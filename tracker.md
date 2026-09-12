@@ -2,6 +2,139 @@
 
 ---
 
+## 2026-09-12 — BACK-04 & FRONT-01: Implement Decision Actions & AppShell UI Framework
+
+### Objective
+Implement the `decisions-approve` and `decisions-reject` Supabase Edge Function endpoints (`BACK-04`) and the complete `AppShell`, `Sidebar`, `TopBar`, and Zustand store client architecture (`FRONT-01`) with full test coverage under strict `/tdd` Red-Green-Refactor protocol.
+
+### Changes Made
+- **BACK-04 (Decision Actions Backend)**:
+  - Created `supabase/functions/decisions-approve/index.ts` implementing:
+    - Route handling for `POST /decisions/:id/approve` and `POST /decisions-approve`
+    - Preflight CORS `OPTIONS` handling
+    - Decision lookup with 404 `DECISION_NOT_FOUND` on invalid IDs
+    - Conflict guard with 409 `DECISION_ALREADY_RESOLVED` on already resolved items
+    - Safety validator with 422 `EMAIL_VALIDATION_FAILED` if custom `edited_body` omits the invoice ID
+    - Resend API dispatch with `Idempotency-Key` header (`decision-${id}-approve`) and zero-credit sandbox fallback
+    - Atomic database/mock state updates (`decision_queue`, `contact_history`, `invoices`, `audit_log` with `OWNER_APPROVED`)
+  - Created `supabase/functions/decisions-reject/index.ts` implementing:
+    - Route handling for `POST /decisions/:id/reject` and `POST /decisions-reject`
+    - Preflight CORS `OPTIONS` handling
+    - Decision lookup (404) and state conflict check (409)
+    - Database/mock state updates with `reject_reason` and `audit_log` (`OWNER_REJECTED`)
+  - Created `dashboard/tests/decisions-actions.test.ts` (12 tests covering approve, reject, validation errors, 404, 409 conflict, Resend sandbox, and Supabase client integration).
+
+- **FRONT-01 (AppShell, Sidebar, TopBar & Zustand Store)**:
+  - Created `dashboard/lib/store.ts` providing full Zustand client state:
+    - Global state for `invoices`, `decisions`, `auditEntries`, `summary`, `isSidebarCollapsed`, `isSweeping`, `lastSweepAt`, `activeFilter`, `sortField`, `sortOrder`
+    - Reactive actions for fetching, filtering, sorting, sweep triggering, approving, and rejecting
+  - Created `dashboard/components/TopBar.tsx` implementing:
+    - `SweepStatusIndicator`: relative timestamp ("Last sweep: 3 min ago") with pulsing green dot and spinning sweep loader
+    - `TriggerSweepButton`: "Run Sweep" action button with disabled state and loading spinner
+    - Mobile menu drawer toggle button
+  - Created `dashboard/components/Sidebar.tsx` implementing:
+    - Brand logo with gradient icon and `Autonomous Collections` subtitle
+    - 3 core navigation links (Dashboard, Decisions, Audit Log)
+    - Active route highlighting with purple accent styling
+    - Pending decisions badge bound reactively to Zustand store
+    - Collapsible state toggle for tablet/desktop views
+    - Mobile bottom tab bar for `< 768px` viewports (`data-testid="mobile-bottom-bar"`)
+    - Demo owner profile badge
+  - Created `dashboard/components/AppShell.tsx` combining Sidebar, TopBar, and fluid `<main>` viewport container.
+  - Created `dashboard/types/deno.d.ts` for clean TypeScript compilation of Edge Function Deno globals and URL modules.
+  - Created `dashboard/tests/app-shell.test.tsx` (9 tests covering sidebar navigation, badge display, route highlighting, collapse toggle, mobile tab bar, topbar sweep trigger, loading states, and full shell layout).
+- Updated `dashboard/vitest.config.ts`, `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
+
+### Files Changed
+- `supabase/functions/decisions-approve/index.ts` (NEW)
+- `supabase/functions/decisions-reject/index.ts` (NEW)
+- `dashboard/tests/decisions-actions.test.ts` (NEW)
+- `dashboard/lib/store.ts` (NEW)
+- `dashboard/components/TopBar.tsx` (NEW)
+- `dashboard/components/Sidebar.tsx` (NEW)
+- `dashboard/components/AppShell.tsx` (NEW)
+- `dashboard/types/deno.d.ts` (NEW)
+- `dashboard/tests/app-shell.test.tsx` (NEW)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Implementation Details
+- Handlers in `decisions-approve` and `decisions-reject` support isolated testing via pure `handleApproveDecision` and `handleRejectDecision` async functions, and run natively on Deno Edge Function runtime.
+- AppShell and navigation components strictly follow tokens from `docs/09-design-systems.md` with glassmorphism surface styling, purple glow accents, and responsive layout behavior.
+
+### Verification
+- Vitest suite in `dashboard/`: 55/55 tests passed across 5 test suites (`decisions-actions.test.ts`, `app-shell.test.tsx`, `api-router.test.ts`, `seed-data.test.ts`, `types.test.ts`).
+- Pytest suite in `agent/`: 36/36 tests passed across all agent modules (`test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
+- TypeScript compiler (`npx tsc --noEmit` in `dashboard/`): 0 errors, clean check.
+- Red -> Green TDD verification completed.
+
+### Current State
+`BACK-04` and `FRONT-01` are 100% complete, fully tested, and verified.
+
+### Next Agent Instructions
+1. `FRONT-02`: Build `dashboard/app/dashboard/page.tsx`, `InvoiceTable.tsx`, `StatsBar.tsx`, `TierBadge.tsx`, and `AgingBar.tsx`.
+2. `FRONT-03`: Build `dashboard/app/decisions/page.tsx`, `DecisionCard.tsx`, `EmailDraftPreview.tsx`, and `EditDraftModal.tsx`.
+3. `FRONT-04`: Build `dashboard/app/audit/page.tsx`, `AuditTimeline.tsx`, and `AuditEntry.tsx`.
+4. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
+
+---
+
+## 2026-09-12 — BACK-02 & BACK-03: Implement seed-data & api-router Edge Functions
+
+### Objective
+Implement the `seed-data` CSV ingestion Edge Function (`BACK-02`) and the `api-router` REST API Edge Function (`BACK-03`) with complete test coverage in Vitest (`dashboard/tests/seed-data.test.ts`, `dashboard/tests/api-router.test.ts`), supporting the Next.js owner dashboard and Supabase Postgres database layer under strict `/tdd` Red-Green-Refactor protocol.
+
+### Changes Made
+- Created `supabase/functions/seed-data/index.ts` implementing:
+  - Header auth verification for `x-seed-secret`
+  - Flexible ingestion from Supabase Storage `seed-data/invoices_seed.csv`, direct CSV request body, or canonical seed fallback
+  - CSV parser with delimiter tokenization and quote handling
+  - Row validation (RFC 5321 emails, amount boundaries, invoice ID regex, status enums)
+  - Fault tolerance: isolates bad rows in `invalid_rows` without aborting batch
+  - Client de-duplication and canonical invoice transformation
+  - Idempotent upserts to `clients` and `invoices` tables
+  - CORS headers for preflight and standard HTTP requests
+- Created `supabase/functions/api-router/index.ts` implementing:
+  - `GET /invoices`: Dynamic overdue calculation, tier assignment, high-value flagging, summary statistics aggregation, status/tier filtering, and multi-field sorting
+  - `GET /decisions`: Decision item retrieval with invoice context, AI draft details, and status filtering
+  - `GET /audit-log`: Paginated action log retrieval with `page`, `limit`, `has_more`, `total`, and invoice/action filters
+  - CORS headers and preflight `OPTIONS` handling
+  - Fallback mock data engine when database client is offline or running in mock testing mode
+- Created `dashboard/tests/seed-data.test.ts` (14 tests covering all parsing, validation, sanitization, auth guard, and upsert scenarios).
+- Created `dashboard/tests/api-router.test.ts` (14 tests covering enrichment, summary calculations, routing, filtering, sorting, pagination, and Supabase client integration).
+- Updated `dashboard/vitest.config.ts` with custom resolver for `https://esm.sh/` Deno-compatible imports.
+- Updated `features_implemented.md`, `docs/23-parallel-execution-plan.md`, and `tracker.md`.
+
+### Files Changed
+- `supabase/functions/seed-data/index.ts` (NEW)
+- `supabase/functions/api-router/index.ts` (NEW)
+- `dashboard/tests/seed-data.test.ts` (NEW)
+- `dashboard/tests/api-router.test.ts` (NEW)
+- `dashboard/vitest.config.ts` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Implementation Details
+- Handlers in `seed-data` and `api-router` are exported as pure async functions (`handleSeedData`, `handleApiRouter`) alongside native `Deno.serve` invocation hooks, enabling zero-friction testing under Vitest as well as deployment on Deno/Supabase Edge runtime.
+- In `api-router`, dynamic calculation helpers `computeEnrichedInvoice` and `calculateInvoicesSummary` ensure aging days and escalation tiers are computed accurately from due dates and dispute flags.
+
+### Verification
+- Vitest suite in `dashboard/`: 34/34 tests passed across 3 test files (`seed-data.test.ts`, `api-router.test.ts`, `types.test.ts`).
+- Pytest suite in `agent/`: 36/36 tests passed across all agent modules (`test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
+- Red -> Green TDD verification completed.
+
+### Current State
+`BACK-02` and `BACK-03` are 100% complete, fully tested, and ready for integration.
+
+### Next Agent Instructions
+1. `BACK-04`: Implement `supabase/functions/decisions-approve/index.ts` and `supabase/functions/decisions-reject/index.ts`.
+2. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
+3. `FRONT-01` .. `FRONT-04`: Implement Next.js dashboard UI components and pages using the type contracts and API endpoints now available.
+
+---
+
 ## 2026-09-12 — AGENT-03: Implement send_email and write_audit_log Tools
 
 ### Objective

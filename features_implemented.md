@@ -5,6 +5,67 @@
 
 ---
 
+## Feature: AppShell, Responsive Sidebar & TopBar Component System (FRONT-01)
+
+**Status:** Implemented  
+**What it does:** Core application layout framework, responsive navigation system, live sweep status indicator, manual sweep trigger, and Zustand state integration for the Chazer owner dashboard.
+
+**Important details:**
+- **Sidebar (`dashboard/components/Sidebar.tsx`)**:
+  - Chazer brand logo with gradient icon and subtitle (`Autonomous Collections`).
+  - 3 primary routes: Dashboard (`/dashboard`), Decisions (`/decisions`), Audit Log (`/audit`).
+  - Active route highlighting with purple glow styling (`bg-chazer-purple/20 text-white font-semibold`).
+  - Reactive decision count badge reading pending decisions from Zustand store.
+  - Collapsible support for tablet/desktop viewport width toggling.
+  - Mobile bottom navigation tab bar at `< 768px` (`data-testid="mobile-bottom-bar"`).
+  - Owner profile badge (`Demo Owner · demo_owner`).
+- **TopBar (`dashboard/components/TopBar.tsx`)**:
+  - `SweepStatusIndicator`: Formatted relative time indicator ("Last sweep: 3 min ago") with pulsing green alive status beacon and spinning loader during active sweep runs.
+  - `TriggerSweepButton`: "Run Sweep" action button with disabled state and loading spinner animation during active sweeps.
+  - Mobile navigation drawer toggle button.
+- **AppShell (`dashboard/components/AppShell.tsx`)**:
+  - Responsive container combining Sidebar, sticky TopBar, and fluid `<main>` viewport with transition padding and smooth entry animation.
+- **Client State Store (`dashboard/lib/store.ts`)**:
+  - Full Zustand store managing invoices, decisions, audit entries, summary stats, filter selections, sorting parameters, and sweep lifecycle operations.
+- **Testing**: 9/9 unit and component tests passing under Vitest (`dashboard/tests/app-shell.test.tsx`).
+
+**Relevant files:**
+- `dashboard/components/AppShell.tsx`
+- `dashboard/components/Sidebar.tsx`
+- `dashboard/components/TopBar.tsx`
+- `dashboard/lib/store.ts`
+- `dashboard/tests/app-shell.test.tsx`
+- `docs/07-components.md`, `docs/08-pages.md`, `docs/09-design-systems.md`
+
+---
+
+## Feature: Decision Queue Action Endpoints: Approve & Reject (BACK-04)
+
+**Status:** Implemented  
+**What it does:** Supabase Edge Functions implementing owner approval (`POST /decisions/:id/approve` / `decisions-approve`) and rejection (`POST /decisions/:id/reject` / `decisions-reject`) for pending AI-drafted collection emails.
+
+**Important details:**
+- **Approve Decision Endpoint (`decisions-approve`)**:
+  - Validates decision presence, returning 404 `DECISION_NOT_FOUND` if absent.
+  - Enforces conflict resolution guard, returning 409 `DECISION_ALREADY_RESOLVED` if decision is not pending.
+  - Accepts optional `edited_subject` and `edited_body` payload; runs safety validation requiring `invoice_id` in custom edited email body (returning 422 `EMAIL_VALIDATION_FAILED` if missing).
+  - Dispatches email via Resend API with `Idempotency-Key` header (`decision-${id}-approve`) or zero-credit sandbox simulation.
+  - Updates `decision_queue.status = 'APPROVED'`, creates `contact_history` record, updates `invoices` contact timestamp, and records `OWNER_APPROVED` event in `audit_log`.
+- **Reject Decision Endpoint (`decisions-reject`)**:
+  - Validates decision presence (404) and state conflict (409).
+  - Updates `decision_queue.status = 'REJECTED'` and attaches `reject_reason`.
+  - Records `OWNER_REJECTED` event in `audit_log`.
+- **CORS & Resilience**: Full CORS headers on standard and `OPTIONS` preflight requests; mock fallback engine for offline or mock test execution.
+- **Testing**: 12/12 unit and integration tests passing under Vitest (`dashboard/tests/decisions-actions.test.ts`).
+
+**Relevant files:**
+- `supabase/functions/decisions-approve/index.ts`
+- `supabase/functions/decisions-reject/index.ts`
+- `dashboard/tests/decisions-actions.test.ts`
+- `docs/06-api-and-state-design.md`, `docs/22-actionable-issues-backlog.md`
+
+---
+
 ## Feature: Vitest & Pydantic Test Framework with Strict TDD Protocol
 
 **Status:** Implemented  
@@ -17,6 +78,54 @@
 - `dashboard/vitest.config.ts`, `dashboard/vitest.setup.ts`, `dashboard/package.json`, `dashboard/tests/types.test.ts`
 - `agent/tests/schemas.py`
 - `docs/20-testing-strategy.md`, `docs/21-code-review-protocol.md`, `docs/22-actionable-issues-backlog.md`, `docs/23-parallel-execution-plan.md`
+
+## Feature: REST API Router Edge Function (BACK-03)
+
+**Status:** Implemented  
+**What it does:** Supabase Edge Function serving REST API endpoints (`GET /invoices`, `GET /decisions`, `GET /audit-log`) for the Next.js owner dashboard with dynamic aging calculation, tier classification, high-value flagging, summary statistics aggregation, and query filtering/pagination.
+
+**Important details:**
+- **`GET /invoices`**:
+  - Fetches and dynamically enriches invoices with `days_overdue`, `tier`, `is_high_value`, `client_name`, and `client_email`.
+  - Computes global summary statistics (`total_overdue_amount`, `count_by_tier`, `pending_decisions`).
+  - Supports query filters (`status`, `tier`) and multi-field sorting (`sort=days_overdue|amount|due_date|status`, `order=asc|desc`).
+- **`GET /decisions`**:
+  - Fetches pending escalation decisions with attached invoice context, escalation reason, AI draft subject/body, and LLM confidence score.
+  - Supports status filtering (`status=PENDING_APPROVAL|APPROVED|REJECTED`).
+- **`GET /audit-log`**:
+  - Fetches paginated immutable action entries (`page`, `limit`, `has_more`, `total`).
+  - Supports filtering by `invoice_id` and `action`.
+- **CORS & Resilience**: Full CORS headers on all requests and `OPTIONS` preflight; automatic fallback to deterministic seed dataset when offline or running in mock test mode.
+- **Testing**: 14/14 unit and integration tests passing under Vitest (`dashboard/tests/api-router.test.ts`).
+
+**Relevant files:**
+- `supabase/functions/api-router/index.ts`
+- `dashboard/tests/api-router.test.ts`
+- `docs/06-api-and-state-design.md`
+
+---
+
+## Feature: Seed Data Edge Function & CSV Ingestion Pipeline (BACK-02)
+
+**Status:** Implemented  
+**What it does:** Supabase Edge Function ingesting, validating, and upserting invoice seed datasets from Supabase Storage or request payloads into Postgres `clients` and `invoices` tables.
+
+**Important details:**
+- **Authentication Guard**: Mandatory `x-seed-secret` header check returning 401 Unauthorized if secret is invalid.
+- **CSV Parser & Validator**:
+  - RFC 5321 email format validation, `amount` bounds checking (`> 0` and `<= 999,999.99`), `invoice_id` format checking (`INV-NNN`), and status validation.
+  - Isolates invalid CSV rows in `invalid_rows` array without failing or aborting the remaining valid batch.
+- **Canonical Normalization**:
+  - Extracts and de-duplicates unique client records before upserting into `clients`.
+  - Transforms rows to canonical `invoices` records with default state (`contact_count: 0`, `dispute_flag: false`, `last_contact_at: null`).
+- **Idempotent DB Upsert**: Employs `upsert` on conflict keys (`client_id` and `invoice_id`).
+- **Testing**: 14/14 unit and integration tests passing under Vitest (`dashboard/tests/seed-data.test.ts`).
+
+**Relevant files:**
+- `supabase/functions/seed-data/index.ts`
+- `data/invoices_seed.csv`
+- `dashboard/tests/seed-data.test.ts`
+- `docs/05-data-ingestion-and-processing-engine.md`
 
 ---
 

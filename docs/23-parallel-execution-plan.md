@@ -79,9 +79,9 @@ flowchart TD
 
 | Status Category | Count | Status Badge | Description |
 |---|:---:|:---:|---|
-| **Completed** | 2 / 20 | `🟢 Completed` | Fully implemented, verified via `/tdd` Red-Green suite (Vitest / Pytest + Pydantic), and passing all tests |
+| **Completed** | 8 / 20 | `🟢 Completed` | Fully implemented, verified via `/tdd` Red-Green suite (Vitest / Pytest + Pydantic), and passing all tests |
 | **Implementing** | 0 / 20 | `🟡 Implementing` | Currently actively being developed under `/tdd` red/green loop |
-| **Not Implemented** | 18 / 20 | `🔴 Not Implemented` | Specified with full acceptance criteria, queued for TDD build |
+| **Not Implemented** | 12 / 20 | `🔴 Not Implemented` | Specified with full acceptance criteria, queued for TDD build |
 
 > [!IMPORTANT]
 > **Mandatory TDD Completion Policy**: Tickets can ONLY transition to `🟢 Completed` after their dedicated test suite (Vitest for TS/Frontend, Pytest + Pydantic for Python Agent) has been executed, red-to-green verified, and passed.
@@ -112,9 +112,9 @@ flowchart TD
 | Ticket | Status | Can Run In Parallel With | Prerequisite | Files Touched (Zero Collision) |
 |---|:---:|---|---|---|
 | **BACK-01** (Database Schema & Views) | 🔴 Not Implemented | DEVOPS-01, FRONT-01, FRONT-05 (types) | None | `supabase/migrations/001_initial_schema.sql` |
-| **BACK-02** (seed-data Function) | 🔴 Not Implemented | BACK-03, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/seed-data/index.ts`<br>`data/invoices_seed.csv` |
-| **BACK-03** (api-router Function) | 🔴 Not Implemented | BACK-02, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/api-router/index.ts` |
-| **BACK-04** (decisions approve/reject) | 🔴 Not Implemented | BACK-02, BACK-03, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/decisions-approve/index.ts`<br>`supabase/functions/decisions-reject/index.ts` |
+| **BACK-02** (seed-data Function) | 🟢 Completed | BACK-03, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/seed-data/index.ts`<br>`data/invoices_seed.csv` |
+| **BACK-03** (api-router Function) | 🟢 Completed | BACK-02, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/api-router/index.ts` |
+| **BACK-04** (decisions approve/reject) | 🟢 Completed | BACK-02, BACK-03, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/decisions-approve/index.ts`<br>`supabase/functions/decisions-reject/index.ts` |
 | **BACK-05** (pg_cron sweep schedule) | 🔴 Not Implemented | AGENT-04, AGENT-05, FRONT-01..05 | BACK-01, AGENT-05 URL | `supabase/migrations/001_initial_schema.sql` |
 
 **Parallelism Note:**
@@ -127,7 +127,7 @@ flowchart TD
 
 | Ticket | Status | Can Run In Parallel With | Prerequisite | Files Touched (Zero Collision) |
 |---|:---:|---|---|---|
-| **FRONT-01** (AppShell, Sidebar, TopBar) | 🔴 Not Implemented | FRONT-02, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | DEVOPS-01 | `dashboard/components/AppShell.tsx`<br>`dashboard/components/Sidebar.tsx`<br>`dashboard/components/TopBar.tsx` |
+| **FRONT-01** (AppShell, Sidebar, TopBar) | 🟢 Completed | FRONT-02, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | DEVOPS-01 | `dashboard/components/AppShell.tsx`<br>`dashboard/components/Sidebar.tsx`<br>`dashboard/components/TopBar.tsx` |
 | **FRONT-02** (Dashboard page & table) | 🔴 Not Implemented | FRONT-01, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/dashboard/page.tsx`<br>`dashboard/components/InvoiceTable.tsx`<br>`dashboard/components/StatsBar.tsx`<br>`dashboard/components/TierBadge.tsx`<br>`dashboard/components/AgingBar.tsx` |
 | **FRONT-03** (Decision Queue & modals) | 🔴 Not Implemented | FRONT-01, FRONT-02, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/decisions/page.tsx`<br>`dashboard/components/DecisionCard.tsx`<br>`dashboard/components/EmailDraftPreview.tsx`<br>`dashboard/components/EditDraftModal.tsx` |
 | **FRONT-04** (Audit Log page & timeline) | 🔴 Not Implemented | FRONT-01, FRONT-02, FRONT-03, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/audit/page.tsx`<br>`dashboard/components/AuditTimeline.tsx`<br>`dashboard/components/AuditEntry.tsx` |
