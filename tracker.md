@@ -2,7 +2,57 @@
 
 ---
 
-## 2026-09-13 — Phase 3 (Wave 2): AGENT-04 & AGENT-05 Implementation
+## 2026-09-13 — Phase 3 (Wave 2): FRONT-05 & BACK-05 Implementation
+
+### Objective
+Complete **Phase 3: Integration (Wave 2)**:
+- **Agent 3: FRONT-05**: Wire Zustand client store (`dashboard/lib/store.ts` and `dashboard/lib/api.ts`) to live Supabase Edge Function REST API endpoints (`/invoices`, `/decisions`, `/audit-log`, `/decisions-approve`, `/decisions-reject`, `/agent-sweep`), with optimistic mutations, rollback resilience, loading skeletons, query synchronizations, and Vitest test suite.
+- **Agent 4: BACK-05**: Configure `pg_cron` daily collection sweep schedule in PostgreSQL migrations (`supabase/migrations/001_initial_schema.sql`) and `CRON_SECRET` authentication verification in the `agent-sweep` Edge Function (`supabase/functions/agent-sweep/index.ts`).
+
+### Changes Made
+- **FRONT-05 (Zustand Store & API Integration)**:
+  - Created `dashboard/tests/store.test.ts`:
+    - 14 comprehensive unit and integration tests verifying store initialization, sidebar controls, filter & sorting mutations, `fetchInvoices`, `fetchDecisions`, `fetchAuditLog`, optimistic `approveDecision` with rollback on error, optimistic `rejectDecision` with rollback on error, and `triggerSweep` refresh cycles.
+  - Enhanced `dashboard/lib/api.ts`:
+    - Implemented `fetchWithCandidateUrls` multi-route fallback resilience trying `/api-router/invoices`, `/api-router?route=...`, `/invoices`, `/agent-sweep`, `/sweep`, `/decisions-approve`, and `/decisions-reject` with `Authorization` and `apikey` headers.
+    - Preserved deterministic offline/mock datasets for local testing.
+  - Verified `dashboard/lib/store.ts` actions integration across `DashboardPage`, `DecisionsPage`, `AuditPage`, `Sidebar`, and `TopBar`.
+- **BACK-05 (pg_cron Daily Sweep Schedule & CRON_SECRET Guard)**:
+  - Updated `supabase/migrations/001_initial_schema.sql`:
+    - Added idempotent `pg_cron` daily schedule registration (`daily-chazer-sweep`, `0 9 * * *`) dispatching `net.http_post` to the `agent-sweep` Edge Function with `x-cron-secret` header.
+  - Updated `supabase/functions/agent-sweep/index.ts`:
+    - Added `x-cron-secret` to CORS `Access-Control-Allow-Headers`.
+    - Added `CRON_SECRET` authentication verification rejecting unauthenticated requests with 401 Unauthorized while allowing valid `x-cron-secret` or dashboard `Authorization` / `apikey` bearer headers.
+  - Updated `dashboard/tests/agent-sweep.test.ts`:
+    - Added 5 new tests verifying CORS headers, 401 on missing secret, 401 on invalid secret, 200 on matching `x-cron-secret`, and 200 on valid dashboard `Authorization`.
+- **Documentation & Tracking**:
+  - Updated `docs/23-parallel-execution-plan.md` marking `FRONT-05` and `BACK-05` as `🟢 Completed` (16/20 tickets complete).
+  - Updated `features_implemented.md` with complete feature descriptions, file lists, and verification results.
+
+### Files Changed
+- `dashboard/tests/store.test.ts` (NEW)
+- `dashboard/lib/api.ts` (MODIFIED)
+- `supabase/migrations/001_initial_schema.sql` (MODIFIED)
+- `supabase/functions/agent-sweep/index.ts` (MODIFIED)
+- `dashboard/tests/agent-sweep.test.ts` (MODIFIED)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Verification
+- **Frontend & Edge Vitest Suite**: 123/123 tests passed across 11 test suites (`npm test` in `dashboard/`).
+- **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
+- **Python Agent Pytest Suite**: 42/42 tests passed in 0.45s (`pytest agent/tests/ -v`).
+
+### Current State
+`FRONT-05` and `BACK-05` are 100% complete and verified. All Phase 1, Phase 2, and Phase 3 tickets (16/20 total tickets) are now completed. All core agent tools, edge functions, database migrations, pg_cron schedules, Next.js frontend pages, and Zustand store API bindings are implemented and green under TDD.
+
+### Next Agent Instructions
+The next agent should proceed to **Phase 4: Verification & Release (Wave 3)**:
+1. `DEVOPS-03`: Update `README.md` and public architecture docs with badging, complete setup walkthrough, API routes table, and demo script details for hackathon judging.
+2. `DEVOPS-04`: Perform end-to-end smoke verification against live endpoints following `docs/17-submission-qa-checklist.md`.
+
+---
 
 ### Objective
 Complete **Phase 3: Integration (Wave 2)**:

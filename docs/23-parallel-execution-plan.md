@@ -79,9 +79,9 @@ flowchart TD
 
 | Status Category | Count | Status Badge | Description |
 |---|:---:|:---:|---|
-| **Completed** | 14 / 20 | `🟢 Completed` | Fully implemented, verified via `/tdd` Red-Green suite (Vitest / Pytest + Pydantic), and passing all tests |
+| **Completed** | 16 / 20 | `🟢 Completed` | Fully implemented, verified via `/tdd` Red-Green suite (Vitest / Pytest + Pydantic), and passing all tests |
 | **Implementing** | 0 / 20 | `🟡 Implementing` | Currently actively being developed under `/tdd` red/green loop |
-| **Not Implemented** | 6 / 20 | `🔴 Not Implemented` | Specified with full acceptance criteria, queued for TDD build |
+| **Not Implemented** | 4 / 20 | `🔴 Not Implemented` | Specified with full acceptance criteria, queued for TDD build |
 
 > [!IMPORTANT]
 > **Mandatory TDD Completion Policy**: Tickets can ONLY transition to `🟢 Completed` after their dedicated test suite (Vitest for TS/Frontend, Pytest + Pydantic for Python Agent) has been executed, red-to-green verified, and passed.
@@ -115,7 +115,7 @@ flowchart TD
 | **BACK-02** (seed-data Function) | 🟢 Completed | BACK-03, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/seed-data/index.ts`<br>`data/invoices_seed.csv` |
 | **BACK-03** (api-router Function) | 🟢 Completed | BACK-02, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/api-router/index.ts` |
 | **BACK-04** (decisions approve/reject) | 🟢 Completed | BACK-02, BACK-03, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/decisions-approve/index.ts`<br>`supabase/functions/decisions-reject/index.ts` |
-| **BACK-05** (pg_cron sweep schedule) | 🔴 Not Implemented | AGENT-04, AGENT-05, FRONT-01..05 | BACK-01, AGENT-05 URL | `supabase/migrations/001_initial_schema.sql` |
+| **BACK-05** (pg_cron sweep schedule) | 🟢 Completed | AGENT-04, AGENT-05, FRONT-01..05 | BACK-01, AGENT-05 URL | `supabase/migrations/001_initial_schema.sql`<br>`supabase/functions/agent-sweep/index.ts` |
 
 **Parallelism Note:**
 - Once `BACK-01` establishes the database schema, all three Edge Function endpoints (`BACK-02`, `BACK-03`, `BACK-04`) reside in isolated directories under `supabase/functions/` and can be implemented in parallel.
@@ -131,7 +131,7 @@ flowchart TD
 | **FRONT-02** (Dashboard page & table) | 🟢 Completed | FRONT-01, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/dashboard/page.tsx`<br>`dashboard/components/InvoiceTable.tsx`<br>`dashboard/components/StatsBar.tsx`<br>`dashboard/components/TierBadge.tsx`<br>`dashboard/components/AgingBar.tsx` |
 | **FRONT-03** (Decision Queue & modals) | 🟢 Completed | FRONT-01, FRONT-02, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/decisions/page.tsx`<br>`dashboard/components/DecisionCard.tsx`<br>`dashboard/components/EmailDraftPreview.tsx`<br>`dashboard/components/EditDraftModal.tsx` |
 | **FRONT-04** (Audit Log page & timeline) | 🟢 Completed | FRONT-01, FRONT-02, FRONT-03, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/audit/page.tsx`<br>`dashboard/components/AuditTimeline.tsx`<br>`dashboard/components/AuditEntry.tsx` |
-| **FRONT-05** (Zustand store & API hooks) | 🔴 Not Implemented | Phase A (types): Wave 0<br>Phase B (live API): Wave 2 | BACK-03, BACK-04 for live testing | `dashboard/lib/types.ts`<br>`dashboard/lib/store.ts`<br>`dashboard/lib/api.ts` |
+| **FRONT-05** (Zustand store & API hooks) | 🟢 Completed | Phase A (types): Wave 0<br>Phase B (live API): Wave 2 | BACK-03, BACK-04 for live testing | `dashboard/lib/types.ts`<br>`dashboard/lib/store.ts`<br>`dashboard/lib/api.ts`<br>`dashboard/tests/store.test.ts` |
 
 **Parallelism Note:**
 - The frontend pages (`FRONT-02`, `FRONT-03`, `FRONT-04`) and AppShell (`FRONT-01`) touch completely separate page files and component files. Because all TypeScript interfaces and JSON response mock structures are predefined in `docs/06-api-and-state-design.md`, frontend UI components can be developed in parallel using mock data before live API wiring.

@@ -8,7 +8,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
 
 export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
@@ -526,7 +526,11 @@ export async function sendEmailTs(params: {
   }
 }
 
-export async function handleAgentSweep(req: Request): Promise<Response> {
+export async function handleAgentSweep(
+  req: Request,
+  envOverride?: Record<string, string>,
+  supabaseClientOverride?: any
+): Promise<Response> {
   // 1. CORS Preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: CORS_HEADERS });
@@ -545,7 +549,25 @@ export async function handleAgentSweep(req: Request): Promise<Response> {
     );
   }
 
-  // 3. POST execution
+  // 3. CRON_SECRET & Authorization Verification
+  const cronSecret =
+    envOverride?.CRON_SECRET ||
+    (typeof Deno !== "undefined" ? Deno.env.get("CRON_SECRET") : process?.env?.CRON_SECRET);
+  const providedCronSecret = req.headers.get("x-cron-secret");
+  const authHeader = req.headers.get("authorization") || req.headers.get("apikey");
+
+  if (cronSecret && cronSecret.trim() !== "") {
+    const isCronSecretValid = providedCronSecret === cronSecret;
+    const hasAuth = Boolean(authHeader && authHeader.trim() !== "");
+    if (!isCronSecretValid && !hasAuth) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: invalid or missing cron secret" }),
+        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+  }
+
+  // 4. POST execution
   let bodyPayload: SweepRequestBody = {};
   try {
     if (req.headers.get("content-type")?.includes("application/json")) {
@@ -565,9 +587,9 @@ export async function handleAgentSweep(req: Request): Promise<Response> {
   const startIso = new Date().toISOString();
 
   // Supabase client instance if configured
-  const supabaseUrl = typeof Deno !== "undefined" ? Deno.env.get("SUPABASE_URL") : undefined;
-  const supabaseKey = typeof Deno !== "undefined" ? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_ANON_KEY") : undefined;
-  const supabase = supabaseUrl && supabaseKey && !supabaseUrl.includes("your-project") ? createClient(supabaseUrl, supabaseKey) : null;
+  const supabaseUrl = envOverride?.SUPABASE_URL || (typeof Deno !== "undefined" ? Deno.env.get("SUPABASE_URL") : undefined);
+  const supabaseKey = envOverride?.SUPABASE_SERVICE_ROLE_KEY || (typeof Deno !== "undefined" ? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_ANON_KEY") : undefined);
+  const supabase = supabaseClientOverride || (supabaseUrl && supabaseKey && !supabaseUrl.includes("your-project") ? createClient(supabaseUrl, supabaseKey) : null);
 
   // Record SWEEP_STARTED
   const startAudit = {

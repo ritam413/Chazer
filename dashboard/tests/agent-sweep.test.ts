@@ -34,6 +34,75 @@ describe('AGENT-05: agent-sweep Edge Function (Native TypeScript)', () => {
       expect(json.service).toBe('chazer-agent-sweep');
       expect(json.status).toBe('ready');
     });
+
+    it('includes x-cron-secret in CORS allowed headers', async () => {
+      const req = new Request('https://test.supabase.co/functions/v1/agent-sweep', {
+        method: 'OPTIONS',
+      });
+      const res = await handleAgentSweep(req);
+      expect(res.headers.get('Access-Control-Allow-Headers')).toContain('x-cron-secret');
+    });
+  });
+
+  describe('BACK-05: CRON_SECRET Authentication Guard', () => {
+    it('rejects with 401 when CRON_SECRET is configured and request lacks valid secret or auth', async () => {
+      const req = new Request('https://test.supabase.co/functions/v1/agent-sweep', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ owner_id: 'demo_owner' }),
+      });
+
+      const res = await handleAgentSweep(req, { CRON_SECRET: 'secret-cron-key-123' });
+      expect(res.status).toBe(401);
+      const json = await res.json();
+      expect(json.error).toContain('Unauthorized');
+    });
+
+    it('rejects with 401 when invalid x-cron-secret is provided', async () => {
+      const req = new Request('https://test.supabase.co/functions/v1/agent-sweep', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-cron-secret': 'wrong-secret',
+        },
+        body: JSON.stringify({ owner_id: 'demo_owner' }),
+      });
+
+      const res = await handleAgentSweep(req, { CRON_SECRET: 'secret-cron-key-123' });
+      expect(res.status).toBe(401);
+    });
+
+    it('accepts and executes sweep when valid x-cron-secret is provided', async () => {
+      const req = new Request('https://test.supabase.co/functions/v1/agent-sweep', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-cron-secret': 'secret-cron-key-123',
+        },
+        body: JSON.stringify({ owner_id: 'demo_owner' }),
+      });
+
+      const res = await handleAgentSweep(req, { CRON_SECRET: 'secret-cron-key-123' });
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+    });
+
+    it('accepts and executes sweep when valid Authorization header is provided from dashboard', async () => {
+      const req = new Request('https://test.supabase.co/functions/v1/agent-sweep', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer test-anon-key',
+        },
+        body: JSON.stringify({ owner_id: 'demo_owner' }),
+      });
+
+      const res = await handleAgentSweep(req, { CRON_SECRET: 'secret-cron-key-123' });
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+    });
   });
 
   describe('Classification and Validation Unit Logic', () => {

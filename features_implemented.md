@@ -1,7 +1,57 @@
 # Chazer — Features Implemented
 
-**Last updated:** 2026-09-12  
-**Project status:** Active Development · Entire Frontend Unified Under Monad Editorial Design System
+**Last updated:** 2026-09-13  
+**Project status:** Active Development · 16/20 Tickets Complete · Edge & Store Wireup Verified
+
+---
+
+## Feature: Zustand Client Store & Supabase Edge Function API Integration (FRONT-05)
+
+**Status:** Implemented  
+**What it does:** Reactive global state management architecture (`dashboard/lib/store.ts` and `dashboard/lib/api.ts`) connecting all Next.js dashboard surfaces (`/dashboard`, `/decisions`, `/audit`, TopBar, and Sidebar) directly to live Supabase Edge Functions (`api-router`, `agent-sweep`, `decisions-approve`, `decisions-reject`) with optimistic mutations, rollback resilience, query synchronizations, and loading skeletons.
+
+**Important details:**
+- **Asynchronous Actions & Store Wireup**:
+  - `fetchInvoices()`: Ingests dynamic overdue aging receivables and summary KPI aggregates (`total_overdue_amount`, `count_by_tier`, `pending_decisions`, `sent_this_week`).
+  - `fetchDecisions()`: Loads human-in-the-loop pending approval decisions with invoice context and LLM-drafted emails.
+  - `fetchAuditLog()`: Ingests immutable telemetry action journal records with query filtering and pagination.
+  - `approveDecision(decisionId, content)`: Optimistically removes decision item, decrements pending badge, dispatches email via Resend API, and rolls back with user error state on failure.
+  - `rejectDecision(decisionId, reason)`: Optimistically removes item, decrements pending badge, records rejection in audit log, and rolls back on failure.
+  - `triggerSweep()`: Activates live `isSweeping` indicator, invokes autonomous collection sweep, and refreshes invoices, decisions, and audit journal streams.
+- **Resilience & Candidate URL Routing**:
+  - Automatically queries deployed Supabase Edge Function paths (`/api-router/invoices`, `/api-router?route=...`, `/invoices`, `/agent-sweep`, `/sweep`, `/decisions-approve`, `/decisions-reject`) with `apikey` and `Authorization` headers.
+  - Deterministic in-memory fallback datasets with client-side sorting and filtering for offline execution and testing.
+- **Verification**: 14/14 dedicated Vitest tests passing in `dashboard/tests/store.test.ts`, bringing full test suite to 123/123 tests passing.
+
+**Relevant files:**
+- `dashboard/lib/store.ts`
+- `dashboard/lib/api.ts`
+- `dashboard/tests/store.test.ts`
+
+---
+
+## Feature: pg_cron Daily Autonomous Collection Sweep Schedule (BACK-05)
+
+**Status:** Implemented  
+**What it does:** PostgreSQL cron schedule in `supabase/migrations/001_initial_schema.sql` registering `daily-chazer-sweep` at `0 9 * * *` (09:00 UTC) invoking the `agent-sweep` Supabase Edge Function via `pg_net` with `x-cron-secret` authentication and automated error resilience.
+
+**Important details:**
+- **pg_cron Schedule (`0 9 * * *`)**:
+  - Fires daily at 09:00 UTC using `net.http_post` to trigger the autonomous background sweep.
+  - Automatically reads `app.supabase_url` and `app.cron_secret` configuration parameters.
+  - Idempotent: unschedules any existing `daily-chazer-sweep` job before registering to prevent duplicate triggers.
+- **Edge Function CRON_SECRET & Auth Guard**:
+  - `supabase/functions/agent-sweep/index.ts` enforces `CRON_SECRET` validation when configured in environment.
+  - Rejects unauthenticated requests with 401 Unauthorized (`{ "error": "Unauthorized: invalid or missing cron secret" }`).
+  - Accepts requests with valid `x-cron-secret` header or valid `Authorization` / `apikey` bearer headers from owner dashboard.
+  - Exposes `x-cron-secret` in CORS `Access-Control-Allow-Headers`.
+- **Verification**: 17/17 Vitest tests passing in `dashboard/tests/agent-sweep.test.ts`.
+
+**Relevant files:**
+- `supabase/migrations/001_initial_schema.sql`
+- `supabase/functions/agent-sweep/index.ts`
+- `dashboard/tests/agent-sweep.test.ts`
+- `docs/11-deployment-cloud-guide.md`
 
 ---
 

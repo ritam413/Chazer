@@ -165,3 +165,48 @@ CREATE POLICY "demo_owner_contact_read" ON contact_history FOR SELECT USING (own
 CREATE POLICY "demo_owner_audit_read" ON audit_log FOR SELECT USING (owner_id = 'demo_owner');
 CREATE POLICY "demo_owner_decisions_read" ON decision_queue FOR SELECT USING (owner_id = 'demo_owner');
 CREATE POLICY "demo_owner_sweeps_read" ON sweep_runs FOR SELECT USING (owner_id = 'demo_owner');
+
+-- =============================================================================
+-- pg_cron Daily Autonomous Collection Sweep Schedule (BACK-05)
+-- Runs daily at 09:00 UTC via pg_net HTTP POST to agent-sweep Edge Function
+-- =============================================================================
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_extension WHERE extname = 'pg_cron'
+  ) THEN
+    -- Unschedule existing job if already present to ensure idempotency
+    PERFORM cron.unschedule('daily-chazer-sweep')
+    WHERE EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'daily-chazer-sweep'
+    );
+
+    -- Register daily 09:00 UTC sweep schedule
+    PERFORM cron.schedule(
+      'daily-chazer-sweep',
+      '0 9 * * *',
+      $cron$
+      SELECT net.http_post(
+        url := COALESCE(
+          NULLIF(current_setting('app.supabase_url', true), ''),
+          'http://localhost:54321'
+        ) || '/functions/v1/agent-sweep',
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'x-cron-secret', COALESCE(NULLIF(current_setting('app.cron_secret', true), ''), 'ch-cron-secret-demo')
+        ),
+        body := jsonb_build_object(
+          'owner_id', 'demo_owner',
+          'high_value_threshold', 10000,
+          'contact_window_hours', 72
+        )
+      );
+      $cron$
+    );
+  END IF;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE NOTICE 'pg_cron scheduling skipped during migration: %', SQLERRM;
+END $$;
+
