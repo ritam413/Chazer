@@ -5,6 +5,29 @@
 
 ---
 
+## Feature: Domain-Themed 404 Not Found Error & Recovery Screen
+
+**Status:** Implemented  
+**What it does:** High-taste error and route recovery page tailored to the Chazer autonomous A/R domain ("Ledger Entry Missing / Uncollectible Route"), featuring interactive snapshot diagnostics and quick navigation recovery.
+
+**Important details:**
+- **Visual Design & Micro-interactions**:
+  - Dark-mode glassmorphic inspection card (`glass-card`, `border-border-subtle`, gradient accents) depicting `INV-404-NOT-FOUND`.
+  - Alive pulsing classification badge (`UNCOLLECTIBLE_ROUTE · TIER_3_ESCALATED`).
+  - Animated diagnostic radar scanline indicator.
+- **Recovery Actions**:
+  - Primary CTA: "Return to Dashboard" (`/dashboard`) with purple glow shadow.
+  - Secondary CTA: "Decision Queue" (`/decisions`) with warning badge.
+  - Breadcrumb quick links: "Inspect Audit Log" (`/audit`) and "Home Overview" (`/`).
+- **A11y & Responsiveness**: WCAG AA contrast compliance, keyboard focus rings, single-line CTA labels, and responsive layout across mobile and desktop.
+- **Testing**: 3/3 unit tests passing in Vitest (`dashboard/tests/not-found.test.tsx`).
+
+**Relevant files:**
+- `dashboard/app/not-found.tsx`
+- `dashboard/tests/not-found.test.tsx`
+
+---
+
 ## Feature: AppShell, Responsive Sidebar & TopBar Component System (FRONT-01)
 
 **Status:** Implemented  

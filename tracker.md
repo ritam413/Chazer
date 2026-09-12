@@ -2,6 +2,27 @@
 
 ---
 
+## 2026-09-12 — UI Craft: Implement Domain-Themed 404 Not Found Screen
+
+### Objective
+Create a domain-authentic 404 Not Found error and recovery page for the Next.js App Router (`dashboard/app/not-found.tsx`) adhering to the `/taste` and `/impeccable` design systems (dark-mode glassmorphic aesthetics, alive micro-interactions, WCAG AA compliance, and clear recovery navigation).
+
+### Changes Made
+- Created `dashboard/app/not-found.tsx` with:
+  - "Ledger Entry Missing" / "Uncollectible Route" headline with giant gradient display number and VOID stamp
+  - Pulsing `UNCOLLECTIBLE_ROUTE · TIER_3_ESCALATED` badge
+  - Domain-authentic glassmorphic invoice inspection snapshot card (`INV-404-NOT-FOUND`, ∞ Days Overdue, Re-route Required, diagnostic radar icon)
+  - Clear single-line recovery actions: "Return to Dashboard" (`/dashboard`) and "Decision Queue" (`/decisions`)
+  - Sub-navigation links to Audit Log (`/audit`) and Home (`/`)
+- Created `dashboard/tests/not-found.test.tsx` (3 tests covering error code rendering, navigation links, and themed receipt card).
+- Updated `features_implemented.md` and `tracker.md`.
+
+### Verification
+- Vitest suite in `dashboard/`: 58/58 tests passing across 6 test files (`not-found.test.tsx`, `app-shell.test.tsx`, `decisions-actions.test.ts`, `api-router.test.ts`, `seed-data.test.ts`, `types.test.ts`).
+- TypeScript compiler (`npx tsc --noEmit` in `dashboard/`): 0 errors.
+
+---
+
 ## 2026-09-12 — BACK-04 & FRONT-01: Implement Decision Actions & AppShell UI Framework
 
 ### Objective
