@@ -29,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`dark ${libreFranklin.variable} ${libreBaskerville.variable}`}>
-      <body className="font-sans bg-surface-base text-[#F0F0F5] antialiased selection:bg-chazer-purple selection:text-white min-h-screen">
+      <body className={`${libreFranklin.className} bg-surface-base text-[#F0F0F5] antialiased selection:bg-chazer-purple selection:text-white min-h-screen font-sans`}>
         {children}
       </body>
     </html>

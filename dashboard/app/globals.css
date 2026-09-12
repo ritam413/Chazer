@@ -10,13 +10,23 @@
   --color-surface-elevated: #22222c;
   --color-border-subtle: #2e2e3a;
   --color-chazer-purple: #7c3aed;
+  --font-libre-franklin: 'Libre Franklin', system-ui, sans-serif;
+  --font-libre-baskerville: 'Libre Baskerville', Georgia, serif;
 }
 
 body {
   background-color: #0f0f13;
   color: #f0f0f5;
-  font-family: var(--font-libre-franklin), 'Libre Franklin', system-ui, sans-serif;
+  font-family: 'Libre Franklin', var(--font-libre-franklin), system-ui, -apple-system, sans-serif;
   min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, button, input, label {
+  font-family: 'Libre Franklin', var(--font-libre-franklin), system-ui, -apple-system, sans-serif;
+}
+
+.font-serif, .body-copy {
+  font-family: 'Libre Baskerville', var(--font-libre-baskerville), Georgia, serif;
 }
 
 /* Glassmorphism surfaces */
