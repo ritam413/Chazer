@@ -35,3 +35,24 @@ class EmailDraftSchema(BaseModel):
     word_count: int = Field(le=200)
     validation_passed: bool = True
     tier: Optional[Literal["TIER_1", "TIER_2", "TIER_3"]] = None
+
+
+class SendEmailOutputSchema(BaseModel):
+    """Validation schema for send_email tool output."""
+    success: bool
+    resend_message_id: Optional[str] = None
+    timestamp_utc: str
+    error: Optional[str] = None
+
+
+class AuditLogEntrySchema(BaseModel):
+    """Validation schema for write_audit_log tool output."""
+    log_id: str
+    sweep_id: Optional[str] = None
+    invoice_id: Optional[str] = None
+    owner_id: str = "demo_owner"
+    action: str
+    status: str
+    metadata: dict = Field(default_factory=dict)
+    created_at: str
+

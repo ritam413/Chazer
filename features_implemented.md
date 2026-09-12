@@ -20,6 +20,34 @@
 
 ---
 
+## Feature: Email Dispatch & Immutable Audit Logging Tools (AGENT-03)
+
+**Status:** Implemented  
+**What it does:** Resend API integration with Idempotency-Key support and sandbox development mode, coupled with synchronous immutable audit event persistence in Supabase Postgres.
+
+**Important details:**
+- **Email Sending Tool (`send_email`)**:
+  - Resend API dispatch supporting custom sender, recipients, plain-text body, and subject.
+  - Zero-credit Sandbox Mode (`sandbox = True` / `RESEND_SANDBOX = true`) generating deterministic mock message IDs without live HTTP traffic.
+  - Mandatory `Idempotency-Key` header injection preventing duplicate email dispatch during retries or network blips.
+  - Structured return schema `{ success, resend_message_id, timestamp_utc, error }`.
+- **Immutable Audit Logging Tool (`write_audit_log`)**:
+  - Synchronously records all agent life-cycle actions (`INVOICE_CLASSIFIED`, `EMAIL_DRAFTED`, `TIER1_EMAIL_SENT`, `TIER2_EMAIL_SENT`, `TIER3_DRAFT_CREATED`, `TIER3_ESCALATED`, `HIGH_VALUE_ESCALATED`, `SEND_FAILED`, `LLM_FAILED`, `OWNER_APPROVED`, `OWNER_REJECTED`, etc.).
+  - Persists records to Supabase `audit_log` table when configured.
+  - Automatic fallback resilience preventing agent crash if database connection fluctuates.
+  - Generates immutable UUID `log_id` and UTC ISO timestamp.
+- **Testing**: 8/8 unit tests passing under Pytest with Pydantic `SendEmailOutputSchema` and `AuditLogEntrySchema` validation.
+
+**Relevant files:**
+- `agent/tools/send_email.py`
+- `agent/tools/write_audit_log.py`
+- `agent/tests/test_send_email.py`
+- `agent/tests/test_write_audit_log.py`
+- `agent/tests/schemas.py`
+- `docs/03-agent-specification.md`, `docs/06-api-and-state-design.md`, `docs/22-actionable-issues-backlog.md`
+
+---
+
 ## Feature: LLM-Driven Email Drafter Tool (AGENT-02)
 
 **Status:** Implemented  

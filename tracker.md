@@ -2,6 +2,67 @@
 
 ---
 
+## 2026-09-12 — AGENT-03: Implement send_email and write_audit_log Tools
+
+### Objective
+Implement the remaining two core Strands agent tools: `send_email` (Resend integration with sandbox mode and idempotency keys) and `write_audit_log` (synchronous immutable audit persistence in Supabase Postgres) along with their unit and contract tests (`agent/tools/send_email.py`, `agent/tools/write_audit_log.py`, `agent/tests/test_send_email.py`, `agent/tests/test_write_audit_log.py`) following strict `/tdd` Red-Green-Refactor protocol.
+
+### Changes Made
+- Created feature branch `feat/agent-03-tools`.
+- Created `agent/tests/test_send_email.py` covering:
+  - Zero-credit sandbox mode generating mock Resend IDs without live HTTP traffic
+  - Live API dispatch including `Idempotency-Key` header injection
+  - Resend API failure handling without crashing the agent
+  - Keyword arguments and dictionary dual invocation
+  - Pydantic `SendEmailOutputSchema` validation
+- Created `agent/tests/test_write_audit_log.py` covering:
+  - Synchronous record generation with unique UUID and ISO-8601 timestamps
+  - Full support and verification for all standard domain actions and statuses
+  - Supabase `audit_log` table insertion integration
+  - Keyword arguments and dictionary dual invocation
+  - Pydantic `AuditLogEntrySchema` validation
+- Created `agent/tools/send_email.py` implementing:
+  - `@tool` decorator from `strands` (with local fallback)
+  - Resend dispatch via `resend` SDK or direct HTTP requests
+  - Sandbox mode simulation
+  - Idempotency key generation and propagation
+- Created `agent/tools/write_audit_log.py` implementing:
+  - `@tool` decorator from `strands` (with local fallback)
+  - Domain action and status validation sets
+  - Supabase client integration for `audit_log` table inserts
+  - Resilient error trapping for offline or intermittent DB conditions
+- Updated `agent/tests/schemas.py`, `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
+
+### Files Changed
+- `agent/tools/send_email.py` (NEW)
+- `agent/tools/write_audit_log.py` (NEW)
+- `agent/tests/test_send_email.py` (NEW)
+- `agent/tests/test_write_audit_log.py` (NEW)
+- `agent/tests/schemas.py` (MODIFIED)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Implementation Details
+- `send_email` defaults to sandbox mode if `RESEND_API_KEY` is absent or `RESEND_SANDBOX=true`, ensuring zero-cost developer experience and test suite execution.
+- `write_audit_log` produces immutable log entries synchronously before returning to satisfy invariant INV-03 (all agent actions logged before next step).
+
+### Verification
+- Pytest unit suite `pytest agent/tests/test_send_email.py agent/tests/test_write_audit_log.py`: 8/8 unit tests passed in 0.17s.
+- Pytest full agent suite `pytest agent/tests/ -v`: 36/36 tests passed in 0.23s.
+- Vitest frontend suite `npm test` in `dashboard/`: 6/6 tests passed in 2.20s.
+- Red -> Green TDD verification completed.
+
+### Current State
+`AGENT-03` is 100% complete and verified on branch `feat/agent-03-tools`. All 3 individual Strands agent tools (`classify_invoice`, `draft_email`, `send_email`, `write_audit_log`) are now fully built and tested.
+
+### Next Agent Instructions
+The agent toolchain is ready for:
+1. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling all 4 tools into `ChazerCollectionAgent` and executing the full per-invoice background sweep loop.
+2. Parallel backend streams (`BACK-01`, `BACK-02`) or frontend streams (`FRONT-01`, `FRONT-02`).
+
+---
+
 ## 2026-09-12 — AGENT-02: Implement draft_email Strands Tool with LiteLLM & Tests
 
 ### Objective
