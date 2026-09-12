@@ -1,0 +1,9 @@
+invoice_id,client_id,client_name,client_email,amount,currency,due_date,status,services_description
+INV-001,CLI-001,Acme Corp,ap@acme.com,4800.00,USD,2026-08-15,OVERDUE,UX Design Sprint — August 2026
+INV-002,CLI-002,Bluebell Studios,finance@bluebell.io,12500.00,USD,2026-08-01,OVERDUE,Brand Identity Package
+INV-003,CLI-003,Cascade Tech,sarah.l@cascade.com,890.00,USD,2026-08-28,OVERDUE,Landing Page — Revision 2
+INV-004,CLI-001,Acme Corp,ap@acme.com,3200.00,USD,2026-09-01,SENT,Monthly Retainer — September
+INV-005,CLI-004,DeltaWave Media,billing@deltawave.com,55000.00,USD,2026-07-31,OVERDUE,IT Infrastructure Audit
+INV-006,CLI-005,Ember Creative,jo@embercreative.co,1400.00,USD,2026-09-05,SENT,Social Media Package
+INV-007,CLI-002,Bluebell Studios,finance@bluebell.io,7200.00,USD,2026-08-10,OVERDUE,Web App Development Phase 1
+INV-008,CLI-006,Foxglove Labs,accounts@foxglove.io,2100.00,USD,2026-08-22,OVERDUE,API Integration Consulting

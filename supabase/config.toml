@@ -1,0 +1,22 @@
+project_id = "chazer"
+
+[api]
+port = 54321
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+port = 54323
+
+[edge_runtime]
+enabled = true
+port = 54324
+inspector_port = 8083
+
+[inbucket]
+port = 54325
