@@ -28,7 +28,8 @@ module.exports = {
         'high-value': '#F97316',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-libre-franklin)', 'Libre Franklin', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-libre-baskerville)', 'Libre Baskerville', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       backdropBlur: {
