@@ -96,7 +96,7 @@ flowchart TD
 | Ticket | Status | Can Run In Parallel With | Prerequisite | Files Touched (Zero Collision) |
 |---|:---:|---|---|---|
 | **AGENT-01** (classify tool) | 🟢 Completed | AGENT-02, AGENT-03, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/classify.py`<br>`agent/tests/test_classify.py` |
-| **AGENT-02** (draft_email tool) | 🔴 Not Implemented | AGENT-01, AGENT-03, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/draft_email.py`<br>`agent/tests/test_draft_email.py` |
+| **AGENT-02** (draft_email tool) | 🟢 Completed | AGENT-01, AGENT-03, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/draft_email.py`<br>`agent/tests/test_draft_email.py` |
 | **AGENT-03** (send_email & audit tool) | 🔴 Not Implemented | AGENT-01, AGENT-02, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/send_email.py`<br>`agent/tools/write_audit_log.py` |
 | **AGENT-04** (ChazerCollectionAgent loop) | 🔴 Not Implemented | AGENT-05, BACK-03, BACK-04, FRONT-01..04 | AGENT-01, 02, 03, BACK-01 | `agent/chazer_agent.py`<br>`agent/main.py` |
 | **AGENT-05** (TypeScript Edge sweep) | 🔴 Not Implemented | AGENT-04, BACK-05, FRONT-01..05 | AGENT-01, 02, 03 logic specs, BACK-01 | `supabase/functions/agent-sweep/index.ts` |

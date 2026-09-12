@@ -2,6 +2,63 @@
 
 ---
 
+## 2026-09-12 — AGENT-02: Implement draft_email Strands Tool with LiteLLM & Tests
+
+### Objective
+Implement the `@tool`-decorated `draft_email` Strands agent tool and comprehensive unit/contract test suite (`agent/tools/draft_email.py`, `agent/tests/test_draft_email.py`) supporting Grok (xAI) and Google Gemini 1.5 Flash via LiteLLM following strict `/tdd` Red-Green-Refactor protocol.
+
+### Changes Made
+- Created feature branch `feat/agent-02-draft-email`.
+- Created `agent/tests/test_draft_email.py` covering:
+  - Tier 1 friendly email drafting & tone instructions
+  - Tier 2 firm reminder drafting (with prior contact date reference)
+  - Tier 3 final notice drafting (clear urgency, zero legal threats)
+  - Accurate calculation of word count (`len(body.split())`)
+  - Post-generation validation failure scenarios: word count > 200, missing invoice ID, missing amount, prohibited legal threats / collections agency language
+  - Automatic retry once on malformed JSON response
+  - Raising `LLMParseError` on persistent JSON parsing failures
+  - Raising `LLMTimeoutError` on request timeouts (15s default)
+  - Dual invocation support (dictionary payload vs keyword arguments)
+  - Full Pydantic `EmailDraftSchema` validation
+- Created `agent/tools/draft_email.py` implementing:
+  - `@tool` decorator from `strands` (with local fallback)
+  - `build_draft_prompt()` with tier-specific tone and strict domain constraints
+  - `validate_draft()` safety validator computed at tool level
+  - `call_llm()` via `litellm.completion` with model selection (`xai/grok-beta` / `gemini/gemini-1.5-flash`)
+  - `_extract_json_payload()` with code-fence stripping and bracket boundary extraction
+  - Custom exceptions `LLMTimeoutError` and `LLMParseError`
+- Updated `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
+
+### Files Changed
+- `agent/tools/draft_email.py` (NEW)
+- `agent/tests/test_draft_email.py` (NEW)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Implementation Details
+- `validate_draft` is independently computed by the Python tool, never relying blindly on LLM self-reporting.
+- Prompt explicitly provides tone, schema, and forbidden terms constraints for the LLM.
+- Model defaults to `LLM_MODEL_ID` or Grok/Gemini based on available API keys (`GROK_API_KEY`, `GEMINI_API_KEY`).
+- 15s timeout is captured and translated into standard `LLMTimeoutError`.
+
+### Verification
+- Pytest unit suite `pytest agent/tests/test_draft_email.py`: 13/13 unit tests passed in 0.18s.
+- Pytest full agent suite `pytest agent/tests/ -v`: 28/28 tests passed in 0.24s.
+- Vitest frontend suite `npm test` in `dashboard/`: 6/6 tests passed in 2.49s.
+- Red -> Green TDD verification completed.
+
+### Current State
+`AGENT-02` is 100% complete and verified on branch `feat/agent-02-draft-email`.
+
+### Next Agent Instructions
+The agent toolchain is ready for:
+1. `AGENT-03`: Implement `agent/tools/send_email.py` (Resend integration) and `agent/tools/write_audit_log.py` (Supabase audit logging).
+2. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
+3. Parallel backend or frontend streams (`BACK-01`, `BACK-02`, `FRONT-01`, `FRONT-02`).
+
+---
+
 ## 2026-09-12 — AGENT-01: Implement classify_invoice Strands Tool
 
 ### Objective

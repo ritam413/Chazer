@@ -20,6 +20,35 @@
 
 ---
 
+## Feature: LLM-Driven Email Drafter Tool (AGENT-02)
+
+**Status:** Implemented  
+**What it does:** LLM-powered collection email generation tool for the Strands agent framework, supporting Grok (xAI) and Google Gemini 1.5 Flash via LiteLLM provider with strict post-generation safety validation, word count limits, and robust parse/retry logic.
+
+**Important details:**
+- **Tier 1 Tone**: Warm, polite nudge assuming the client simply misplaced or overlooked the invoice.
+- **Tier 2 Tone**: Firmer follow-up explicitly referencing prior reminder dates and stating clear payment urgency.
+- **Tier 3 Tone**: Formal, unambiguous final notice requesting immediate settlement while strictly banning unlawful threats.
+- **Tool-Level Safety & Accuracy Validation**:
+  - Requires presence of `invoice_id`, formatted dollar `amount`, and `due_date`.
+  - Enforces hard word count ceiling: `word_count <= 200` (computed by tool, not LLM).
+  - Safety filter rejecting aggressive legal threats / collections agency vocabulary (`sue`, `lawsuit`, `attorney`, `court`, `police`, `penalties`, etc.).
+  - Returns `validation_passed: bool`.
+- **Fault-Tolerant Parsing & Timeout Handling**:
+  - Automatically cleans markdown code fences (` ```json `).
+  - Retries once on invalid JSON with explicit correction instructions, raising `LLMParseError` on persistent failure.
+  - Enforces configurable timeout (default 15s) raising `LLMTimeoutError`.
+- **Dual Invocation Support**: Callable via `@tool` with dictionary payload or keyword arguments.
+- **Testing**: 13/13 unit and contract tests passing under Pytest with Pydantic `EmailDraftSchema` validation.
+
+**Relevant files:**
+- `agent/tools/draft_email.py`
+- `agent/tests/test_draft_email.py`
+- `agent/tests/schemas.py`
+- `docs/03-agent-specification.md`, `docs/04-rules.md`, `docs/22-actionable-issues-backlog.md`
+
+---
+
 ## Feature: Invoice Escalation Classifier Strands Tool (AGENT-01)
 
 **Status:** Implemented  
