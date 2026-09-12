@@ -11,98 +11,69 @@ import {
   Home,
   ArrowRight,
   ShieldAlert,
-  SearchX,
-  Radar,
-  Zap,
 } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-surface-base text-[#F0F0F5] flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden selection:bg-chazer-purple selection:text-white">
-      {/* Background Ambient Glow Accents */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-chazer-purple/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-tier3/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-3xl w-full flex flex-col items-center text-center relative z-10 space-y-8 animate-fade-in">
-        {/* Radar & Status Badge */}
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-surface-card border border-border-subtle shadow-glass text-xs font-mono">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tier3 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-tier3"></span>
-          </span>
-          <span className="text-gray-400">CLASSIFICATION:</span>
-          <span className="text-tier3 font-bold tracking-wider">UNCOLLECTIBLE_ROUTE</span>
+    <div className="min-h-screen bg-surface-base text-[#F0F0F5] flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 selection:bg-chazer-purple selection:text-white">
+      <div className="max-w-xl w-full flex flex-col items-center text-center space-y-6">
+        {/* Subtle Status Pill */}
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-card border border-border-subtle text-xs text-gray-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          <span className="font-mono text-gray-300">404</span>
           <span className="text-gray-600">·</span>
-          <span className="text-chazer-purple-light font-medium">TIER_3_ESCALATED</span>
+          <span>Ledger Entry Missing</span>
         </div>
 
-        {/* 404 Headline & Value Prop */}
-        <div className="space-y-3 max-w-xl">
-          <div className="relative inline-block">
-            <h1 className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-600 select-none">
-              404
-            </h1>
-            <div className="absolute -top-2 -right-4 px-2 py-0.5 rounded-md bg-tier3/20 border border-tier3/40 text-tier3 text-[11px] font-mono font-bold tracking-wide transform rotate-6">
-              VOID
-            </div>
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-            Ledger Entry Missing
-          </h2>
-
-          <p className="text-sm sm:text-base text-gray-400 leading-relaxed max-w-lg mx-auto">
-            The autonomous collection agent swept the entire receivable graph and could not locate
-            this path. The invoice or route may have been closed, settled, or never issued.
+        {/* Headline & Description */}
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+            Page or Invoice Not Found
+          </h1>
+          <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+            The requested route or invoice context could not be located in the active ledger. It may
+            have been archived, settled, or moved.
           </p>
         </div>
 
-        {/* Stylized Simulated Invoice Inspection Card */}
-        <div className="w-full max-w-md glass-card p-5 sm:p-6 text-left border border-border-subtle shadow-glass font-mono relative overflow-hidden group">
-          {/* Subtle top accent gradient */}
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-chazer-purple via-tier3 to-chazer-purple-light opacity-80" />
-
-          <div className="flex items-center justify-between pb-3 border-b border-border-subtle text-xs text-gray-400">
-            <div className="flex items-center space-x-2">
-              <Zap className="w-4 h-4 text-chazer-purple-light" />
-              <span className="font-semibold text-gray-200">CHAZER AUDIT SNAPSHOT</span>
+        {/* Refined Ledger Diagnostic Card */}
+        <div className="w-full bg-surface-card/80 border border-border-subtle rounded-xl p-5 text-left shadow-card">
+          <div className="flex items-center justify-between pb-3.5 border-b border-border-subtle">
+            <div className="flex items-center space-x-2.5">
+              <FileQuestion className="w-4 h-4 text-chazer-purple-light" />
+              <span className="text-xs font-semibold text-gray-200">Route Diagnostic</span>
             </div>
-            <span className="text-[11px] text-gray-500">ID: INV-404-NOT-FOUND</span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 py-4 text-xs border-b border-border-subtle">
-            <div>
-              <span className="text-[11px] text-gray-500 block uppercase">Target Client</span>
-              <span className="font-semibold text-gray-300">Unresolved Endpoint</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-gray-500 block uppercase">Aging Status</span>
-              <span className="font-semibold text-tier3">∞ Days Overdue</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-gray-500 block uppercase">Recoverable Amount</span>
-              <span className="font-semibold text-gray-300">$0.00 USD</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-gray-500 block uppercase">Agent Action</span>
-              <span className="font-semibold text-amber-400">Re-route Required</span>
-            </div>
-          </div>
-
-          <div className="pt-3 text-[11px] text-gray-400 flex items-center justify-between">
-            <span className="flex items-center space-x-1.5">
-              <Radar className="w-3.5 h-3.5 text-chazer-purple-light animate-pulse" />
-              <span>Diagnostic: HTTP 404 Route Not Registered</span>
+            <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-elevated text-gray-400 border border-border-subtle">
+              INV-404-NOT-FOUND
             </span>
-            <span className="text-gray-500">UTC: {new Date().toISOString().slice(0, 10)}</span>
+          </div>
+
+          <div className="py-3.5 space-y-2.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Resolution</span>
+              <span className="font-medium text-gray-200">Unresolved Endpoint</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Status</span>
+              <span className="font-medium text-amber-400">Not in Ledger</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Suggested Action</span>
+              <span className="font-medium text-gray-200">Redirect to active operations</span>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-gray-400">
+            <span>System: Chazer Recovery Engine</span>
+            <span>Ref: HTTP_404_NOT_FOUND</span>
           </div>
         </div>
 
-        {/* Action Buttons & Fast Recovery Navigation */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md justify-center">
+        {/* Recovery Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center pt-2">
           <Link
             href="/dashboard"
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl bg-chazer-purple hover:bg-chazer-purple-dark text-white text-sm font-semibold transition-all duration-200 shadow-purple-glow hover:scale-[1.02] active:scale-[0.98] border border-purple-400/30"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-chazer-purple hover:bg-chazer-purple-dark text-white text-xs font-semibold tracking-wide transition-colors shadow-sm"
           >
             <LayoutDashboard className="w-4 h-4 mr-2" />
             Return to Dashboard
@@ -110,29 +81,29 @@ export default function NotFound() {
 
           <Link
             href="/decisions"
-            className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-xl bg-surface-card hover:bg-surface-elevated text-gray-200 hover:text-white text-sm font-medium transition-all duration-200 border border-border-subtle hover:border-chazer-purple/40"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-surface-elevated hover:bg-surface-card text-gray-300 hover:text-white text-xs font-medium transition-colors border border-border-subtle"
           >
-            <AlertTriangle className="w-4 h-4 mr-2 text-tier2" />
+            <AlertTriangle className="w-4 h-4 mr-2 text-amber-400" />
             Decision Queue
           </Link>
         </div>
 
-        {/* Secondary Quick Links */}
-        <div className="pt-2 flex items-center space-x-6 text-xs text-gray-400">
+        {/* Secondary Navigation */}
+        <div className="flex items-center space-x-5 text-xs text-gray-400 pt-1">
           <Link
             href="/audit"
-            className="inline-flex items-center hover:text-chazer-purple-light transition-colors"
+            className="inline-flex items-center hover:text-gray-200 transition-colors"
           >
             <History className="w-3.5 h-3.5 mr-1.5" />
-            Inspect Audit Log
+            Audit Log
           </Link>
-          <span className="text-gray-700">|</span>
+          <span className="text-gray-700">·</span>
           <Link
             href="/"
-            className="inline-flex items-center hover:text-chazer-purple-light transition-colors"
+            className="inline-flex items-center hover:text-gray-200 transition-colors"
           >
             <Home className="w-3.5 h-3.5 mr-1.5" />
-            Home Overview
+            Home
           </Link>
         </div>
       </div>
