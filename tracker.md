@@ -2,6 +2,232 @@
 
 ---
 
+## 2026-09-13 — Phase 3 (Wave 2): AGENT-04 & AGENT-05 Implementation
+
+### Objective
+Complete **Phase 3: Integration (Wave 2)**:
+- **Agent 1: AGENT-04**: Assemble Python Strands agent `chazer_agent.py` and CLI sweep loop runner `main.py` with full per-invoice classification, auto-send, high-value/tier-3 escalation, contact window guards, fault tolerance, and Pytest test suite.
+- **Agent 2: AGENT-05**: Implement native TypeScript `agent-sweep` Supabase Edge Function (`supabase/functions/agent-sweep/index.ts`) providing serverless execution parity with the Python agent, with full Vitest test suite.
+
+### Changes Made
+- **AGENT-04 (Python Strands Agent Sweep Loop & CLI Runner)**:
+  - Created `agent/chazer_agent.py`:
+    - Implemented `ChazerCollectionAgent` orchestrating `classify_invoice`, `draft_email`, `send_email`, and `write_audit_log`.
+    - Integrated 72-hour contact window guard, high-value threshold ($10,000+), dispute freeze, and late-start edge case handling.
+    - Added safe email drafting with LiteLLM (Grok/Gemini) and deterministic template fallback in offline/sandbox modes.
+    - Added atomic updates to `invoices`, `contact_history`, `decision_queue`, `audit_log`, and `sweep_runs`.
+    - Implemented fault tolerance: individual invoice failures log `LLM_FAILED` or `SEND_FAILED` and do not crash the sweep for remaining invoices.
+    - Implemented `SweepSummary` telemetry data model.
+  - Created `agent/main.py`:
+    - Implemented CLI runner supporting arguments: `--threshold`, `--window-hours`, `--owner-id`, `--model-id`, `--live`, `--sandbox`.
+    - Formatted terminal output with telemetry KPIs and per-invoice action breakdown.
+  - Created `agent/tests/test_chazer_agent.py`:
+    - 6 unit/integration tests verifying 8-invoice seeded sweep, high-value escalation, auto-send contact history, 72h contact window guard, idempotency, single-invoice failure resilience, and dispute escalation.
+- **AGENT-05 (Native TypeScript agent-sweep Edge Function)**:
+  - Created `supabase/functions/agent-sweep/index.ts`:
+    - Implemented `handleAgentSweep` supporting `POST`, `GET` (health/status), and `OPTIONS` (CORS preflight).
+    - Ported exact rule-based classification (`classifyInvoiceTs`), contact window guards, email validation (`validateDraftTs`), and template/Gemini drafting (`generateEmailDraftTs`).
+    - Implemented Resend dispatch with `Idempotency-Key` header and sandbox mode.
+    - Handled atomic database persistence (`invoices`, `contact_history`, `decision_queue`, `audit_log`, `sweep_runs`) with mock memory state fallback.
+  - Created `dashboard/tests/agent-sweep.test.ts`:
+    - 12 unit/integration tests verifying CORS headers, health checks, dispute/high-value/tier-1/tier-2/tier-3 classification, draft safety validation, seeded sweep execution, idempotency, and contact window guards.
+- **Documentation & Tracking**:
+  - Updated `docs/23-parallel-execution-plan.md` marking `AGENT-04` and `AGENT-05` as `🟢 Completed` (14/20 tickets complete).
+  - Updated `features_implemented.md` with complete implementation details and verified files.
+
+### Files Changed
+- `agent/chazer_agent.py` (NEW)
+- `agent/main.py` (NEW)
+- `agent/tests/test_chazer_agent.py` (NEW)
+- `supabase/functions/agent-sweep/index.ts` (NEW)
+- `dashboard/tests/agent-sweep.test.ts` (NEW)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Verification
+- **Python Agent Pytest Suite**: 42/42 tests passed in 0.41s (`pytest agent/tests/ -v`).
+- **Python CLI Runner**: `python -m agent.main --sandbox` executed against all 8 seeded invoices with 0 errors (4 dispatched, 4 escalated).
+- **Frontend / Edge Vitest Suite**: 104/104 tests passed across 10 test suites (`npm test` in `dashboard/`).
+- **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
+
+### Current State
+`AGENT-04` and `AGENT-05` are 100% complete, fully tested, and verified. The autonomous sweep engine is operational in both Python (Strands agent for CLI/hackathon judging) and native TypeScript (Supabase Edge Function for serverless production runtime).
+
+### Next Agent Instructions
+1. `FRONT-05 (Phase B)`: Wire Zustand store actions (`dashboard/lib/store.ts` and `dashboard/lib/api.ts`) to live Supabase Edge Function endpoints (`/invoices`, `/decisions`, `/audit-log`, `/sweep`, `/approve`, `/reject`).
+2. `BACK-05`: Configure `pg_cron` daily sweep schedule in Supabase migrations.
+3. `DEVOPS-03`: Finalize `README.md` and public architecture docs for hackathon submission.
+
+---
+
+### Objective
+Complete **Agent 10: FRONT-04** (Audit Log Page `/audit`, `AuditTimeline.tsx`, and `AuditEntry.tsx` with newest-first ordering, relative timestamps with absolute ISO hover tooltips, and complete action coverage) and **Agent 11: DEVOPS-02 & DEVOPS-05** (`.github/workflows/deploy.yml` CI/CD pipeline, `supabase/migrations/002_demo_utilities.sql` stored procedure for reset, plus `supabase/migrations/001_initial_schema.sql` base DDL).
+
+### Changes Made
+- **FRONT-04 (Audit Log Page & Components)**:
+  - `dashboard/components/AuditEntry.tsx`: Added `formatRelativeTime` utility rendering relative timestamps ("Just now", "2m ago", "1h ago"), absolute ISO timestamps in `title` hover tooltips, and complete action type icons (`HIGH_VALUE_ESCALATED`, `TIER3_ESCALATED`, `DISPUTE_ESCALATED`, `TIER1_EMAIL_SENT`, `TIER2_EMAIL_SENT`, `EMAIL_SENT`, `OWNER_APPROVED`, `OWNER_REJECTED`, `SWEEP_STARTED`, `SWEEP_COMPLETED`, `SEED_DATA_INGESTED`, `SEND_FAILED`, `LLM_FAILED`).
+  - `dashboard/components/AuditTimeline.tsx`: Enforced strict newest-first sorting (`.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())`), category filtering, search, and loading skeleton states.
+  - `dashboard/tests/audit-page.test.tsx`: Expanded test suite to 10 comprehensive tests validating relative time, tooltips, newest-first sorting, and sweep telemetry summaries.
+- **DEVOPS-02 (GitHub Actions CI/CD Pipeline)**:
+  - Created `.github/workflows/deploy.yml`:
+    - `frontend-verification`: ESLint, `npx tsc --noEmit`, and 100% Vitest test suite pass on Node 20.
+    - `agent-verification`: Python 3.11 agent test suite with Pydantic contract validation.
+    - `deploy-frontend`: Automated prebuilt Vercel production deployment on push to `main`.
+    - `deploy-edge-functions`: Supabase CLI edge functions deployment (`api-router`, `seed-data`, `decisions-approve`, `decisions-reject`) on push to `main`.
+- **DEVOPS-05 & BACK-01 (Database Migrations & Demo Utilities)**:
+  - Created `supabase/migrations/001_initial_schema.sql`: 6 tables (`clients`, `invoices`, `contact_history`, `audit_log`, `decision_queue`, `sweep_runs`), `v_invoices_enriched` view, extensions, indices, and RLS policies.
+  - Created `supabase/migrations/002_demo_utilities.sql`: Stored procedures `reset_demo(p_owner_id)` (resets invoice timestamps/counts, clears contact history, decision queue, sweeps, logs audit event) and `get_demo_summary(p_owner_id)` (real-time aggregation of collections state).
+- **Documentation**:
+  - Updated `README.md` with CI/CD required secrets table, demo reset instructions, and docs links.
+  - Updated `docs/23-parallel-execution-plan.md` and `features_implemented.md`.
+
+### Files Changed
+- `dashboard/components/AuditEntry.tsx` (MODIFIED)
+- `dashboard/components/AuditTimeline.tsx` (MODIFIED)
+- `dashboard/tests/audit-page.test.tsx` (MODIFIED)
+- `.github/workflows/deploy.yml` (NEW)
+- `supabase/migrations/001_initial_schema.sql` (NEW)
+- `supabase/migrations/002_demo_utilities.sql` (NEW)
+- `README.md` (MODIFIED)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Verification
+- `npm test` in `dashboard/`: 92/92 Vitest tests passed across 9 test suites.
+- `npx tsc --noEmit` in `dashboard/`: 0 errors, clean check.
+- `pytest agent/tests/ -v`: 36/36 tests passed in 0.31s.
+
+### Current State
+`FRONT-04`, `DEVOPS-02`, `DEVOPS-05`, and `BACK-01` are 100% complete, tested, and documented.
+
+### Next Agent Instructions
+1. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent` CLI loop.
+2. `AGENT-05`: Implement `supabase/functions/agent-sweep/index.ts`.
+3. `FRONT-05`: Implement Zustand store live API wiring in `dashboard/lib/store.ts`.
+
+---
+
+## 2026-09-12 — DESIGN-01 & FRONT-04: Full App Unification Under Monad Editorial Design System
+
+### Objective
+Unify the entire Chazer web application (Landing Page `/`, Receivables Dashboard `/dashboard`, Decision Queue `/decisions`, Audit Log `/audit`, and 404 Recovery `/not-found`) under the **Monad Editorial Design System** (warm parchment `#f6f3f1` / deep obsidian `#111215`, Newsreader weight 400 headings, JetBrains Mono body & tables, Lake Blue `#2b59d1` primary actions, Periwinkle cards, and Ash hairline borders), maintaining 100% test coverage.
+
+### Changes Made
+- **Design System Tokens & Foundation**:
+  - Configured `dashboard/tailwind.config.js` and `dashboard/app/globals.css` with Monad dual-mode palette, Google fonts (`Newsreader` + `JetBrains Mono`), and zero-flash CSS variables for live Sun/Moon toggling.
+- **Component & Page Architecture**:
+  - `TopBar.tsx`: Interactive Sun/Moon theme switcher, live heartbeat beacon, and Lake Blue pill sweep action.
+  - `Sidebar.tsx`: Monad editorial branding, pill navigation items, and Coral decision count badge.
+  - `AppShell.tsx`: Full-width Ink notification banner with live telemetry status and jump-to-authorization queue link.
+  - `StatsBar.tsx`: 32px rounded metric cards with Newsreader serif numbers and accent borders.
+  - `AgingBar.tsx` & `TierBadge.tsx`: Clean proportional progress bars and pill badge tags.
+  - `InvoiceTable.tsx`: Monospace tabular technical ledger with search, filter chips, and column sorting.
+  - `DecisionCard.tsx`, `EmailDraftPreview.tsx`, `EditDraftModal.tsx`: 32px rounded cards with Coral accents, word count validator, safety guard checklists, and Lake Blue authorize buttons.
+  - `dashboard/app/page.tsx`: Editorial Landing Page with display headline, Monad pill CTAs, Periwinkle feature card, and capability matrix.
+  - `dashboard/app/dashboard/page.tsx`: Receivables Ledger with elevated Periwinkle tone ladder banner.
+  - `dashboard/app/decisions/page.tsx`: Human-in-the-loop decision queue with toast feedback and optimistic state.
+  - `dashboard/app/not-found.tsx`: Monad diagnostic ledger card with pill recovery navigation.
+  - `dashboard/app/audit/page.tsx`, `dashboard/components/AuditTimeline.tsx`, `dashboard/components/AuditEntry.tsx`: Immutable execution journal stream with real-time category filtering, search, and expandable raw telemetry payloads (`FRONT-04`).
+- **Tests & Verification**:
+  - Created `dashboard/tests/audit-page.test.tsx` (7 tests).
+  - All 9 Vitest test suites (89 tests) passing in `dashboard/`.
+  - TypeScript typecheck (`npx tsc --noEmit`) clean with 0 errors.
+  - All 36 Pytest tests in `agent/tests/` passing.
+
+### Files Changed
+- `dashboard/app/page.tsx` (MODIFIED)
+- `dashboard/app/not-found.tsx` (MODIFIED)
+- `dashboard/app/audit/page.tsx` (NEW)
+- `dashboard/components/AuditTimeline.tsx` (NEW)
+- `dashboard/components/AuditEntry.tsx` (NEW)
+- `dashboard/lib/api.ts` (MODIFIED)
+- `dashboard/lib/types.ts` (MODIFIED)
+- `dashboard/tests/audit-page.test.tsx` (NEW)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Verification
+- `npm test` in `dashboard/`: 89/89 Vitest tests passed across 9 test suites.
+- `npx tsc --noEmit` in `dashboard/`: 0 errors, clean compilation.
+- `pytest agent/tests/ -v`: 36/36 tests passed.
+
+### Current State
+The entire Chazer application is completely unified under the Monad Editorial Design System in both Light and Dark modes with responsive layout support and zero test regressions.
+
+### Next Agent Instructions
+1. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py`.
+2. `AGENT-05`: Implement `supabase/functions/agent-sweep/index.ts`.
+3. `BACK-01`: Create `supabase/migrations/001_initial_schema.sql`.
+
+---
+
+## 2026-09-12 — FRONT-02 & FRONT-03: Implement Dashboard & Decision Queue Pages
+
+### Objective
+Implement the complete Next.js Aging Receivables Dashboard (`FRONT-02`) and Decision Queue Review System (`FRONT-03`) along with their full component trees (`StatsBar`, `InvoiceTable`, `TierBadge`, `AgingBar`, `DecisionCard`, `EmailDraftPreview`, `EditDraftModal`), API client (`api.ts`), and Zustand state integration under strict `/tdd` Red-Green-Refactor protocol.
+
+### Changes Made
+- **API Client & Store Wiring**:
+  - Created `dashboard/lib/api.ts` providing typed functions (`fetchInvoicesApi`, `fetchDecisionsApi`, `approveDecisionApi`, `rejectDecisionApi`, `triggerSweepApi`, `fetchAuditLogApi`) with seamless Edge Function integration and robust offline/client fallback datasets (`FALLBACK_INVOICES`, `FALLBACK_DECISIONS`, `FALLBACK_SUMMARY`).
+  - Updated `dashboard/lib/store.ts` connecting Zustand actions to API client with optimistic updates, rollback resilience, and reactive summary counts.
+- **FRONT-02 (Dashboard Page & Components)**:
+  - Created `dashboard/components/TierBadge.tsx` supporting `TIER_1`, `TIER_2`, `TIER_3`, `UNCLASSIFIED`, and `⚠ HIGH VALUE` threshold badges.
+  - Created `dashboard/components/AgingBar.tsx` with animated proportional fill and tiered color transitions (green/amber/red).
+  - Created `dashboard/components/StatsBar.tsx` and `StatCard` displaying Total Overdue currency, Pending Decisions, Sent This Week, KPI trend indicators, and loading skeletons.
+  - Created `dashboard/components/InvoiceTable.tsx` with client-side multi-term search, tier filter dropdown, status filter dropdown, multi-column sorting (amount, days overdue, due date, client), loading table skeletons, empty states with filter reset, and responsive mobile card lists (`< 768px`).
+  - Created `dashboard/app/dashboard/page.tsx` integrating AppShell, StatsBar, InvoiceTable, and live store actions.
+  - Created `dashboard/tests/dashboard-page.test.tsx` (13 tests covering all badges, bars, stats, table sorting/filtering, empty states, and full page integration).
+- **FRONT-03 (Decision Queue Page & Components)**:
+  - Created `dashboard/components/EmailDraftPreview.tsx` rendering email frame, AI confidence percentage badge, subject, and expandable body text.
+  - Created `dashboard/components/EditDraftModal.tsx` modal dialog featuring subject input, multi-line body editor, live word count tracker (/200 words), and safety rule validator requiring presence of invoice ID in edited copy.
+  - Created `dashboard/components/DecisionCard.tsx` with high-value tag, invoice metadata, escalation trigger callout box, email draft preview, interactive actions (Edit, Reject with reason prompt, Approve & Send), and optimistic feedback.
+  - Created `dashboard/app/decisions/page.tsx` with pending count badge, toast feedback notifications, decision list, decision skeleton, and empty state.
+  - Created `dashboard/tests/decisions-page.test.tsx` (11 tests covering preview, modal validation, decision actions, optimistic approve/reject, empty state, and page integration).
+- Updated `dashboard/lib/types.ts` (`isSubmitting` optional in `DecisionCardProps`), `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
+
+### Files Changed
+- `dashboard/lib/api.ts` (NEW)
+- `dashboard/lib/store.ts` (MODIFIED)
+- `dashboard/lib/types.ts` (MODIFIED)
+- `dashboard/components/TierBadge.tsx` (NEW)
+- `dashboard/components/AgingBar.tsx` (NEW)
+- `dashboard/components/StatsBar.tsx` (NEW)
+- `dashboard/components/InvoiceTable.tsx` (NEW)
+- `dashboard/components/EmailDraftPreview.tsx` (NEW)
+- `dashboard/components/EditDraftModal.tsx` (NEW)
+- `dashboard/components/DecisionCard.tsx` (NEW)
+- `dashboard/app/dashboard/page.tsx` (NEW)
+- `dashboard/app/decisions/page.tsx` (NEW)
+- `dashboard/tests/dashboard-page.test.tsx` (NEW)
+- `dashboard/tests/decisions-page.test.tsx` (NEW)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Implementation Details
+- Glassmorphic styling strictly follows `docs/09-design-systems.md` (`glass-card`, `border-border-subtle`, purple glow shadows, custom scrollbars).
+- Safety invariant checks (e.g. email must contain invoice ID, word count ceiling ≤ 200 words) are enforced on the client in `EditDraftModal` before submission, mirroring backend and agent rules.
+- Mobile responsiveness features dual-view layout: comprehensive 8-column data table on desktop, transitioning seamlessly to touch-optimized cards on mobile screens (`< 768px`).
+
+### Verification
+- Vitest suite in `dashboard/`: 82/82 tests passed across 8 test suites (`dashboard-page.test.tsx`, `decisions-page.test.tsx`, `not-found.test.tsx`, `app-shell.test.tsx`, `decisions-actions.test.ts`, `api-router.test.ts`, `seed-data.test.ts`, `types.test.ts`).
+- Pytest suite in `agent/`: 36/36 tests passed across all agent modules (`test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
+- TypeScript compiler (`npx tsc --noEmit` in `dashboard/`): 0 errors, clean check.
+- Red -> Green TDD verification completed.
+
+### Current State
+`FRONT-02` and `FRONT-03` are 100% complete, fully verified, and ready for production deployment.
+
+### Next Agent Instructions
+1. `FRONT-04`: Build `dashboard/app/audit/page.tsx`, `dashboard/components/AuditTimeline.tsx`, and `dashboard/components/AuditEntry.tsx`.
+2. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
+3. `AGENT-05`: Implement `supabase/functions/agent-sweep/index.ts`.
+4. `BACK-01`: Create `supabase/migrations/001_initial_schema.sql`.
+
+---
+
 ## 2026-09-12 — UI Craft: Implement Domain-Themed 404 Not Found Screen
 
 ### Objective

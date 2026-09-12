@@ -1,7 +1,172 @@
 # Chazer — Features Implemented
 
 **Last updated:** 2026-09-12  
-**Project status:** Documentation Complete · Build Not Started
+**Project status:** Active Development · Entire Frontend Unified Under Monad Editorial Design System
+
+---
+
+## Feature: Monad Editorial Dual-Mode Design System & Full-App Unification (DESIGN-01)
+
+**Status:** Implemented  
+**What it does:** Complete unification of the entire Chazer web application into an editorial technical journal on warm parchment (`#f6f3f1`) and deep obsidian (`#111215`), adhering to Monad design system specifications, `/taste`, `/impeccable`, and `/awesome-design` rules.
+
+**Important details:**
+- **Typography Matrix**: Newsreader (Untitled Serif) weight 400 strictly for display and section headings (`-0.02em` tracking, never bold); JetBrains Mono / ABC Diatype Mono for body copy, tabular ledger rows, audit logs, and status badges.
+- **Palette**: Warm parchment canvas (`#f6f3f1`) & deep obsidian (`#111215`), single Lake Blue (`#2b59d1` / `#4d7aff`) primary CTA accent with trailing arrow (`▸`), Periwinkle Mist (`#cfdaf5` / `#1a2030`) elevated tone ladder banner with soft pastel washes, Coral (`#ff9473`) alert accents, Mint (`#9fe3c0`) success tags, and Ash (`#cecac8` / `#2a2d38`) hairline 1px borders.
+- **Pages & Surfaces Unified**:
+  - Root Landing (`/`): Editorial display headline, Monad pill buttons, Periwinkle feature card, and capability matrix.
+  - Receivables Ledger (`/dashboard`): 32px rounded cards, monospace tabular ledger, and tone ladder.
+  - Decision Queue (`/decisions`): 32px rounded cards, simulated email client frames, and safety-enforced modals.
+  - Autonomous Execution Journal (`/audit`): Chronological timeline stream, category filters, metadata drawers, and telemetry summary cards.
+  - Ledger Missing / 404 (`/not-found`): Editorial diagnostic card, Monad recovery pill buttons, and domain ledger routing.
+- **Interactive Dual-Mode Theme Toggle**: TopBar Sun/Moon switch controlling dynamic CSS custom properties without layout flash.
+- **Verification**: 89/89 Vitest tests passing across 9 test suites, 0 TypeScript errors, 36/36 Pytest tests passing.
+
+---
+
+## Feature: GitHub Actions CI/CD Pipeline & Automated Deployment (DEVOPS-02)
+
+**Status:** Implemented  
+**What it does:** Automated continuous integration and deployment workflow (`.github/workflows/deploy.yml`) running lint, TypeScript type checking, Vitest test suites, and Pytest Python agent contract tests on PRs/pushes to `main`, and deploying the Next.js frontend to Vercel and Edge Functions to Supabase upon successful verification.
+
+**Important details:**
+- **Quality Gates**:
+  - `frontend-verification`: ESLint, `npx tsc --noEmit`, and 100% Vitest test suite pass.
+  - `agent-verification`: Pytest suite with Pydantic contract validation.
+- **Automated Continuous Deployment**:
+  - `deploy-frontend`: Vercel prebuilt production deployment using `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
+  - `deploy-edge-functions`: Supabase CLI edge function deployment (`api-router`, `seed-data`, `decisions-approve`, `decisions-reject`) via `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`.
+- **Concurrency Guard**: Cancels redundant in-progress workflow runs on branch update.
+
+**Relevant files:**
+- `.github/workflows/deploy.yml`
+- `README.md`
+
+---
+
+## Feature: Supabase Demo Reset & Diagnostic Utilities (DEVOPS-05)
+
+**Status:** Implemented  
+**What it does:** Stored procedures (`reset_demo()` and `get_demo_summary()`) in `supabase/migrations/002_demo_utilities.sql` providing single-command reset of all agent state, contact history, decision queues, and sweep executions back to pristine demo state.
+
+**Important details:**
+- **`reset_demo(p_owner_id)`**:
+  - Resets all invoice contact timestamps (`last_contact_at = NULL`) and contact count (`contact_count = 0`).
+  - Purges records from `contact_history`, `decision_queue`, `sweep_runs`, and `audit_log`.
+  - Automatically records an immutable `DEMO_ENVIRONMENT_RESET` event in `audit_log`.
+  - Returns detailed JSON summary with counts of reset rows and execution timestamp.
+  - Callable from Supabase SQL Editor (`SELECT reset_demo();`) or REST RPC (`POST /rest/v1/rpc/reset_demo`).
+- **`get_demo_summary(p_owner_id)`**:
+  - Diagnostic query returning real-time aggregation of invoices, overdue amounts, pending decisions, sweeps, and audit entries.
+
+**Relevant files:**
+- `supabase/migrations/002_demo_utilities.sql`
+- `README.md`
+
+---
+
+## Feature: Initial Database Schema, Views & RLS Policies (BACK-01)
+
+**Status:** Implemented  
+**What it does:** Core PostgreSQL DDL schema definition in `supabase/migrations/001_initial_schema.sql` creating all 6 application tables, indices, dynamic aging view `v_invoices_enriched`, and Row Level Security (RLS) policies.
+
+**Important details:**
+- **Tables**: `clients`, `invoices`, `contact_history`, `audit_log`, `decision_queue`, `sweep_runs`.
+- **View `v_invoices_enriched`**: Computes `days_overdue` and tiered classification (`TIER_1`, `TIER_2`, `TIER_3`, `UNCLASSIFIED`) on-the-fly.
+- **Extensions**: `uuid-ossp`, `pg_cron`, `pg_net`.
+- **RLS**: Enabled across all tables with `demo_owner` access policies.
+
+**Relevant files:**
+- `supabase/migrations/001_initial_schema.sql`
+
+---
+
+## Feature: Autonomous Agent Audit Log & Execution Journal (FRONT-04)
+
+**Status:** Implemented  
+**What it does:** Full-surface chronological audit log (`/audit`) visualizing every autonomous agent sweep, tier escalation, Resend email dispatch, and human owner authorization in an immutable execution stream.
+
+**Important details:**
+- **Audit Timeline (`dashboard/components/AuditTimeline.tsx`)**:
+  - Automatically sorts all entries strictly newest-first by timestamp.
+  - Filter chips: All Telemetry, Agent Sweeps, Dispatches, Escalations, Human Decisions.
+  - Real-time search filter across actions, invoice IDs, sweep IDs, and metadata notes.
+  - Skeleton loading states and domain-authentic empty state with filter reset.
+- **Audit Entry (`dashboard/components/AuditEntry.tsx`)**:
+  - Vertical timeline node connector with action icon for all action types (`HIGH_VALUE_ESCALATED`, `TIER3_ESCALATED`, `DISPUTE_ESCALATED`, `TIER1_EMAIL_SENT`, `TIER2_EMAIL_SENT`, `EMAIL_SENT`, `OWNER_APPROVED`, `OWNER_REJECTED`, `SWEEP_STARTED`, `SWEEP_COMPLETED`, `SEED_DATA_INGESTED`, `SEND_FAILED`, `LLM_FAILED`).
+  - Semantic status pill badge with color coding (Mint, Coral, Sky, Ash).
+  - Relative timestamp display (e.g. "Just now", "2m ago") with absolute ISO timestamp on hover (`title` tooltip) and formatted date.
+  - Expandable JSON raw telemetry payload viewer.
+  - Structured summary display for sweep completion metrics (`invoices_processed`, `emails_sent`, `escalated_count`, `duration_ms`).
+- **Audit Page (`dashboard/app/audit/page.tsx`)**:
+  - Editorial headline, telemetry KPI metrics cards, and sync journal action.
+- **Testing**: 10/10 Vitest tests passing (`dashboard/tests/audit-page.test.tsx`).
+
+---
+
+## Feature: Decision Queue & AI Email Review System (FRONT-03)
+
+**Status:** Implemented  
+**What it does:** Complete human-in-the-loop escalation safeguard screen (`/decisions`), allowing owners to inspect AI-drafted collection emails, evaluate escalation reasons, edit draft content in a modal with safety verification, and execute optimistic approval or rejection with instant UI updates.
+
+**Important details:**
+- **Decision Cards (`dashboard/components/DecisionCard.tsx`)**:
+  - Displays invoice context (`INV-005`, client name, dollar amount, days overdue, high-value flag).
+  - Clear escalation trigger callout box explaining why human oversight was required.
+  - Interactive actions: Edit Draft (opens modal), Reject (prompts reason and pauses automated followup), Approve & Send (dispatches notice via Resend and updates ledger).
+- **Simulated Email Preview (`dashboard/components/EmailDraftPreview.tsx`)**:
+  - Simulated client frame with From, To, Subject, Body, and AI confidence score pill (e.g. `96%`).
+  - Expand/collapse toggle for long email drafts.
+- **Safety-Enforced Edit Draft Modal (`dashboard/components/EditDraftModal.tsx`)**:
+  - Subject input and multi-line body editor.
+  - Live word count validator against 200-word limit.
+  - Safety validation check requiring presence of `invoice_id` in custom body copy.
+- **State & Optimistic Updates**:
+  - Bound to Zustand store with optimistic card removal and automatic sidebar badge decrement.
+  - Toast notifications confirming dispatch.
+  - Skeleton loading state and domain-authentic empty state.
+- **Testing**: 11/11 tests passing under Vitest (`dashboard/tests/decisions-page.test.tsx`).
+
+**Relevant files:**
+- `dashboard/app/decisions/page.tsx`
+- `dashboard/components/DecisionCard.tsx`
+- `dashboard/components/EmailDraftPreview.tsx`
+- `dashboard/components/EditDraftModal.tsx`
+- `dashboard/tests/decisions-page.test.tsx`
+- `docs/07-components.md`, `docs/08-pages.md`
+
+---
+
+## Feature: Aging Receivables Dashboard & Interactive Invoice Table (FRONT-02)
+
+**Status:** Implemented  
+**What it does:** Primary operational receivables ledger (`/dashboard`) displaying overdue invoices categorized across graduated escalation tiers, real-time statistics summary, multi-dimensional filtering, and sortable table/mobile card views.
+
+**Important details:**
+- **Stats Summary Bar (`dashboard/components/StatsBar.tsx`)**:
+  - 3 KPI metric cards: Total Overdue (formatted USD), Pending Decisions count, Sent This Week count.
+  - Left-border color accents (red, amber, green, purple) and loading skeleton cards.
+- **Graduated Tier Badges (`dashboard/components/TierBadge.tsx`)**:
+  - Visual classification pill badges: `T1 · Nudge` (green), `T2 · Firm` (amber), `T3 · Final` (red).
+  - High Value flag badge (`⚠ HIGH VALUE`) for receivables exceeding threshold ($10,000+).
+- **Animated Aging Indicator (`dashboard/components/AgingBar.tsx`)**:
+  - Proportional progress bar showing days overdue out of 60d max with tiered color coding.
+- **Multi-Dimensional Invoice Table (`dashboard/components/InvoiceTable.tsx`)**:
+  - Client-side search across invoice ID, client name, email, and service description.
+  - Tier filter dropdown (`ALL`, `TIER_1`, `TIER_2`, `TIER_3`) and Status filter dropdown (`ALL`, `OVERDUE`, `DISPUTED`, `SENT`, `PAID`).
+  - Multi-column sorting (`days_overdue`, `amount`, `due_date`, `client_name`).
+  - Responsive layout: 8-column desktop table and responsive card list on mobile viewports (< 768px).
+  - Empty state with reset filters button and loading skeleton table.
+- **Testing**: 13/13 tests passing under Vitest (`dashboard/tests/dashboard-page.test.tsx`).
+
+**Relevant files:**
+- `dashboard/app/dashboard/page.tsx`
+- `dashboard/components/StatsBar.tsx`
+- `dashboard/components/InvoiceTable.tsx`
+- `dashboard/components/TierBadge.tsx`
+- `dashboard/components/AgingBar.tsx`
+- `dashboard/tests/dashboard-page.test.tsx`
+- `docs/07-components.md`, `docs/08-pages.md`
 
 ---
 
@@ -292,21 +457,54 @@
 
 ---
 
-## Feature: Autonomous Invoice Escalation Agent (Specified, Not Built)
+---
 
-**Status:** Planned / Specified  
-**What it does (when built):** Background Strands Python agent that classifies overdue invoices into escalation tiers, auto-sends Tier-1/2 emails via Resend, and holds Tier-3 items for owner approval. Runs daily via pg_cron.
+## Feature: Autonomous Python Strands Agent Sweep Loop & CLI Runner (AGENT-04)
+
+**Status:** Implemented  
+**What it does:** Full orchestration engine (`agent/chazer_agent.py` and `agent/main.py`) assembling the complete Strands agent toolchain (`classify_invoice`, `draft_email`, `send_email`, `write_audit_log`) into an autonomous background loop capable of executing sweeps across active receivables, auto-dispatching Tier 1/2 notices, and escalating Tier 3 or high-value invoices into the human decision queue.
+
+**Important details:**
+- **`ChazerCollectionAgent` Engine (`agent/chazer_agent.py`)**:
+  - Ingests active invoices from Supabase Postgres or canonical 8-invoice seed dataset fallback.
+  - Dynamically computes overdue aging (`days_overdue = max(0, (now - due_date).days)`).
+  - Enforces 72-hour contact window guard to prevent re-contacting recently nudged clients.
+  - Executes rule-based classification (`classify_invoice`), evaluating high-value threshold ($10,000+) and dispute overrides.
+  - Safely drafts emails using LiteLLM (Grok/Gemini) with deterministic template fallback when operating in zero-cost offline/sandbox modes.
+  - Dispatches emails via Resend API with idempotency keys (`INV-XXX-TIER-YYYYMMDD`).
+  - Records atomic updates to `invoices` (`last_contact_at`, `contact_count`), `contact_history`, `decision_queue`, `audit_log`, and `sweep_runs`.
+  - Fault tolerance: Any single invoice failure (LLM timeout, parse error, Resend network error) is logged as `LLM_FAILED` or `SEND_FAILED` and never crashes the sweep for remaining invoices.
+- **CLI Runner (`agent/main.py`)**:
+  - Executable via `python -m agent.main` or `python agent/main.py`.
+  - Supports CLI arguments: `--threshold`, `--window-hours`, `--owner-id`, `--model-id`, `--live`, `--sandbox`.
+  - Prints formatted telemetry summaries and per-invoice action breakdowns.
+- **Testing**: 42/42 tests passing in Pytest (`agent/tests/test_chazer_agent.py`, `test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
+
+**Relevant files:**
+- `agent/chazer_agent.py`
+- `agent/main.py`
+- `agent/tests/test_chazer_agent.py`
+- `docs/03-agent-specification.md`, `docs/14-core-algorithms-and-theory.md`
 
 ---
 
-## Feature: Owner Dashboard (Specified, Not Built)
+## Feature: Native TypeScript agent-sweep Edge Function (AGENT-05)
 
-**Status:** Planned / Specified  
-**What it does (when built):** Next.js dashboard with Aging Receivables view, Decision Queue with AI-drafted email approval, and Audit Log timeline showing all agent actions.
+**Status:** Implemented  
+**What it does:** Supabase Edge Function (`supabase/functions/agent-sweep/index.ts`) providing native TypeScript runtime execution for autonomous collection sweeps triggered by pg_cron schedules, manual dashboard button clicks, or external webhook invocations.
 
----
+**Important details:**
+- **Endpoint Route**: `POST /functions/v1/agent-sweep` (and `POST /sweep`), supporting `GET` (health/status) and `OPTIONS` (CORS preflight).
+- **Parity with Python Strands Agent**:
+  - Employs identical classification rules (`classifyInvoiceTs`), 72-hour contact window guards, high-value overrides ($10,000+), and dispute freezes.
+  - Generates email drafts via direct Google Gemini / Grok REST inference with deterministic template fallback.
+  - Dispatches emails via Resend API with `Idempotency-Key` headers or zero-credit sandbox simulation.
+  - Persists atomic database updates to `invoices`, `contact_history`, `decision_queue`, `audit_log`, and `sweep_runs`.
+  - Idempotent: Running the sweep twice within the same contact window yields 0 new dispatches.
+- **Testing**: 12/12 unit and integration tests passing in Vitest (`dashboard/tests/agent-sweep.test.ts`), bringing full frontend/edge test suite to 104/104 tests passing.
 
-## Feature: Supabase Data Layer (Specified, Not Built)
+**Relevant files:**
+- `supabase/functions/agent-sweep/index.ts`
+- `dashboard/tests/agent-sweep.test.ts`
+- `docs/03-agent-specification.md`, `docs/06-api-and-state-design.md`
 
-**Status:** Planned / Specified  
-**What it does (when built):** Postgres schema with 6 tables, enriched view for tier computation, RLS policies, pg_cron scheduler, seed pipeline from CSV.

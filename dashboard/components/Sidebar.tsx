@@ -1,5 +1,5 @@
 // dashboard/components/Sidebar.tsx
-// Primary navigation sidebar for desktop and mobile bottom navigation
+// Primary navigation sidebar for desktop and mobile bottom navigation in Monad Editorial Style
 
 'use client';
 
@@ -10,10 +10,8 @@ import {
   LayoutDashboard,
   AlertTriangle,
   History,
-  Zap,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
   UserCheck,
 } from 'lucide-react';
 import { useChazerStore } from '../lib/store';
@@ -47,23 +45,24 @@ export function Sidebar() {
     <>
       {/* Desktop & Tablet Sidebar */}
       <aside
-        className={`hidden md:flex flex-col fixed inset-y-0 left-0 z-40 bg-surface-base border-r border-border-subtle transition-all duration-300 ease-in-out select-none ${
+        className={`hidden md:flex flex-col fixed inset-y-0 left-0 z-40 border-r transition-all duration-300 ease-in-out select-none ${
           isSidebarCollapsed ? 'w-20' : 'w-64'
         }`}
+        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
       >
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border-subtle">
+        <div className="h-20 flex items-center justify-between px-5 border-b" style={{ borderColor: 'var(--border-card)' }}>
           <Link href="/dashboard" className="flex items-center space-x-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-chazer-purple to-chazer-purple-light flex items-center justify-center text-white shadow-purple-glow group-hover:scale-105 transition-transform">
-              <Zap className="w-5 h-5 fill-current" />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-105" style={{ backgroundColor: 'var(--text-main)' }}>
+              <span className="w-2.5 h-2.5 rounded-full bg-mint"></span>
             </div>
             {!isSidebarCollapsed && (
               <div className="flex flex-col overflow-hidden">
-                <span className="font-bold text-lg text-white tracking-tight leading-none group-hover:text-chazer-purple-light transition-colors">
+                <span className="font-editorial text-2xl tracking-serif-tight leading-none" style={{ color: 'var(--text-main)' }}>
                   Chazer
                 </span>
-                <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase mt-0.5">
-                  Autonomous Collections
+                <span className="text-[10px] font-mono uppercase tracking-mono-wide mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  Autonomous A/R
                 </span>
               </div>
             )}
@@ -73,18 +72,19 @@ export function Sidebar() {
             type="button"
             onClick={toggleSidebar}
             aria-label="Collapse sidebar"
-            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-surface-elevated transition-colors"
+            className="p-1.5 rounded-full border transition-colors hover:opacity-80"
+            style={{ borderColor: 'var(--border-card)', color: 'var(--text-sub)' }}
           >
             {isSidebarCollapsed ? (
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             ) : (
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             )}
           </button>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto font-mono">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive =
@@ -98,16 +98,17 @@ export function Sidebar() {
                 href={link.href}
                 title={isSidebarCollapsed ? link.label : undefined}
                 className={`group flex items-center ${
-                  isSidebarCollapsed ? 'justify-center px-0' : 'px-3.5'
-                } py-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative ${
+                  isSidebarCollapsed ? 'justify-center px-0' : 'px-4'
+                } py-3 rounded-pill text-xs uppercase tracking-mono-wide font-medium transition-all duration-200 relative ${
                   isActive
-                    ? 'bg-chazer-purple/20 text-white border border-chazer-purple/40 shadow-purple-glow font-semibold'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-surface-card border border-transparent'
+                    ? 'active bg-chazer-purple text-white shadow-sm font-semibold'
+                    : 'text-graphite hover:text-off-black hover:bg-surface-card border border-transparent'
                 }`}
+                style={isActive ? { backgroundColor: 'var(--text-main)', color: 'var(--bg-page)' } : { color: 'var(--text-sub)' }}
               >
                 <Icon
-                  className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                    isActive ? 'text-chazer-purple-light' : 'text-gray-400 group-hover:text-gray-300'
+                  className={`w-4 h-4 flex-shrink-0 transition-colors ${
+                    isActive ? 'text-parchment' : 'opacity-70 group-hover:opacity-100'
                   }`}
                 />
 
@@ -120,8 +121,8 @@ export function Sidebar() {
                   <span
                     className={`inline-flex items-center justify-center font-bold rounded-full ${
                       isSidebarCollapsed
-                        ? 'absolute -top-1 -right-1 w-5 h-5 text-[10px] bg-tier3 text-white border-2 border-surface-base'
-                        : 'ml-auto px-2 py-0.5 text-xs bg-tier3/20 text-tier3 border border-tier3/40'
+                        ? 'absolute -top-1 -right-1 w-5 h-5 text-[10px] bg-coral text-off-black border-2'
+                        : 'ml-auto px-2 py-0.5 text-[10px] bg-coral/30 text-off-black border border-coral font-mono'
                     }`}
                   >
                     {link.badge}
@@ -133,19 +134,20 @@ export function Sidebar() {
         </nav>
 
         {/* Footer / Account Section */}
-        <div className="p-3 border-t border-border-subtle bg-surface-card/40">
+        <div className="p-4 border-t" style={{ borderColor: 'var(--border-card)' }}>
           <div
             className={`flex items-center ${
-              isSidebarCollapsed ? 'justify-center' : 'space-x-3 px-2 py-1.5'
-            } rounded-lg bg-surface-elevated/60 border border-border-subtle/60`}
+              isSidebarCollapsed ? 'justify-center' : 'space-x-3 px-3 py-2'
+            } rounded-card border`}
+            style={{ backgroundColor: 'var(--bg-page)', borderColor: 'var(--border-card)' }}
           >
-            <div className="w-8 h-8 rounded-lg bg-purple-950/70 border border-purple-800/50 flex items-center justify-center text-chazer-purple-light">
-              <UserCheck className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: 'var(--chip-bg)', color: 'var(--text-main)' }}>
+              <UserCheck className="w-3.5 h-3.5" />
             </div>
             {!isSidebarCollapsed && (
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold text-gray-200 truncate">Demo Owner</span>
-                <span className="text-[10px] text-gray-400 truncate">demo_owner</span>
+              <div className="flex flex-col min-w-0 font-mono">
+                <span className="text-xs font-medium truncate" style={{ color: 'var(--text-main)' }}>Demo Owner</span>
+                <span className="text-[10px] truncate" style={{ color: 'var(--text-muted)' }}>demo_owner</span>
               </div>
             )}
           </div>
@@ -155,7 +157,8 @@ export function Sidebar() {
       {/* Mobile Bottom Navigation Bar (<768px) */}
       <nav
         data-testid="mobile-bottom-bar"
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 bg-surface-base/95 backdrop-blur-lg border-t border-border-subtle flex items-center justify-around px-2"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 backdrop-blur-lg border-t flex items-center justify-around px-2 font-mono"
+        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
       >
         {navLinks.map((link) => {
           const Icon = link.icon;
@@ -169,18 +172,19 @@ export function Sidebar() {
               key={link.href}
               href={link.href}
               className={`flex flex-col items-center justify-center flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors relative ${
-                isActive ? 'text-chazer-purple-light' : 'text-gray-400 hover:text-gray-200'
+                isActive ? 'text-lake-blue font-bold' : 'opacity-70 hover:opacity-100'
               }`}
+              style={{ color: isActive ? 'var(--btn-primary)' : 'var(--text-sub)' }}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'text-chazer-purple-light' : ''}`} />
+                <Icon className="w-4 h-4" />
                 {link.badge !== undefined && (
-                  <span className="absolute -top-1.5 -right-2.5 px-1.5 py-0.2 text-[9px] font-bold bg-tier3 text-white rounded-full">
+                  <span className="absolute -top-1.5 -right-2.5 px-1.5 py-0.2 text-[9px] font-bold bg-coral text-off-black rounded-full font-mono">
                     {link.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1">{link.label}</span>
+              <span className="text-[10px] uppercase tracking-mono-tight mt-1">{link.label}</span>
             </Link>
           );
         })}

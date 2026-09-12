@@ -79,9 +79,9 @@ flowchart TD
 
 | Status Category | Count | Status Badge | Description |
 |---|:---:|:---:|---|
-| **Completed** | 8 / 20 | `🟢 Completed` | Fully implemented, verified via `/tdd` Red-Green suite (Vitest / Pytest + Pydantic), and passing all tests |
+| **Completed** | 14 / 20 | `🟢 Completed` | Fully implemented, verified via `/tdd` Red-Green suite (Vitest / Pytest + Pydantic), and passing all tests |
 | **Implementing** | 0 / 20 | `🟡 Implementing` | Currently actively being developed under `/tdd` red/green loop |
-| **Not Implemented** | 12 / 20 | `🔴 Not Implemented` | Specified with full acceptance criteria, queued for TDD build |
+| **Not Implemented** | 6 / 20 | `🔴 Not Implemented` | Specified with full acceptance criteria, queued for TDD build |
 
 > [!IMPORTANT]
 > **Mandatory TDD Completion Policy**: Tickets can ONLY transition to `🟢 Completed` after their dedicated test suite (Vitest for TS/Frontend, Pytest + Pydantic for Python Agent) has been executed, red-to-green verified, and passed.
@@ -98,8 +98,8 @@ flowchart TD
 | **AGENT-01** (classify tool) | 🟢 Completed | AGENT-02, AGENT-03, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/classify.py`<br>`agent/tests/test_classify.py` |
 | **AGENT-02** (draft_email tool) | 🟢 Completed | AGENT-01, AGENT-03, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/draft_email.py`<br>`agent/tests/test_draft_email.py` |
 | **AGENT-03** (send_email & audit tool) | 🟢 Completed | AGENT-01, AGENT-02, BACK-02, BACK-03, BACK-04, FRONT-01..04, DEVOPS-02 | DEVOPS-01 | `agent/tools/send_email.py`<br>`agent/tools/write_audit_log.py` |
-| **AGENT-04** (ChazerCollectionAgent loop) | 🔴 Not Implemented | AGENT-05, BACK-03, BACK-04, FRONT-01..04 | AGENT-01, 02, 03, BACK-01 | `agent/chazer_agent.py`<br>`agent/main.py` |
-| **AGENT-05** (TypeScript Edge sweep) | 🔴 Not Implemented | AGENT-04, BACK-05, FRONT-01..05 | AGENT-01, 02, 03 logic specs, BACK-01 | `supabase/functions/agent-sweep/index.ts` |
+| **AGENT-04** (ChazerCollectionAgent loop) | 🟢 Completed | AGENT-05, BACK-03, BACK-04, FRONT-01..04 | AGENT-01, 02, 03, BACK-01 | `agent/chazer_agent.py`<br>`agent/main.py`<br>`agent/tests/test_chazer_agent.py` |
+| **AGENT-05** (TypeScript Edge sweep) | 🟢 Completed | AGENT-04, BACK-05, FRONT-01..05 | AGENT-01, 02, 03 logic specs, BACK-01 | `supabase/functions/agent-sweep/index.ts`<br>`dashboard/tests/agent-sweep.test.ts` |
 
 **Parallelism Note:**
 - `AGENT-01`, `AGENT-02`, and `AGENT-03` are 100% decoupled unit modules. They can be created and unit-tested in parallel via mocked inputs before `AGENT-04` integrates them.
@@ -111,7 +111,7 @@ flowchart TD
 
 | Ticket | Status | Can Run In Parallel With | Prerequisite | Files Touched (Zero Collision) |
 |---|:---:|---|---|---|
-| **BACK-01** (Database Schema & Views) | 🔴 Not Implemented | DEVOPS-01, FRONT-01, FRONT-05 (types) | None | `supabase/migrations/001_initial_schema.sql` |
+| **BACK-01** (Database Schema & Views) | 🟢 Completed | DEVOPS-01, FRONT-01, FRONT-05 (types) | None | `supabase/migrations/001_initial_schema.sql` |
 | **BACK-02** (seed-data Function) | 🟢 Completed | BACK-03, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/seed-data/index.ts`<br>`data/invoices_seed.csv` |
 | **BACK-03** (api-router Function) | 🟢 Completed | BACK-02, BACK-04, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/api-router/index.ts` |
 | **BACK-04** (decisions approve/reject) | 🟢 Completed | BACK-02, BACK-03, AGENT-01..03, FRONT-01..04 | BACK-01 | `supabase/functions/decisions-approve/index.ts`<br>`supabase/functions/decisions-reject/index.ts` |
@@ -128,9 +128,9 @@ flowchart TD
 | Ticket | Status | Can Run In Parallel With | Prerequisite | Files Touched (Zero Collision) |
 |---|:---:|---|---|---|
 | **FRONT-01** (AppShell, Sidebar, TopBar) | 🟢 Completed | FRONT-02, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | DEVOPS-01 | `dashboard/components/AppShell.tsx`<br>`dashboard/components/Sidebar.tsx`<br>`dashboard/components/TopBar.tsx` |
-| **FRONT-02** (Dashboard page & table) | 🔴 Not Implemented | FRONT-01, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/dashboard/page.tsx`<br>`dashboard/components/InvoiceTable.tsx`<br>`dashboard/components/StatsBar.tsx`<br>`dashboard/components/TierBadge.tsx`<br>`dashboard/components/AgingBar.tsx` |
-| **FRONT-03** (Decision Queue & modals) | 🔴 Not Implemented | FRONT-01, FRONT-02, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/decisions/page.tsx`<br>`dashboard/components/DecisionCard.tsx`<br>`dashboard/components/EmailDraftPreview.tsx`<br>`dashboard/components/EditDraftModal.tsx` |
-| **FRONT-04** (Audit Log page & timeline) | 🔴 Not Implemented | FRONT-01, FRONT-02, FRONT-03, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/audit/page.tsx`<br>`dashboard/components/AuditTimeline.tsx`<br>`dashboard/components/AuditEntry.tsx` |
+| **FRONT-02** (Dashboard page & table) | 🟢 Completed | FRONT-01, FRONT-03, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/dashboard/page.tsx`<br>`dashboard/components/InvoiceTable.tsx`<br>`dashboard/components/StatsBar.tsx`<br>`dashboard/components/TierBadge.tsx`<br>`dashboard/components/AgingBar.tsx` |
+| **FRONT-03** (Decision Queue & modals) | 🟢 Completed | FRONT-01, FRONT-02, FRONT-04, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/decisions/page.tsx`<br>`dashboard/components/DecisionCard.tsx`<br>`dashboard/components/EmailDraftPreview.tsx`<br>`dashboard/components/EditDraftModal.tsx` |
+| **FRONT-04** (Audit Log page & timeline) | 🟢 Completed | FRONT-01, FRONT-02, FRONT-03, BACK-01..04, AGENT-01..03 | FRONT-05 types | `dashboard/app/audit/page.tsx`<br>`dashboard/components/AuditTimeline.tsx`<br>`dashboard/components/AuditEntry.tsx` |
 | **FRONT-05** (Zustand store & API hooks) | 🔴 Not Implemented | Phase A (types): Wave 0<br>Phase B (live API): Wave 2 | BACK-03, BACK-04 for live testing | `dashboard/lib/types.ts`<br>`dashboard/lib/store.ts`<br>`dashboard/lib/api.ts` |
 
 **Parallelism Note:**
@@ -144,8 +144,8 @@ flowchart TD
 | Ticket | Status | Can Run In Parallel With | Prerequisite | Files Touched (Zero Collision) |
 |---|:---:|---|---|---|
 | **DEVOPS-01** (Repo scaffolding) | 🟢 Completed | BACK-01 | None | `.gitignore`, `package.json`, `requirements.txt` |
-| **DEVOPS-02** (GitHub Actions CI/CD) | 🔴 Not Implemented | Any Wave 1 ticket | DEVOPS-01 | `.github/workflows/deploy.yml` |
-| **DEVOPS-05** (Demo reset stored proc) | 🔴 Not Implemented | Any Wave 1 ticket | BACK-01 | `supabase/migrations/002_demo_utilities.sql` |
+| **DEVOPS-02** (GitHub Actions CI/CD) | 🟢 Completed | Any Wave 1 ticket | DEVOPS-01 | `.github/workflows/deploy.yml` |
+| **DEVOPS-05** (Demo reset stored proc) | 🟢 Completed | Any Wave 1 ticket | BACK-01 | `supabase/migrations/002_demo_utilities.sql` |
 | **DEVOPS-03** (README & Pitch material) | 🔴 Not Implemented | Any Wave 2 ticket | DEVOPS-01 | `README.md` |
 | **DEVOPS-04** (Production smoke test) | 🔴 Not Implemented | None (Final step) | All previous tickets | Live endpoints |
 

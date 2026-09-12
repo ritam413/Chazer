@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chazer · Autonomous Receivables Ledger &amp; Escalation Engine</title>
+  
+  <!-- Fonts: Newsreader (Editorial Serif) & JetBrains Mono (Technical UI Monospace) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            // Light Mode Monad Tokens
+            parchment: '#f6f3f1',
+            'lake-blue': '#2b59d1',
+            'lake-blue-dark': '#4d7aff',
+            'periwinkle-mist': '#cfdaf5',
+            'sky-blue': '#a0b5eb',
+            mint: '#a7fccd',
+            coral: '#ff9473',
+            gold: '#ecda98',
+            crimson: '#f37a0a',
+            'off-black': '#242424',
+            ink: '#000000',
+            graphite: '#4e4d4d',
+            smoke: '#797776',
+            ash: '#cecac8',
+            'ash-light': '#e5e2e0',
+
+            // Dark Mode Monad Counterparts
+            'dark-canvas': '#111215',
+            'dark-surface': '#181a1f',
+            'dark-elevated': '#21242d',
+            'dark-border': '#2c2f3a',
+            'dark-text-primary': '#f0ece9',
+            'dark-text-secondary': '#a8a5a2',
+            'dark-text-muted': '#72706e',
+            'dark-periwinkle': '#1c2233',
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          borderRadius: {
+            'card': '32px',
+            'card-lg': '40px',
+            'pill': '9999px',
+            'btn': '100px',
+          },
+          letterSpacing: {
+            'serif-tight': '-0.02em',
+            'mono-tight': '-0.025em',
+            'mono-wide': '0.04em',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* CSS Variables for Dynamic Light / Dark Theming */
+    :root {
+      --bg-page: #f6f3f1;
+      --bg-card: #f6f3f1;
+      --bg-card-elevated: #cfdaf5;
+      --border-card: #cecac8;
+      --border-elevated: #b8c8f0;
+      --text-main: #242424;
+      --text-sub: #4e4d4d;
+      --text-muted: #797776;
+      --btn-primary: #2b59d1;
+      --btn-primary-text: #ffffff;
+      --btn-secondary: #242424;
+      --btn-secondary-text: #f6f3f1;
+      --chip-bg: #e5e2e0;
+      --announcement-bg: #000000;
+      --announcement-text: #f6f3f1;
+      --wash-opacity: 0.45;
+    }
+
+    html.dark {
+      --bg-page: #111215;
+      --bg-card: #181a1f;
+      --bg-card-elevated: #1a2030;
+      --border-card: #2a2d38;
+      --border-elevated: #333d59;
+      --text-main: #f0ece9;
+      --text-sub: #a8a5a2;
+      --text-muted: #72706e;
+      --btn-primary: #4d7aff;
+      --btn-primary-text: #ffffff;
+      --btn-secondary: #f0ece9;
+      --btn-secondary-text: #111215;
+      --chip-bg: #22252f;
+      --announcement-bg: #090a0d;
+      --announcement-text: #f0ece9;
+      --wash-opacity: 0.25;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Monad Typographic Discipline */
+    h1, h2, h3, h4, .font-editorial {
+      font-family: 'Newsreader', Georgia, serif;
+      font-weight: 400 !important;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    /* Themed Monad Card */
+    .monad-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 32px;
+      padding: 32px;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .monad-card:hover {
+      border-color: #797776;
+    }
+
+    .monad-card-elevated {
+      background-color: var(--bg-card-elevated);
+      border: 1px solid var(--border-elevated);
+      border-radius: 32px;
+      padding: 32px;
+      transition: all 0.25s ease;
+    }
+
+    /* Atmospheric pastel gradient washes */
+    .gradient-wash-hero {
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(255, 148, 115, var(--wash-opacity)) 0%, rgba(160, 181, 235, var(--wash-opacity)) 45%, rgba(167, 252, 205, calc(var(--wash-opacity) * 0.7)) 80%, transparent 100%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Custom Hairline Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-page);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-card);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-main);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-periwinkle-mist selection:text-off-black">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div id="announcementBar" class="w-full text-xs py-2.5 px-4 sm:px-8 flex items-center justify-between z-50 transition-colors" style="background-color: var(--announcement-bg); color: var(--announcement-text);">
+    <div class="max-w-[1432px] mx-auto w-full flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 uppercase font-medium text-[11px] tracking-mono-wide px-2 py-0.5 rounded-full bg-white/15">
+          <span class="w-1.5 h-1.5 rounded-full bg-mint animate-pulse"></span>
+          Autonomous Loop Active
+        </span>
+        <span class="text-xs opacity-80 hidden sm:inline">Daily sweep completed · 12 invoices parsed · 3 held for owner approval</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="switchView('decisions')" class="px-3 py-1 rounded-pill text-[11px] font-medium uppercase tracking-mono-tight hover:opacity-90 transition-all flex items-center gap-1" style="background-color: var(--bg-page); color: var(--text-main);">
+          <span>Authorize Queue (3)</span>
+          <span>▸</span>
+        </button>
+        <button onclick="document.getElementById('announcementBar').style.display='none'" class="opacity-60 hover:opacity-100 text-sm px-1">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION (Transparent ~80px) -->
+  <header class="w-full border-b backdrop-blur-md sticky top-0 z-40 transition-colors" style="border-color: var(--border-card); background-color: rgba(var(--bg-page), 0.9);">
+    <div class="max-w-[1432px] mx-auto px-6 sm:px-10 h-20 flex items-center justify-between gap-6">
+      
+      <!-- Brand Wordmark & Dot Mark -->
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('dashboard')">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center transition-colors" style="background-color: var(--text-main);">
+            <span class="w-2 h-2 rounded-full bg-mint"></span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="font-editorial text-2xl tracking-serif-tight" style="color: var(--text-main);">Chazer</span>
+            <span class="text-[11px] uppercase tracking-mono-wide font-medium" style="color: var(--text-muted);">Vol. 01 / Collections</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Editorial ABC Diatype Mono 14px Uppercase) -->
+      <nav class="hidden md:flex items-center gap-1 p-1.5 rounded-pill border transition-colors" style="background-color: var(--chip-bg); border-color: var(--border-card);">
+        <button onclick="switchView('dashboard')" id="tab-dashboard" class="px-5 py-2 rounded-pill text-xs uppercase tracking-mono-wide font-medium transition-all" style="background-color: var(--text-main); color: var(--bg-page);">
+          Ledger &amp; Aging
+        </button>
+        <button onclick="switchView('decisions')" id="tab-decisions" class="px-5 py-2 rounded-pill text-xs uppercase tracking-mono-wide font-medium transition-all flex items-center gap-2 hover:opacity-100" style="color: var(--text-sub);">
+          <span>Decisions</span>
+          <span id="navBadgeDecisions" class="w-4 h-4 rounded-full bg-coral text-off-black text-[10px] font-bold flex items-center justify-center">3</span>
+        </button>
+        <button onclick="switchView('audit')" id="tab-audit" class="px-5 py-2 rounded-pill text-xs uppercase tracking-mono-wide font-medium transition-all hover:opacity-100" style="color: var(--text-sub);">
+          Agent Audit Log
+        </button>
+      </nav>
+
+      <!-- Action Buttons & Theme Switcher -->
+      <div class="flex items-center gap-3">
+        
+        <!-- Live Theme Toggle Button (Light <-> Dark) -->
+        <button onclick="toggleDarkMode()" id="themeToggleBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-pill border text-xs uppercase tracking-mono-wide transition-all" style="border-color: var(--border-card); color: var(--text-main);" title="Toggle Dark/Light Palette">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel" class="hidden sm:inline font-mono text-[11px]">Dark Mode</span>
+        </button>
+
+        <!-- Secondary Sweep Pill -->
+        <button onclick="triggerSweep()" id="btnSweep" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-btn border text-xs uppercase tracking-mono-wide font-medium transition-all active:scale-98" style="border-color: var(--text-main); color: var(--text-main);">
+          <span id="sweepSpinner" class="hidden animate-spin">●</span>
+          <span id="sweepLabel">Run Daily Sweep</span>
+        </button>
+
+        <!-- Primary Lake Blue Pill (The Single Saturated Action in the System) -->
+        <button onclick="switchView('decisions')" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-btn text-xs uppercase tracking-mono-wide font-medium hover:opacity-95 transition-all shadow-sm active:scale-98" style="background-color: var(--btn-primary); color: var(--btn-primary-text);">
+          <span>Review Held Drafts</span>
+          <span class="text-sm">▸</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- CONTENT CONTAINER (Max-Width 1432px, Section Gap 64px) -->
+  <main class="max-w-[1432px] mx-auto w-full px-6 sm:px-10 py-12 space-y-14 flex-1">
+
+    <!-- HERO SECTION: Typographic Composition with Untitled Serif -->
+    <section class="space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b" style="border-color: var(--border-card);">
+        <div class="space-y-3 max-w-3xl">
+          <div class="text-xs uppercase tracking-mono-wide font-medium" style="color: var(--text-muted);">Autonomous Cashflow Supervision · Live Ledger</div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-editorial" style="color: var(--text-main);">
+            Aging receivables, cataloged and recovered with deliberate restraint.
+          </h1>
+          <p class="text-base leading-relaxed max-w-2xl pt-2" style="color: var(--text-sub);">
+            The background agent classifies overdue accounts, calibrates communication tone across three distinct escalation tiers, and holds high-exposure notices for explicit human authorization.
+          </p>
+        </div>
+
+        <!-- Metric Snapshot Pill Box -->
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 p-3 rounded-card border shrink-0" style="background-color: var(--bg-card); border-color: var(--border-card);">
+          <div class="px-4 py-2 border-r" style="border-color: var(--border-card);">
+            <div class="text-[11px] uppercase tracking-mono-wide" style="color: var(--text-muted);">Total Overdue</div>
+            <div class="font-editorial text-3xl mt-0.5" style="color: var(--text-main);">$87,090.00</div>
+          </div>
+          <div class="px-4 py-2 border-r" style="border-color: var(--border-card);">
+            <div class="text-[11px] uppercase tracking-mono-wide" style="color: var(--text-muted);">Escalated / Held</div>
+            <div class="font-editorial text-3xl text-coral mt-0.5" id="heroDecisionCount">3 Accounts</div>
+          </div>
+          <div class="px-4 py-2">
+            <div class="text-[11px] uppercase tracking-mono-wide" style="color: var(--text-muted);">Recovery Rate</div>
+            <div class="font-editorial text-3xl mt-0.5" style="color: var(--text-main);">94.2%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 1: DASHBOARD (LEDGER & AGING) -->
+    <div id="view-dashboard" class="space-y-12">
+
+      <!-- ELEVATED FEATURE CARD (Periwinkle Mist Surface with Pastel Atmospheric Wash) -->
+      <section class="relative overflow-hidden monad-card-elevated">
+        <div class="gradient-wash-hero"></div>
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-pill border text-xs uppercase tracking-mono-tight" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-main);">
+              <span class="w-2 h-2 rounded-full" style="background-color: var(--btn-primary);"></span>
+              <span>Autonomous Tone Ladder In Effect</span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-editorial" style="color: var(--text-main);">
+              Three-tier graduated escalation protocol.
+            </h2>
+            <p class="text-sm leading-relaxed" style="color: var(--text-sub);">
+              Invoices progress through automated friendly nudges (Tier 1), firm references to prior communication (Tier 2), and formal final settlement notices (Tier 3). Disputes and balances above $10,000 immediately lock automated dispatch.
+            </p>
+            <div class="pt-2 flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-pill border text-[11px] uppercase tracking-mono-tight" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-sub);">Tier 1 · 1–7 Days (Auto)</span>
+              <span class="px-3 py-1 rounded-pill border text-[11px] uppercase tracking-mono-tight" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-sub);">Tier 2 · 8–21 Days (Auto)</span>
+              <span class="px-3 py-1 rounded-pill bg-coral/25 border border-coral text-[11px] uppercase tracking-mono-tight font-medium" style="color: var(--text-main);">Tier 3 · 22+ Days (Held)</span>
+            </div>
+          </div>
+
+          <!-- Pipeline Node Diagram Representation -->
+          <div class="lg:col-span-5 p-6 rounded-card border space-y-4" style="background-color: var(--bg-card); border-color: var(--border-card);">
+            <div class="text-xs uppercase tracking-mono-wide pb-2 border-b flex items-center justify-between" style="color: var(--text-muted); border-color: var(--border-card);">
+              <span>Agent Telemetry</span>
+              <span class="text-emerald-500 font-medium">Active · pg_cron</span>
+            </div>
+            
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-center justify-between p-2.5 rounded-2xl border" style="background-color: var(--bg-page); border-color: var(--border-card);">
+                <span style="color: var(--text-sub);">Tier 1 · Polite Reminder</span>
+                <span class="font-medium" style="color: var(--text-main);">4 Active ($18,200)</span>
+              </div>
+              <div class="flex items-center justify-between p-2.5 rounded-2xl border" style="background-color: var(--bg-page); border-color: var(--border-card);">
+                <span style="color: var(--text-sub);">Tier 2 · Firm Follow-up</span>
+                <span class="font-medium" style="color: var(--text-main);">5 Active ($25,390)</span>
+              </div>
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-coral/20 border border-coral/40">
+                <span class="font-medium" style="color: var(--text-main);">Tier 3 · Final Notice (Held)</span>
+                <span class="font-medium text-coral font-mono">3 Pending ($43,500)</span>
+              </div>
+            </div>
+
+            <button onclick="switchView('decisions')" class="w-full py-2.5 rounded-btn text-xs uppercase tracking-mono-wide font-medium hover:opacity-90 transition-all flex items-center justify-center gap-1" style="background-color: var(--btn-secondary); color: var(--btn-secondary-text);">
+              <span>Inspect Held Decisions</span>
+              <span>▸</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RECEIVABLES LEDGER (DATA-MANUAL MONOSPACE FORMAT) -->
+      <section class="space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b" style="border-color: var(--border-card);">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-editorial" style="color: var(--text-main);">Receivables Ledger</h2>
+            <p class="text-xs mt-1" style="color: var(--text-muted);">Full index of active invoices under autonomous tracking</p>
+          </div>
+
+          <!-- Controls in Monad Pill Shapes -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            
+            <!-- Search -->
+            <div class="relative">
+              <input 
+                id="searchLedger" 
+                oninput="renderLedgerTable()" 
+                type="text" 
+                placeholder="SEARCH INVOICE / CLIENT..." 
+                class="w-56 pl-3 pr-8 py-2 rounded-pill border text-xs uppercase tracking-mono-tight focus:outline-none transition-all"
+                style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-main);"
+              >
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs opacity-60">⌕</span>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex items-center p-1 rounded-pill border text-xs" style="background-color: var(--chip-bg); border-color: var(--border-card);">
+              <button onclick="setFilter('ALL')" id="filter-ALL" class="px-3 py-1 rounded-pill uppercase tracking-mono-tight font-medium transition-all" style="background-color: var(--text-main); color: var(--bg-page);">All (12)</button>
+              <button onclick="setFilter('TIER_1')" id="filter-TIER_1" class="px-3 py-1 rounded-pill uppercase tracking-mono-tight font-medium transition-all" style="color: var(--text-sub);">Tier 1</button>
+              <button onclick="setFilter('TIER_2')" id="filter-TIER_2" class="px-3 py-1 rounded-pill uppercase tracking-mono-tight font-medium transition-all" style="color: var(--text-sub);">Tier 2</button>
+              <button onclick="setFilter('TIER_3')" id="filter-TIER_3" class="px-3 py-1 rounded-pill uppercase tracking-mono-tight font-medium transition-all" style="color: var(--text-sub);">Tier 3 (3)</button>
+            </div>
+
+            <!-- Sort Select -->
+            <select id="sortBy" onchange="renderLedgerTable()" class="text-xs uppercase tracking-mono-tight py-2 px-3 rounded-pill border focus:outline-none cursor-pointer" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-main);">
+              <option value="days_desc">Sort: Days Overdue (↓)</option>
+              <option value="amount_desc">Sort: Amount (↓)</option>
+              <option value="client_asc">Sort: Client Name (A-Z)</option>
+            </select>
+
+          </div>
+        </div>
+
+        <!-- Hairline Table Format -->
+        <div class="overflow-x-auto border rounded-card" style="border-color: var(--border-card); background-color: var(--bg-card);">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b uppercase tracking-mono-wide text-[11px]" style="border-color: var(--border-card); color: var(--text-muted); background-color: var(--chip-bg);">
+                <th class="py-3.5 px-6 font-medium">Invoice ID</th>
+                <th class="py-3.5 px-6 font-medium">Client / Domain</th>
+                <th class="py-3.5 px-6 font-medium">Balance</th>
+                <th class="py-3.5 px-6 font-medium">Aging &amp; Overdue</th>
+                <th class="py-3.5 px-6 font-medium">Escalation Tier</th>
+                <th class="py-3.5 px-6 font-medium">Notices Sent</th>
+                <th class="py-3.5 px-6 font-medium">State</th>
+                <th class="py-3.5 px-6 font-medium text-right">Inspect</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerTableBody" class="divide-y" style="divide-color: var(--border-card);">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- VIEW 2: DECISION QUEUE (STANDALONE HUMAN REVIEW) -->
+    <div id="view-decisions" class="space-y-8 hidden">
+      
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b" style="border-color: var(--border-card);">
+        <div>
+          <div class="text-xs uppercase tracking-mono-wide text-coral font-medium">Safety Gate · Human Oversight Required</div>
+          <h2 class="text-3xl sm:text-4xl font-editorial mt-1" style="color: var(--text-main);">Pending Escalation Authorizations</h2>
+          <p class="text-xs mt-1" style="color: var(--text-sub);">
+            The AI drafted these formal notices according to Tier 3 parameters. Verify details, edit text, or dispatch via Resend.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="approveAllDecisions()" class="px-6 py-2.5 rounded-btn text-xs uppercase tracking-mono-wide font-medium hover:opacity-90 transition-all flex items-center gap-1.5" style="background-color: var(--btn-primary); color: var(--btn-primary-text);">
+            <span>Authorize All (3)</span>
+            <span>▸</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="decisionsContainer" class="space-y-6">
+        <!-- Rendered via JS -->
+      </div>
+
+    </div>
+
+    <!-- VIEW 3: AGENT AUDIT TRAIL -->
+    <div id="view-audit" class="space-y-8 hidden">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b" style="border-color: var(--border-card);">
+        <div>
+          <div class="text-xs uppercase tracking-mono-wide font-medium" style="color: var(--text-muted);">Immutable Telemetry Log</div>
+          <h2 class="text-3xl sm:text-4xl font-editorial mt-1" style="color: var(--text-main);">Autonomous Execution Audit</h2>
+          <p class="text-xs mt-1" style="color: var(--text-sub);">
+            Every classification evaluation, prompt construction, and email dispatch is timestamped and recorded.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-pill border text-[11px] uppercase tracking-mono-tight font-medium" style="background-color: var(--chip-bg); border-color: var(--border-card); color: var(--text-main);">
+            ● Log Stream Verified
+          </span>
+        </div>
+      </div>
+
+      <div class="monad-card p-6">
+        <div class="space-y-4" id="auditListContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- SLIDE-OVER INSPECTION DRAWER -->
+  <div id="drawerBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden transition-opacity" onclick="closeDrawer()"></div>
+  
+  <div id="drawerPanel" class="fixed top-0 right-0 w-full sm:w-[580px] h-full border-l z-50 p-8 overflow-y-auto transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between" style="background-color: var(--bg-card); border-color: var(--border-card);">
+    
+    <div class="space-y-6">
+      
+      <!-- Drawer Header -->
+      <div class="flex items-start justify-between pb-6 border-b" style="border-color: var(--border-card);">
+        <div class="space-y-1">
+          <div class="text-[11px] uppercase tracking-mono-wide" style="color: var(--text-muted);">Invoice Inspection · Escalation Context</div>
+          <h3 id="drawerInvoiceId" class="text-3xl font-editorial" style="color: var(--text-main);">INV-005</h3>
+          <p id="drawerClientSubtitle" class="text-xs font-mono" style="color: var(--text-sub);">Vortex Dynamics · $18,500.00 USD</p>
+        </div>
+        <button onclick="closeDrawer()" class="p-2 rounded-full border opacity-60 hover:opacity-100 transition-all" style="border-color: var(--border-card); color: var(--text-main);">
+          ✕
+        </button>
+      </div>
+
+      <!-- Escalation Reason Card -->
+      <div class="p-4 rounded-2xl bg-coral/15 border border-coral/40 space-y-1">
+        <div class="text-[11px] uppercase tracking-mono-wide font-medium flex items-center justify-between" style="color: var(--text-main);">
+          <span id="drawerEscalationTag">Tier 3 Escalation · 24 Days Overdue</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-white text-off-black font-bold">Safety Lock</span>
+        </div>
+        <p class="text-xs leading-relaxed" style="color: var(--text-sub);">
+          The invoice has exceeded the 21-day threshold with 2 automated followups unacknowledged. Balance exceeds owner risk threshold ($10,000+).
+        </p>
+      </div>
+
+      <!-- Telemetry Parameters -->
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="p-3.5 rounded-2xl border" style="background-color: var(--bg-page); border-color: var(--border-card);">
+          <span class="text-[11px] uppercase tracking-mono-wide block mb-1" style="color: var(--text-muted);">Model / Safety</span>
+          <span class="text-xs font-medium" style="color: var(--text-main);">LiteLLM · Gemini 1.5</span>
+          <div class="text-[10px] text-emerald-500 font-mono mt-0.5">Confidence 96.4%</div>
+        </div>
+        <div class="p-3.5 rounded-2xl border" style="background-color: var(--bg-page); border-color: var(--border-card);">
+          <span class="text-[11px] uppercase tracking-mono-wide block mb-1" style="color: var(--text-muted);">Tone Calibration</span>
+          <span class="text-xs font-medium" style="color: var(--text-main);">Firm &amp; Urgent</span>
+          <div class="text-[10px] font-mono mt-0.5" style="color: var(--text-muted);">Zero Threats Enforced</div>
+        </div>
+      </div>
+
+      <!-- Generated Draft Text Area -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] uppercase tracking-mono-wide font-medium" style="color: var(--text-muted);">Email Draft Content</label>
+          <span id="drawerWordCount" class="text-[11px] font-mono" style="color: var(--text-muted);">84 / 200 words</span>
+        </div>
+
+        <input 
+          id="drawerSubjectInput" 
+          type="text" 
+          value="Settlement Required: Invoice INV-005 balance overdue"
+          class="w-full px-3.5 py-2.5 text-xs border rounded-xl font-mono focus:outline-none"
+          style="background-color: var(--bg-page); border-color: var(--border-card); color: var(--text-main);"
+        >
+
+        <textarea 
+          id="drawerBodyInput" 
+          rows="8" 
+          oninput="validateDrawerDraft()"
+          class="w-full p-3.5 text-xs border rounded-xl font-mono focus:outline-none leading-relaxed"
+          style="background-color: var(--bg-page); border-color: var(--border-card); color: var(--text-main);"
+        >Dear Sarah,
+
+We are writing regarding overdue invoice INV-005 for $18,500.00, which reached maturity on August 19, 2026 (24 days overdue).
+
+Despite our previous reminders, this balance remains outstanding. As we prepare our month-end audit, please confirm today when wire settlement will be initiated, or reply to this notice to arrange payment.
+
+Sincerely,
+Finance Operations Team</textarea>
+
+        <!-- Safety Guard Badge -->
+        <div id="drawerSafetyBadge" class="p-2.5 rounded-xl border bg-mint/20 text-[11px] flex items-center gap-2" style="border-color: var(--border-card); color: var(--text-main);">
+          <span>✓</span>
+          <span>Safety verified: Reference to INV-005 present, word count within 200w limit, no prohibited collections agency language.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="pt-6 border-t flex items-center justify-between gap-4" style="border-color: var(--border-card);">
+      <button onclick="rejectDrawerDecision()" class="px-5 py-3 rounded-btn border text-xs uppercase tracking-mono-wide font-medium transition-all" style="border-color: var(--border-card); color: var(--text-sub);">
+        Suppress Draft
+      </button>
+
+      <!-- Primary Blue Pill -->
+      <button onclick="approveDrawerDecision()" class="flex-1 px-6 py-3 rounded-btn text-xs uppercase tracking-mono-wide font-medium hover:opacity-95 transition-all flex items-center justify-center gap-1.5 shadow-sm" style="background-color: var(--btn-primary); color: var(--btn-primary-text);">
+        <span>Authorize &amp; Dispatch via Resend</span>
+        <span>▸</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- FOOTER -->
+  <footer class="w-full border-t py-8 px-6 sm:px-10 mt-auto" style="border-color: var(--border-card); background-color: var(--bg-card);">
+    <div class="max-w-[1432px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs" style="color: var(--text-muted);">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full" style="background-color: var(--text-main);"></span>
+        <span>Chazer Autonomous Accounts Receivable</span>
+        <span>·</span>
+        <span>Monad Editorial Edition (Dual Mode)</span>
+      </div>
+      <div>
+        <span>Published for High-Trust B2B Operations · Zero-Credit Free Tier Architecture</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- APPLICATION LOGIC & INTERACTION SCRIPT -->
+  <script>
+    let isDarkMode = false;
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      const html = document.getElementById('htmlRoot');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+
+      if (isDarkMode) {
+        html.classList.add('dark');
+        icon.innerText = '☀️';
+        label.innerText = 'Light Mode';
+      } else {
+        html.classList.remove('dark');
+        icon.innerText = '🌙';
+        label.innerText = 'Dark Mode';
+      }
+      renderLedgerTable();
+    }
+
+    let mockInvoices = [
+      { id: 'INV-005', client: 'Vortex Dynamics', email: 'billing@vortexdyn.com', amount: 18500.00, days: 24, tier: 'TIER_3', isHighValue: true, status: 'OVERDUE', contacts: 2, desc: 'Enterprise Architecture Consulting' },
+      { id: 'INV-007', client: 'Apex Media Group', email: 'ap@apexmediagroup.io', amount: 15000.00, days: 28, tier: 'TIER_3', isHighValue: true, status: 'DISPUTED', contacts: 3, desc: 'Brand Identity & Design System' },
+      { id: 'INV-009', client: 'Starlight Retail', email: 'finance@starlight.co', amount: 10000.00, days: 22, tier: 'TIER_3', isHighValue: true, status: 'OVERDUE', contacts: 2, desc: 'E-commerce Migration Sprint' },
+      { id: 'INV-003', client: 'Acme Global Corp', email: 'finance@acmeglobal.com', amount: 6200.00, days: 16, tier: 'TIER_2', isHighValue: false, status: 'OVERDUE', contacts: 1, desc: 'Mobile App Engineering' },
+      { id: 'INV-004', client: 'CloudScale Inc', email: 'accounts@cloudscale.net', amount: 5800.00, days: 12, tier: 'TIER_2', isHighValue: false, status: 'OVERDUE', contacts: 1, desc: 'Cloud Migration & DevOps' },
+      { id: 'INV-006', client: 'Hyperion Bio', email: 'invoices@hyperionbio.com', amount: 7400.00, days: 19, tier: 'TIER_2', isHighValue: false, status: 'OVERDUE', contacts: 1, desc: 'Clinical Portal Visualization' },
+      { id: 'INV-008', client: 'Zenith Ventures', email: 'pay@zenithvc.com', amount: 3990.00, days: 9, tier: 'TIER_2', isHighValue: false, status: 'OVERDUE', contacts: 1, desc: 'Pitch Deck & Motion Assets' },
+      { id: 'INV-012', client: 'Lumina Tech', email: 'billing@luminatech.dev', amount: 2000.00, days: 14, tier: 'TIER_2', isHighValue: false, status: 'OVERDUE', contacts: 1, desc: 'Security Audit & Compliance' },
+      { id: 'INV-001', client: 'Nexus Software', email: 'billing@nexus.io', amount: 4500.00, days: 4, tier: 'TIER_1', isHighValue: false, status: 'OVERDUE', contacts: 0, desc: 'Full-stack Redesign' },
+      { id: 'INV-002', client: 'Quantum Labs', email: 'ap@quantumlabs.ai', amount: 3800.00, days: 6, tier: 'TIER_1', isHighValue: false, status: 'OVERDUE', contacts: 0, desc: 'AI Pipeline Optimization' },
+      { id: 'INV-010', client: 'Cobalt Media', email: 'hello@cobalt.media', amount: 5100.00, days: 2, tier: 'TIER_1', isHighValue: false, status: 'OVERDUE', contacts: 0, desc: 'Video Production & Editing' },
+      { id: 'INV-011', client: 'Pulse Health', email: 'accounts@pulsehealth.org', amount: 4800.00, days: 5, tier: 'TIER_1', isHighValue: false, status: 'OVERDUE', contacts: 0, desc: 'HIPAA Compliance Audit' },
+    ];
+
+    let currentFilter = 'ALL';
+    let activeDrawerInvoiceId = null;
+
+    function renderLedgerTable() {
+      const tbody = document.getElementById('ledgerTableBody');
+      const searchQuery = (document.getElementById('searchLedger')?.value || '').toLowerCase();
+      const sortVal = document.getElementById('sortBy')?.value || 'days_desc';
+
+      let filtered = mockInvoices.filter(inv => {
+        const match = inv.id.toLowerCase().includes(searchQuery) ||
+                      inv.client.toLowerCase().includes(searchQuery) ||
+                      inv.desc.toLowerCase().includes(searchQuery);
+        if (!match) return false;
+        if (currentFilter === 'ALL') return true;
+        return inv.tier === currentFilter;
+      });
+
+      if (sortVal === 'days_desc') filtered.sort((a, b) => b.days - a.days);
+      else if (sortVal === 'amount_desc') filtered.sort((a, b) => b.amount - a.amount);
+      else if (sortVal === 'client_asc') filtered.sort((a, b) => a.client.localeCompare(b.client));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="py-12 text-center" style="color: var(--text-muted);">
+              <p class="font-editorial text-xl" style="color: var(--text-main);">No accounts match this query</p>
+              <button onclick="setFilter('ALL')" class="mt-2 text-xs underline uppercase tracking-mono-tight" style="color: var(--btn-primary);">Reset filters</button>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(inv => {
+        let tierBadge = '';
+        if (inv.tier === 'TIER_1') {
+          tierBadge = `<span class="px-2.5 py-0.5 rounded-pill text-[10px] uppercase tracking-mono-tight border" style="background-color: var(--chip-bg); border-color: var(--border-card); color: var(--text-sub);">T1 · Friendly</span>`;
+        } else if (inv.tier === 'TIER_2') {
+          tierBadge = `<span class="px-2.5 py-0.5 rounded-pill text-[10px] uppercase tracking-mono-tight border font-medium" style="background-color: var(--chip-bg); border-color: var(--border-card); color: var(--text-main);">T2 · Firm</span>`;
+        } else {
+          tierBadge = `<span class="px-2.5 py-0.5 rounded-pill text-[10px] uppercase tracking-mono-tight bg-coral/30 border border-coral font-medium" style="color: var(--text-main);">T3 · Held</span>`;
+        }
+
+        const highValueMark = inv.isHighValue ? `<span class="ml-1.5 px-1.5 py-0.2 rounded text-[9px] uppercase tracking-mono-tight font-medium" style="background-color: var(--text-main); color: var(--bg-page);">High Value</span>` : '';
+
+        return `
+          <tr class="hover:opacity-90 transition-colors cursor-pointer group" onclick="openDrawer('${inv.id}')" style="border-color: var(--border-card);">
+            <td class="py-4 px-6 font-mono font-medium" style="color: var(--text-main);">
+              ${inv.id} ${highValueMark}
+            </td>
+            <td class="py-4 px-6">
+              <div class="font-medium group-hover:underline transition-colors" style="color: var(--text-main);">${inv.client}</div>
+              <div class="text-[11px]" style="color: var(--text-muted);">${inv.email}</div>
+            </td>
+            <td class="py-4 px-6 font-mono font-medium" style="color: var(--text-main);">
+              $${inv.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </td>
+            <td class="py-4 px-6 font-mono" style="color: var(--text-sub);">
+              ${inv.days}d overdue
+            </td>
+            <td class="py-4 px-6">
+              ${tierBadge}
+            </td>
+            <td class="py-4 px-6 font-mono text-[11px]" style="color: var(--text-muted);">
+              ${inv.contacts} notices sent
+            </td>
+            <td class="py-4 px-6">
+              ${inv.status === 'DISPUTED' 
+                ? `<span class="px-2 py-0.5 rounded-pill text-[10px] uppercase tracking-mono-tight" style="background-color: var(--text-main); color: var(--bg-page);">Disputed</span>` 
+                : `<span class="text-[11px] uppercase tracking-mono-tight" style="color: var(--text-muted);">Overdue</span>`}
+            </td>
+            <td class="py-4 px-6 text-right">
+              <span class="text-xs uppercase tracking-mono-wide group-hover:translate-x-1 inline-block transition-transform" style="color: var(--btn-primary);">Inspect ▸</span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function setFilter(tier) {
+      currentFilter = tier;
+      ['ALL', 'TIER_1', 'TIER_2', 'TIER_3'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (btn) {
+          if (f === tier) {
+            btn.style.backgroundColor = 'var(--text-main)';
+            btn.style.color = 'var(--bg-page)';
+          } else {
+            btn.style.backgroundColor = 'transparent';
+            btn.style.color = 'var(--text-sub)';
+          }
+        }
+      });
+      renderLedgerTable();
+    }
+
+    function switchView(view) {
+      ['dashboard', 'decisions', 'audit'].forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        const tab = document.getElementById(`tab-${v}`);
+        if (v === view) {
+          el?.classList.remove('hidden');
+          if (tab) {
+            tab.style.backgroundColor = 'var(--text-main)';
+            tab.style.color = 'var(--bg-page)';
+          }
+        } else {
+          el?.classList.add('hidden');
+          if (tab) {
+            tab.style.backgroundColor = 'transparent';
+            tab.style.color = 'var(--text-sub)';
+          }
+        }
+      });
+
+      if (view === 'decisions') renderDecisionCards();
+      if (view === 'audit') renderAuditList();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderDecisionCards() {
+      const container = document.getElementById('decisionsContainer');
+      const held = mockInvoices.filter(i => i.tier === 'TIER_3');
+
+      if (held.length === 0) {
+        container.innerHTML = `
+          <div class="monad-card text-center py-16">
+            <h3 class="font-editorial text-3xl" style="color: var(--text-main);">Decision Queue Clear</h3>
+            <p class="text-xs mt-2" style="color: var(--text-muted);">All Tier 3 escalations have been authorized or suppressed.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = held.map(inv => `
+        <div class="monad-card border-l-4 border-l-coral space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b" style="border-color: var(--border-card);">
+            <div class="space-y-1">
+              <div class="flex items-center gap-3">
+                <span class="font-mono font-medium text-xs px-2.5 py-0.5 rounded-pill bg-coral/25 border border-coral" style="color: var(--text-main);">${inv.id}</span>
+                <span class="font-editorial text-2xl" style="color: var(--text-main);">${inv.client}</span>
+                ${inv.isHighValue ? `<span class="text-[10px] uppercase tracking-mono-tight px-2 py-0.5 rounded-pill font-medium" style="background-color: var(--text-main); color: var(--bg-page);">High Value ($10k+)</span>` : ''}
+              </div>
+              <div class="text-xs font-mono" style="color: var(--text-muted);">
+                Overdue: ${inv.days} days · Unpaid balance: $${inv.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <button onclick="openDrawer('${inv.id}')" class="px-5 py-2 rounded-btn border text-xs uppercase tracking-mono-wide font-medium transition-all" style="border-color: var(--text-main); color: var(--text-main);">
+                Edit Copy
+              </button>
+              <button onclick="quickApprove('${inv.id}')" class="px-5 py-2 rounded-btn text-xs uppercase tracking-mono-wide font-medium hover:opacity-90 transition-all flex items-center gap-1.5" style="background-color: var(--btn-primary); color: var(--btn-primary-text);">
+                <span>Authorize</span>
+                <span>▸</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Draft Body Preview in Technical Typography -->
+          <div class="p-4 rounded-2xl border text-xs space-y-2" style="background-color: var(--bg-page); border-color: var(--border-card);">
+            <div class="text-[11px] uppercase tracking-mono-wide" style="color: var(--text-muted);">AI Draft Preview · LiteLLM Generator</div>
+            <p class="font-mono leading-relaxed" style="color: var(--text-sub);">
+              "Dear ${inv.client} Accounts Team, we are contacting you regarding overdue invoice ${inv.id} for $${inv.amount.toLocaleString()}. As this account is now ${inv.days} days past maturity and prior reminders remain unanswered, please confirm settlement execution date today..."
+            </p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAuditList() {
+      const logs = [
+        { time: '14:32 UTC', action: 'SWEEP_COMPLETED', desc: 'Evaluated 12 invoices. Generated 3 decision queue holds.', status: 'SUCCESS' },
+        { time: '14:30 UTC', action: 'TIER1_DISPATCHED', desc: 'Sent polite nudge for INV-001 ($4,500) to billing@nexus.io via Resend.', status: 'SUCCESS' },
+        { time: '14:28 UTC', action: 'TIER3_ESCALATED', desc: 'Invoice INV-005 ($18,500) exceeded 21 days. Held for owner sign-off.', status: 'HELD' },
+        { time: '14:25 UTC', action: 'DISPUTE_LOCKED', desc: 'Invoice INV-007 marked DISPUTED. Automation frozen per invariant INV-05.', status: 'LOCKED' },
+        { time: '13:00 UTC', action: 'OWNER_APPROVED', desc: 'Owner approved Tier-2 follow-up for INV-003. Email dispatched.', status: 'DISPATCHED' }
+      ];
+
+      const container = document.getElementById('auditListContainer');
+      container.innerHTML = logs.map(l => `
+        <div class="p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs" style="background-color: var(--bg-page); border-color: var(--border-card);">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2 font-mono">
+              <span class="font-medium" style="color: var(--text-main);">${l.action}</span>
+              <span class="text-[11px]" style="color: var(--text-muted);">· ${l.time}</span>
+            </div>
+            <p class="font-mono text-[11px]" style="color: var(--text-sub);">${l.desc}</p>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-pill text-[10px] uppercase tracking-mono-tight border font-medium self-start sm:self-center" style="background-color: var(--chip-bg); border-color: var(--border-card); color: var(--text-main);">
+            ${l.status}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function openDrawer(id) {
+      activeDrawerInvoiceId = id;
+      const inv = mockInvoices.find(i => i.id === id);
+      if (!inv) return;
+
+      document.getElementById('drawerInvoiceId').innerText = inv.id;
+      document.getElementById('drawerClientSubtitle').innerText = `${inv.client} · $${inv.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+      document.getElementById('drawerEscalationTag').innerText = `${inv.tier.replace('_', ' ')} · ${inv.days} DAYS OVERDUE`;
+
+      document.getElementById('drawerBackdrop').classList.remove('hidden');
+      document.getElementById('drawerPanel').classList.remove('translate-x-full');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawerBackdrop').classList.add('hidden');
+      document.getElementById('drawerPanel').classList.add('translate-x-full');
+    }
+
+    function validateDrawerDraft() {
+      const body = document.getElementById('drawerBodyInput').value;
+      const words = body.trim().split(/\s+/).length;
+      document.getElementById('drawerWordCount').innerText = `${words} / 200 words`;
+
+      const hasId = body.includes(activeDrawerInvoiceId) || body.includes('INV-');
+      const badge = document.getElementById('drawerSafetyBadge');
+
+      if (hasId && words <= 200) {
+        badge.className = 'p-2.5 rounded-xl border bg-mint/20 text-[11px] flex items-center gap-2';
+        badge.style.borderColor = 'var(--border-card)';
+        badge.style.color = 'var(--text-main)';
+        badge.innerHTML = `<span>✓</span><span>Safety verified: Reference to ${activeDrawerInvoiceId} present, word count within 200w limit.</span>`;
+      } else {
+        badge.className = 'p-2.5 rounded-xl border bg-coral/20 text-[11px] flex items-center gap-2';
+        badge.style.borderColor = '#ff9473';
+        badge.style.color = 'var(--text-main)';
+        badge.innerHTML = `<span>⚠</span><span>Safety Violation: Custom draft must reference invoice ID ${activeDrawerInvoiceId}.</span>`;
+      }
+    }
+
+    function approveDrawerDecision() {
+      showToast(`Authorized notice for ${activeDrawerInvoiceId} — Dispatched via Resend`);
+      closeDrawer();
+      removeHeld(activeDrawerInvoiceId);
+    }
+
+    function rejectDrawerDecision() {
+      showToast(`Notice for ${activeDrawerInvoiceId} suppressed. Automated chasing paused.`);
+      closeDrawer();
+      removeHeld(activeDrawerInvoiceId);
+    }
+
+    function quickApprove(id) {
+      showToast(`Authorized notice for ${id} — Dispatched via Resend`);
+      removeHeld(id);
+    }
+
+    function approveAllDecisions() {
+      showToast(`All 3 held notices authorized and queued for email delivery.`);
+      mockInvoices.forEach(i => { if (i.tier === 'TIER_3') i.tier = 'TIER_2'; });
+      updateCounts(0);
+      renderDecisionCards();
+      renderLedgerTable();
+    }
+
+    function removeHeld(id) {
+      const inv = mockInvoices.find(i => i.id === id);
+      if (inv) inv.tier = 'TIER_2';
+      const remaining = mockInvoices.filter(i => i.tier === 'TIER_3').length;
+      updateCounts(remaining);
+      renderDecisionCards();
+      renderLedgerTable();
+    }
+
+    function updateCounts(cnt) {
+      document.getElementById('navBadgeDecisions').innerText = cnt;
+      document.getElementById('heroDecisionCount').innerText = `${cnt} Accounts`;
+    }
+
+    function triggerSweep() {
+      const btn = document.getElementById('btnSweep');
+      const sp = document.getElementById('sweepSpinner');
+      const lbl = document.getElementById('sweepLabel');
+
+      btn.disabled = true;
+      sp.classList.remove('hidden');
+      lbl.innerText = 'Sweeping...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        sp.classList.add('hidden');
+        lbl.innerText = 'Run Daily Sweep';
+        showToast('Autonomous Sweep Complete: 12 invoices analyzed, ledger updated.');
+      }, 1200);
+    }
+
+    function showToast(msg) {
+      const cont = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'px-5 py-3 rounded-pill text-xs font-mono border shadow-md flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-200 pointer-events-auto';
+      toast.style.backgroundColor = 'var(--text-main)';
+      toast.style.color = 'var(--bg-page)';
+      toast.style.borderColor = 'var(--border-card)';
+      toast.innerHTML = `<span>●</span><span>${msg}</span>`;
+      cont.appendChild(toast);
+
+      setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLedgerTable();
+    });
+  </script>
+</body>
+</html>

@@ -9,38 +9,67 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Monad Light Mode Tokens
+        parchment: '#f6f3f1',
+        'lake-blue': '#2b59d1',
+        'lake-blue-dark': '#4d7aff',
+        'periwinkle-mist': '#cfdaf5',
+        'sky-blue': '#a0b5eb',
+        mint: '#a7fccd',
+        coral: '#ff9473',
+        gold: '#ecda98',
+        crimson: '#f37a0a',
+        'off-black': '#242424',
+        ink: '#000000',
+        graphite: '#4e4d4d',
+        smoke: '#797776',
+        ash: '#cecac8',
+        'ash-light': '#e5e2e0',
+
+        // Monad Dark Mode Counterparts
+        'dark-canvas': '#111215',
+        'dark-surface': '#181a1f',
+        'dark-elevated': '#21242d',
+        'dark-border': '#2c2f3a',
+        'dark-text-primary': '#f0ece9',
+        'dark-text-secondary': '#a8a5a2',
+        'dark-text-muted': '#72706e',
+        'dark-periwinkle': '#1c2233',
+
+        // Backward compatibility mappings
         chazer: {
-          purple: '#7C3AED',
-          'purple-light': '#A78BFA',
-          'purple-dark': '#5B21B6',
+          purple: '#2b59d1',
+          'purple-light': '#4d7aff',
+          'purple-dark': '#1e40af',
         },
         surface: {
-          base: '#0F0F13',
-          card: '#18181F',
-          elevated: '#22222C',
+          base: 'var(--bg-page)',
+          card: 'var(--bg-card)',
+          elevated: 'var(--bg-card-elevated)',
         },
         border: {
-          subtle: '#2E2E3A',
+          subtle: 'var(--border-card)',
         },
-        tier1: { DEFAULT: '#22C55E', bg: '#14532D' },
-        tier2: { DEFAULT: '#F59E0B', bg: '#78350F' },
-        tier3: { DEFAULT: '#EF4444', bg: '#7F1D1D' },
+        tier1: { DEFAULT: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
+        tier2: { DEFAULT: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
+        tier3: { DEFAULT: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)' },
         'high-value': '#F97316',
       },
       fontFamily: {
-        sans: ['var(--font-libre-franklin)', 'Libre Franklin', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-libre-baskerville)', 'Libre Baskerville', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        sans: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
-      backdropBlur: {
-        xs: '2px',
-        sm: '8px',
-        md: '16px',
+      borderRadius: {
+        'card': '32px',
+        'card-lg': '40px',
+        'pill': '9999px',
+        'btn': '100px',
       },
-      boxShadow: {
-        glass: '0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-        card: '0 2px 12px rgba(0, 0, 0, 0.3)',
-        'purple-glow': '0 0 20px rgba(124, 58, 237, 0.3)',
+      letterSpacing: {
+        'serif-tight': '-0.02em',
+        'mono-tight': '-0.025em',
+        'mono-wide': '0.04em',
       },
       animation: {
         'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

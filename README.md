@@ -132,6 +132,41 @@ supabase start
 supabase db push
 ```
 
+### 5. Resetting the Demo Environment
+To reset all collections state (clearing contact history, decision queue, sweep runs, and resetting overdue flags) to initial pristine state:
+```sql
+-- In Supabase SQL Editor:
+SELECT reset_demo();
+```
+Or via HTTP / PostgREST RPC:
+```bash
+curl -X POST "https://<project-ref>.supabase.co/rest/v1/rpc/reset_demo" \
+  -H "apikey: <service-role-key>" \
+  -H "Authorization: Bearer <service-role-key>"
+```
+
+---
+
+## ⚙ Continuous Integration & Deployment (CI/CD)
+
+Automated through GitHub Actions (`.github/workflows/deploy.yml`):
+- **Continuous Integration**: Runs on all pushes and PRs to `main`:
+  - Next.js linting, TypeScript compiler check (`tsc --noEmit`), and Vitest component suite.
+  - Python agent tests (`pytest agent/tests/`) with Pydantic payload verification.
+- **Continuous Deployment**: Triggers automatically on push to `main` upon passing tests:
+  - Deploys Next.js dashboard to **Vercel**.
+  - Deploys serverless backend functions to **Supabase**.
+
+### Required GitHub Secrets
+
+| Secret Name | Description | Source |
+|---|---|---|
+| `VERCEL_TOKEN` | Vercel personal access token | [Vercel Account Tokens](https://vercel.com/account/tokens) |
+| `VERCEL_ORG_ID` | Vercel Organization ID | `dashboard/.vercel/project.json` |
+| `VERCEL_PROJECT_ID` | Vercel Project ID | `dashboard/.vercel/project.json` |
+| `SUPABASE_ACCESS_TOKEN` | Supabase CLI management access token | [Supabase Account Tokens](https://supabase.com/dashboard/account/tokens) |
+| `SUPABASE_PROJECT_REF` | Supabase project reference ID | Supabase Project Settings |
+
 ---
 
 ## 📜 Documentation
@@ -142,6 +177,8 @@ Complete technical specifications are available in the [`docs/`](./docs) directo
 - [03 - AI & Autonomous Agent Specification](./docs/03-agent-specification.md)
 - [06 - API & State Design](./docs/06-api-and-state-design.md)
 - [09 - Design System & UI/UX Tokens](./docs/09-design-systems.md)
+- [11 - Deployment & Cloud Guide](./docs/11-deployment-cloud-guide.md)
+- [19 - Troubleshooting Playbook](./docs/19-troubleshooting-playbook.md)
 - [23 - Parallel Execution Plan](./docs/23-parallel-execution-plan.md)
 
 ---

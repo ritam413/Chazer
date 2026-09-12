@@ -1,74 +1,131 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Variables for Dynamic Light / Dark Theming */
 :root {
-  --color-surface-base: #0f0f13;
-  --color-surface-card: #18181f;
-  --color-surface-elevated: #22222c;
-  --color-border-subtle: #2e2e3a;
-  --color-chazer-purple: #7c3aed;
-  --font-libre-franklin: 'Libre Franklin', system-ui, sans-serif;
-  --font-libre-baskerville: 'Libre Baskerville', Georgia, serif;
+  --bg-page: #f6f3f1;
+  --bg-card: #f6f3f1;
+  --bg-card-elevated: #cfdaf5;
+  --border-card: #cecac8;
+  --border-elevated: #b8c8f0;
+  --text-main: #242424;
+  --text-sub: #4e4d4d;
+  --text-muted: #797776;
+  --btn-primary: #2b59d1;
+  --btn-primary-text: #ffffff;
+  --btn-secondary: #242424;
+  --btn-secondary-text: #f6f3f1;
+  --chip-bg: #e5e2e0;
+  --announcement-bg: #000000;
+  --announcement-text: #f6f3f1;
+  --wash-opacity: 0.45;
+  
+  --color-surface-base: var(--bg-page);
+  --color-surface-card: var(--bg-card);
+  --color-surface-elevated: var(--bg-card-elevated);
+  --color-border-subtle: var(--border-card);
+  --color-chazer-purple: #2b59d1;
+}
+
+html.dark {
+  --bg-page: #111215;
+  --bg-card: #181a1f;
+  --bg-card-elevated: #1a2030;
+  --border-card: #2a2d38;
+  --border-elevated: #333d59;
+  --text-main: #f0ece9;
+  --text-sub: #a8a5a2;
+  --text-muted: #72706e;
+  --btn-primary: #4d7aff;
+  --btn-primary-text: #ffffff;
+  --btn-secondary: #f0ece9;
+  --btn-secondary-text: #111215;
+  --chip-bg: #22252f;
+  --announcement-bg: #090a0d;
+  --announcement-text: #f0ece9;
+  --wash-opacity: 0.25;
+
+  --color-surface-base: var(--bg-page);
+  --color-surface-card: var(--bg-card);
+  --color-surface-elevated: var(--bg-card-elevated);
+  --color-border-subtle: var(--border-card);
+  --color-chazer-purple: #4d7aff;
 }
 
 body {
-  background-color: #0f0f13;
-  color: #f0f0f5;
-  font-family: 'Libre Franklin', var(--font-libre-franklin), system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6, button, input, label {
-  font-family: 'Libre Franklin', var(--font-libre-franklin), system-ui, -apple-system, sans-serif;
+/* Monad Typographic Discipline */
+h1, h2, h3, h4, .font-editorial {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400 !important;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
-.font-serif, .body-copy {
-  font-family: 'Libre Baskerville', var(--font-libre-baskerville), Georgia, serif;
+.font-serif {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
 }
 
-/* Glassmorphism surfaces */
-.glass-card {
-  background: rgba(24, 24, 31, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(46, 46, 58, 0.7);
-  border-radius: 12px;
+.font-mono, .body-copy {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Monad Card System */
+.monad-card, .glass-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 32px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.monad-card:hover, .glass-card:hover {
+  border-color: #797776;
+}
+
+.monad-card-elevated {
+  background-color: var(--bg-card-elevated);
+  border: 1px solid var(--border-elevated);
+  border-radius: 32px;
+  transition: all 0.2s ease;
 }
 
 .glass-card-interactive {
-  background: rgba(24, 24, 31, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(46, 46, 58, 0.7);
-  border-radius: 12px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 32px;
+  transition: all 0.2s ease;
 }
 
 .glass-card-interactive:hover {
-  background: rgba(34, 34, 44, 0.85);
-  border-color: rgba(124, 58, 237, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.15);
+  border-color: var(--btn-primary);
 }
 
-/* Custom scrollbars */
+/* Custom Hairline Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f0f13;
+  background: var(--bg-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2e2e3a;
-  border-radius: 3px;
+  background: var(--border-card);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5b21b6;
+  background: var(--text-main);
 }
