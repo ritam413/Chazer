@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { AppShell } from '../../components/AppShell';
 import { StatsBar } from '../../components/StatsBar';
+import { PipelineVisualizer } from '../../components/PipelineVisualizer';
 import { InvoiceTable } from '../../components/InvoiceTable';
 import { useChazerStore } from '../../lib/store';
 import { RefreshCw } from 'lucide-react';
@@ -54,6 +55,9 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
+
+        {/* 4-Stage Autonomous Pipeline Visualizer */}
+        <PipelineVisualizer initialStage={1} />
 
         {/* Stats Summary Bar */}
         <StatsBar

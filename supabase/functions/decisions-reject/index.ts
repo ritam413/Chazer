@@ -3,23 +3,19 @@
 // Rejects a decision — no email sent, records reason and audit log
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
+import {
+  CORS_HEADERS,
+  type RejectDecisionBody,
+  type RejectDecisionResponse,
+  type DecisionRecord,
+} from "../_shared/types";
 
-export const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+export {
+  CORS_HEADERS,
+  type RejectDecisionBody,
+  type RejectDecisionResponse,
+  type DecisionRecord,
 };
-
-export interface RejectDecisionBody {
-  reject_reason?: string;
-  decision_id?: string;
-}
-
-export interface RejectDecisionResponse {
-  success: boolean;
-  decision_id: string;
-  rejected_at: string;
-}
 
 export const INITIAL_MOCK_DECISIONS: Record<string, {
   decision_id: string;

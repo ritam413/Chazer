@@ -144,10 +144,12 @@ describe('FRONT-02: Dashboard Components & Page', () => {
   });
 
   describe('DashboardPage Integration', () => {
-    it('renders full dashboard page with shell, stats, and invoice list', async () => {
+    it('renders full dashboard page with shell, visualizer, stats, and invoice list', async () => {
       render(<DashboardPage />);
 
       expect(screen.getByText('Aging Receivables')).toBeInTheDocument();
+      expect(screen.getByTestId('pipeline-visualizer')).toBeInTheDocument();
+      expect(screen.getAllByText(/Receivables Ingested/i).length).toBeGreaterThan(0);
       await waitFor(() => {
         expect(screen.getByTestId('stats-bar')).toBeInTheDocument();
         expect(screen.getByTestId('invoice-table-container')).toBeInTheDocument();

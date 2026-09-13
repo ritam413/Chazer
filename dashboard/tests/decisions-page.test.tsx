@@ -4,7 +4,8 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { EmailDraftPreview } from '../components/EmailDraftPreview';
 import { EditDraftModal } from '../components/EditDraftModal';
 import { DecisionCard } from '../components/DecisionCard';
-import DecisionsPage, { EmptyDecisionsState, DecisionSkeleton } from '../app/decisions/page';
+import { EmptyDecisionsState, DecisionSkeleton } from '../components/DecisionStates';
+import DecisionsPage from '../app/decisions/page';
 import { useChazerStore } from '../lib/store';
 import { FALLBACK_DECISIONS } from '../lib/api';
 

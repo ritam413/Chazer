@@ -4,7 +4,7 @@
 
 ---
 
-## 1. High-Level System Architecture
+## 1. High-Level System Architecture (Polyglot Design)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -12,29 +12,32 @@
 │                                                                             │
 │  ┌──────────────────────────────┐         ┌────────────────────────────┐   │
 │  │     FRONTEND (Vercel)        │         │  BACKGROUND AGENT LOOP     │   │
-│  │                              │         │  (Supabase Edge Function)  │   │
+│  │                              │         │  (Dual-Runtime Polyglot)   │   │
 │  │  Next.js + Tailwind CSS      │         │                            │   │
-│  │  Owner Dashboard             │         │  pg_cron → daily 09:00 UTC │   │
+│  │  Monad Editorial Dashboard   │         │  pg_cron → daily 09:00 UTC │   │
 │  │  ┌──────────────────────┐   │         │  ┌──────────────────────┐  │   │
-│  │  │ Aging Receivables    │   │         │  │  agent-sweep.ts      │  │   │
-│  │  │ Decision Queue       │   │         │  │  (Deno / TypeScript) │  │   │
-│  │  │ Audit Log Timeline   │   │         │  └─────────┬────────────┘  │   │
-│  │  └──────────────────────┘   │         │            │ HTTP POST      │   │
-│  └──────────┬───────────────────┘         │            ▼               │   │
-│             │ REST (HTTPS)                │  ┌──────────────────────┐  │   │
-│             ▼                            │  │  strands-agent.py    │  │   │
-│  ┌──────────────────────────────┐        │  │  (Python process or  │  │   │
-│  │  SUPABASE EDGE FUNCTIONS     │        │  │   callable endpoint) │  │   │
-│  │  (REST API Layer)            │        │  └──────┬───────────────┘  │   │
-│  │                              │        │         │ Gemini API call   │   │
-│  │  GET  /functions/v1/invoices │        │         ▼                  │   │
-│  │  GET  /functions/v1/decisions│        │  ┌──────────────────────┐  │   │
-│  │  POST /functions/v1/decisions│        │  │  Google Gemini 1.5   │  │   │
-│  │  GET  /functions/v1/audit    │        │  │  Flash API (free)    │  │   │
-│  │  POST /functions/v1/sweep    │        │  └──────────────────────┘  │   │
-│  └──────────┬───────────────────┘        └────────────────────────────┘   │
-│             │                                        │                     │
-│             ▼                                        ▼                     │
+│  │  │ 4-Stage Visualizer   │   │         │  │ 1. agent-sweep (TS)  │  │   │
+│  │  │ Aging Receivables    │   │         │  │ (Deno Edge Function) │  │   │
+│  │  │ Decision Queue       │   │         │  └─────────┬────────────┘  │   │
+│  │  │ Audit Log Timeline   │   │         │            │                │   │
+│  │  └──────────────────────┘   │         │  ┌─────────▼────────────┐  │   │
+│  │                             │         │  │ 2. strands-agent.py  │  │   │
+│  │                             │         │  │ (Python Strands SDK) │  │   │
+│  └──────────┬───────────────────┘         │  └─────────┬────────────┘  │   │
+│             │ REST (HTTPS)                │            │ Multi-Model   │   │
+│             ▼                             │            ▼ LiteLLM       │   │
+│  ┌──────────────────────────────┐         │  ┌──────────────────────┐  │   │
+│  │  SUPABASE EDGE FUNCTIONS     │         │  │ Grok / Gemini /      │  │   │
+│  │  (REST API Layer)            │         │  │ OpenAI GPT-4o-mini   │  │   │
+│  │                              │         │  └──────────────────────┘  │   │
+│  │  GET  /functions/v1/invoices │         └────────────────────────────┘   │
+│  │  GET  /functions/v1/decisions│                      │                   │
+│  │  POST /functions/v1/decisions│                      │                   │
+│  │  GET  /functions/v1/audit    │                      │                   │
+│  │  POST /functions/v1/sweep    │                      │                   │
+│  └──────────┬───────────────────┘                      │                   │
+│             │                                          │                   │
+│             ▼                                          ▼                   │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │                     SUPABASE (Free Tier)                            │   │
 │  │  ┌──────────────┐  ┌────────────────┐  ┌──────────────────────┐   │   │
@@ -48,6 +51,7 @@
 │  │  │  audit_log   │                                                   │   │
 │  │  │  decision_   │                                                   │   │
 │  │  │  queue       │                                                   │   │
+│  │  │  sweep_runs  │                                                   │   │
 │  │  └──────────────┘                                                   │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
 │                                    │                                        │
@@ -66,11 +70,13 @@
 
 ```mermaid
 graph TD
-    subgraph Frontend["Frontend — Vercel (Next.js)"]
-        UI[Owner Dashboard]
+    subgraph Frontend["Frontend — Vercel (Next.js 14)"]
+        UI[Monad Editorial Dashboard]
+        PV[4-Stage Pipeline Visualizer]
         AR[Aging Receivables View]
         DQ[Decision Queue View]
         AL[Audit Log Timeline]
+        UI --> PV
         UI --> AR
         UI --> DQ
         UI --> AL
@@ -83,18 +89,23 @@ graph TD
             CH[(contact_history)]
             LOG[(audit_log)]
             DQT[(decision_queue)]
+            SR[(sweep_runs)]
         end
-        subgraph Functions["Edge Functions (Deno)"]
-            API[api-router.ts]
-            SWEEP[agent-sweep.ts]
+        subgraph Functions["Edge Functions (Deno/TypeScript)"]
+            API[api-router]
+            SWEEP[agent-sweep]
+            DEC_APP[decisions-approve]
+            DEC_REJ[decisions-reject]
+            SEED[seed-data]
         end
         CRON[pg_cron — daily 09:00 UTC]
-        STOR[Supabase Storage — seed.csv]
+        STOR[Supabase Storage — seed CSV]
     end
 
-    subgraph AgentLayer["Agent Layer"]
-        SA[strands-agent.py — Strands SDK]
-        GEM[Google Gemini 1.5 Flash API]
+    subgraph AgentLayer["Agent Layer (Polyglot Runtimes)"]
+        SA[agent/chazer_agent.py — Strands SDK]
+        LLM[LiteLLM Provider Adapter]
+        GROK[Grok xAI / Gemini 1.5 Flash / GPT-4o-mini]
     end
 
     subgraph External["External Services"]
@@ -102,14 +113,14 @@ graph TD
     end
 
     UI -->|REST HTTPS| API
-    API --> DB
-    CRON -->|HTTP trigger| SWEEP
-    SWEEP -->|subprocess / HTTP| SA
-    SA -->|LiteLLM provider| GEM
-    GEM -->|email draft / classification| SA
+    UI -->|Approve/Reject Actions| DEC_APP & DEC_REJ
+    CRON -->|Daily HTTP Trigger| SWEEP
+    SWEEP --> DB
+    SWEEP -->|Auto-send T1/T2| RESEND
+    SA -->|LiteLLM Multi-Model| LLM --> GROK
     SA --> DB
-    SA -->|send email| RESEND
-    STOR -->|CSV seed| DB
+    SA -->|Send Email| RESEND
+    STOR -->|CSV Seed| SEED --> DB
 ```
 
 ---

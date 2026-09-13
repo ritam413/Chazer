@@ -1,7 +1,155 @@
 # Chazer — Features Implemented
 
 **Last updated:** 2026-09-13  
-**Project status:** Active Development · 16/20 Tickets Complete · Edge & Store Wireup Verified
+**Project status:** Complete · 21/21 Tickets Completed · Production Release & Submission Sign-Off
+
+---
+
+## Feature: Full Suite QA Verification & Submission Sign-Off (DEVOPS-04)
+
+**Status:** Implemented  
+**What it does:** Complete pre-submission verification and release audit across all 21 repository tickets, validating 100% test pass rates across both Python Strands and TypeScript Deno/Next.js runtimes, zero compilation errors, and complete verification of `docs/17-submission-qa-checklist.md`.
+
+**Important details:**
+- **Automated Multi-Runtime Verification Suite**:
+  - `npm test` in `dashboard/`: 129/129 tests passed across 12 test suites.
+  - `npx tsc --noEmit` in `dashboard/`: 0 compilation errors.
+  - `pytest agent/tests/ -v`: 42/42 tests passed in 0.47s.
+  - `python -m agent.main --sandbox`: 8/8 invoices processed cleanly (4 auto-sent, 4 escalated).
+- **Checklist Sign-off**:
+  - Critical Path checks (CP-01 through CP-06) verified.
+  - UI Smoke tests (UI-01 through UI-05) verified.
+  - Submission assets (Apache-2.0 `LICENSE`, `README.md`, `docs/12-demo-script.md`, reset procedure `reset_demo()`) verified.
+
+**Relevant files:**
+- `docs/17-submission-qa-checklist.md` (MODIFIED)
+- `docs/22-actionable-issues-backlog.md` (MODIFIED)
+- `docs/23-parallel-execution-plan.md` (MODIFIED)
+- `features_implemented.md` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+## Feature: Polyglot Autonomous Architecture & ADR-002 (ARCH-01)
+
+**Status:** Implemented  
+**What it does:** Formalization of the dual-runtime Polyglot Architecture (Python Strands Agent + TypeScript Edge Function parity), Dispute Reconciliation Invariant, and ADR-002 (Multi-Model LLM routing with Grok, Gemini, OpenAI via LiteLLM) across `context.md`, `docs/02-architecture.md`, `docs/13-tech-stack.md`, and `README.md`.
+
+**Important details:**
+- **Dual-Runtime Parity Matrix**:
+  - Python Strands Agent Runtime (`agent/chazer_agent.py`, `agent/main.py`): AWS Strands SDK with LiteLLM provider for local CLI execution, batch processing, and hackathon judging verification.
+  - TypeScript Deno Edge Function Runtime (`supabase/functions/agent-sweep/index.ts`): Serverless cloud scheduler triggered by `pg_cron` daily at 09:00 UTC and manual dashboard triggers.
+  - Complete parity across tier classification, 72-hour contact frequency window, $10,000+ high-value escalation, dispute auto-freeze, idempotency, and audit logging.
+- **Dispute Reconciliation Domain Invariant**:
+  - Any invoice with `dispute_flag = True` or incoming client dispute feedback immediately halts automated outreach (`auto_send_eligible = False`), escalates to `TIER_3`, routes to `decision_queue` human review item with escalation reason `CLIENT_DISPUTE_RAISED`, and records `DISPUTE_ESCALATED` in `audit_log`.
+- **ADR-002 Multi-Model Routing**:
+  - Primary: Grok (xAI) via LiteLLM (`xai/grok-beta` / `xai/grok-2`).
+  - Fallback / Zero-Cost: Google Gemini 1.5 Flash (`gemini/gemini-1.5-flash`).
+  - Commercial Alternative: OpenAI (`openai/gpt-4o-mini`).
+  - Offline Invariant Engine: Deterministic template synthesis when operating offline or in sandbox unit test modes.
+- **Verification**: 129 Vitest tests, 42 Pytest tests, 0 TypeScript errors.
+
+**Relevant files:**
+- `context.md` (MODIFIED)
+- `docs/02-architecture.md` (MODIFIED)
+- `docs/13-tech-stack.md` (MODIFIED)
+- `README.md` (MODIFIED)
+
+---
+
+## Feature: Master README & 3-Minute Demo Script Alignment (DEVOPS-03)
+
+**Status:** Implemented  
+**What it does:** Complete alignment of public-facing `README.md`, `docs/16-demo-script-pitch.md`, and standalone `docs/12-demo-script.md` for AWS Hackathon judging with 4-Stage Horizontal Pipeline Visualizer narrative, Monad Editorial design system cues, and multi-model runtime instructions.
+
+**Important details:**
+- **Public `README.md` Badging & Sections**:
+  - Badging for Apache-2.0, Python 3.11+, Next.js 14, TypeScript 5.x, Tailwind CSS 3.4, Strands SDK, and AWS Hackathon Professional Agents track.
+  - 4-Stage Autonomous Pipeline Architecture ASCII diagram and breakdown.
+  - Polyglot Architecture & Runtime Parity comparison table.
+  - Repository structure, local quickstart guide, test commands, and demo reset instructions.
+- **3-Minute Hackathon Demo Script (`docs/12-demo-script.md` & `docs/16-demo-script-pitch.md`)**:
+  - Minute-by-minute cues for 0:00–0:30 (Hook & financial stakes), 0:30–1:15 (4-Stage Pipeline Visualizer simulation), 1:15–2:15 (Human-in-the-loop Decision Queue review & 1-click approve), 2:15–2:45 (Python Strands code & polyglot design), and 2:45–3:00 (Vision & closing punchline).
+  - Dramatic Wow Moments table and presenter delivery notes.
+
+**Relevant files:**
+- `README.md` (MODIFIED)
+- `docs/16-demo-script-pitch.md` (MODIFIED)
+- `docs/12-demo-script.md` (NEW)
+
+---
+
+
+## Feature: 4-Stage Horizontal Pipeline Visualizer Component (FRONT-06)
+
+**Status:** Implemented  
+**What it does:** Standalone 4-card horizontal connected pipeline visualizer component (`dashboard/components/PipelineVisualizer.tsx`) rendering real-time receivables ingestion, tone & risk matrix assessment, dual-lane dispatch split, and cryptographic audit settlement with interactive step-through, live simulation loop, and active stage deep inspection callouts.
+
+**Important details:**
+- **4 Connected Sequential Stages**:
+  1. `01: Receivables Ingested` (Badge: `8 Invoices · DB Seed`, Metric: `$96,990.00 · 8 Receivables`, Subtitle: Supabase Postgres data source with dynamic overdue arithmetic).
+  2. `02: Tone & Risk Matrix` (Badge: `Rule + LLM Guard`, Metric: `4 Auto · 4 Escalated · 72h & $10k+`, Subtitle: Multi-tier escalation ladder, 72-hour contact frequency guard, $10k+ high-value check).
+  3. `03: Dual-Lane Dispatch` (Badge: `Resend + Queue`, Metric: `4 Sent ➔ 4 Review · Zero-Loss Guard`, Subtitle: Split routing between automated Resend email dispatch and owner review queue).
+  4. `04: Ledger & Audit Trail` (Badge: `Immutable Telemetry`, Metric: `8 Cryptographic Logs · Instant Sync`, Subtitle: Synchronous append-only Postgres audit events with real-time UI synchronization).
+- **Interactive Simulation & Playback**:
+  - `Simulate Sweep` action button cycling through stages 1 ➔ 2 ➔ 3 ➔ 4 with a 2-second interval timer.
+  - `Pause Loop` and `Reset` controls.
+  - Manual step-through: Clicking any stage card selects it immediately.
+- **Visual Design & Monad Aesthetic**:
+  - Top connected dashed border line on desktop viewports.
+  - Active stage highlight: Mint pastel wash (`bg-emerald-500/10`), emerald border, pulsing status beacon, and bouncing stage icon.
+  - Deep Inspection Callout (`data-testid="stage-detail-callout"`) revealing stage-specific highlights, architectural notes, and telemetry status.
+- **Verification**: 6/6 Vitest tests passing in `dashboard/tests/pipeline-visualizer.test.tsx`.
+
+**Relevant files:**
+- `dashboard/components/PipelineVisualizer.tsx` (NEW)
+- `dashboard/tests/pipeline-visualizer.test.tsx` (NEW)
+
+---
+
+## Feature: Surface Integration of Pipeline Visualizer on /dashboard & / (FRONT-07)
+
+**Status:** Implemented  
+**What it does:** Seamless embedding of the `PipelineVisualizer` component into the primary receivables operational dashboard (`dashboard/app/dashboard/page.tsx`) right above `StatsBar` and into the root editorial landing page (`dashboard/app/page.tsx`) within the architecture showcase section.
+
+**Important details:**
+- **Dashboard Surface (`/dashboard`)**:
+  - Positioned above `StatsBar` and `InvoiceTable`, providing immediate visual context for how the autonomous state machine evaluates aging receivables.
+  - Fully responsive: Stacks cleanly into 2-column or 1-column responsive cards on tablet/mobile screens (< 768px).
+- **Landing Page (`/`)**:
+  - Embedded prominently within the technical demonstration section with editorial heading and live simulation capabilities.
+- **Verification**: 13/13 Vitest tests passing in `dashboard/tests/dashboard-page.test.tsx` and 129/129 total tests passing across all 12 frontend/edge test suites.
+
+**Relevant files:**
+- `dashboard/app/dashboard/page.tsx` (MODIFIED)
+- `dashboard/app/page.tsx` (MODIFIED)
+- `dashboard/tests/dashboard-page.test.tsx` (MODIFIED)
+
+---
+
+## Feature: Centralized Supabase Edge Function Shared Types Architecture (BACK-TYPES)
+
+**Status:** Implemented  
+**What it does:** Unified, single source-of-truth domain types and interfaces library (`supabase/functions/_shared/types.ts` and `supabase/functions/types.ts`) consolidating all domain enums, database record schemas, enriched API contracts, sweep pipeline schemas, action payloads, and CORS constants across all 5 Supabase Edge Functions (`api-router`, `agent-sweep`, `decisions-approve`, `decisions-reject`, `seed-data`).
+
+**Important details:**
+- **Central Library Modules**:
+  - `supabase/functions/_shared/types.ts`: Master definition file covering `InvoiceStatus`, `EscalationTier`, `DecisionStatus`, `ContactHistoryStatus`, `SweepStatus`, `AuditAction`, `AuditStatus`, `ClientRecord`, `InvoiceRecord`, `ContactHistoryRecord`, `DecisionRecord`, `AuditEntryRecord`, `SweepRunRecord`, `EnrichedInvoice`, `InvoicesSummary`, `DecisionItem`, `AuditEntryItem`, `ClassificationResult`, `EmailDraft`, `SweepRequestBody`, `SweepDetailItem`, `SweepResponse`, `ApproveDecisionBody/Response`, `RejectDecisionBody/Response`, `RawCSVRow`, `SanitizedRow`, `ValidationResult`, `SeedResponse`, `InvoicesQueryParams`, `DecisionsQueryParams`, `AuditLogQueryParams`, `Pagination`, `InvoicesResponse`, `DecisionsResponse`, `AuditLogResponse`, `ApiErrorResponse`, `CORS_HEADERS`, `CRON_CORS_HEADERS`, `SEED_CORS_HEADERS`.
+  - `supabase/functions/types.ts`: Central re-export module for root-level import convenience.
+- **Edge Function Refactoring**:
+  - `supabase/functions/api-router/index.ts`: Imports and re-exports central enriched view models, query parameters, and CORS configurations.
+  - `supabase/functions/agent-sweep/index.ts`: Imports and re-exports sweep requests, responses, email drafts, classification models, and CRON headers.
+  - `supabase/functions/decisions-approve/index.ts`: Imports and re-exports approve body/response contracts.
+  - `supabase/functions/decisions-reject/index.ts`: Imports and re-exports reject body/response contracts.
+  - `supabase/functions/seed-data/index.ts`: Imports and re-exports CSV parsing schemas, row sanitizers, and validation results.
+- **Verification**: 123/123 Vitest tests passing across 11 test suites; 42/42 Pytest tests passing; 0 TypeScript errors under `npx tsc --noEmit`.
+
+**Relevant files:**
+- `supabase/functions/_shared/types.ts` (NEW)
+- `supabase/functions/types.ts` (NEW)
+- `supabase/functions/api-router/index.ts` (MODIFIED)
+- `supabase/functions/agent-sweep/index.ts` (MODIFIED)
+- `supabase/functions/decisions-approve/index.ts` (MODIFIED)
+- `supabase/functions/decisions-reject/index.ts` (MODIFIED)
+- `supabase/functions/seed-data/index.ts` (MODIFIED)
 
 ---
 

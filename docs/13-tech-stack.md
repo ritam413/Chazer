@@ -94,54 +94,69 @@
 ---
 
 ### Grok (xAI) vs. Google Gemini 1.5 Flash vs. Amazon Bedrock Claude vs. OpenAI GPT-4o-mini
+ 
+ | Criterion | Grok (xAI) | Gemini 1.5 Flash | Bedrock Claude | GPT-4o-mini |
+ |---|---|---|---|---|
+ | Free tier | ✅ Very generous (high rate limits) | ✅ 60 req/min, no card | ❌ Pay-per-token, AWS account | ⚠ $5 trial credit |
+ | Email quality | ✅ Excellent professional prose | ✅ Excellent | ✅ Excellent | ✅ Excellent |
+ | JSON output | ✅ Supports `json_mode` | ✅ Native `response_format` | ✅ Via prompting | ✅ Native JSON mode |
+ | Strands integration | ✅ Via LiteLLM (`xai/grok-beta`) | ✅ Via LiteLLM (`gemini/gemini-1.5-flash`) | ✅ Native Bedrock provider | ✅ Via LiteLLM (`openai/gpt-4o-mini`) |
+ | Context window | 131k tokens | 1M tokens | 200k tokens | 128k tokens |
+ | **Decision** | ✅ **Grok — preferred** | ✅ Gemini — fallback | — | ✅ OpenAI — supported |
+ 
+ **Rationale (ADR-002):** Grok's free tier is notably permissive for repeated testing and demo runs. Multi-model routing is powered by Strands' LiteLLM provider in Python and REST fallback in TypeScript. Switching between Grok, Gemini, and OpenAI is a zero-code change via environment variables (`MODEL_ID`, `GROK_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`).
+ 
+ ---
+ 
+ ### Polyglot Architecture: Python Strands Agent vs. TypeScript Edge Function
+ 
+ | Dimension | Python Strands Agent (`agent/`) | TypeScript Edge Function (`supabase/functions/`) |
+ | :--- | :--- | :--- |
+ | **Primary Purpose** | Hackathon judging verification, CLI runs, batch sweeps | Cloud production runtime scheduled via `pg_cron` |
+ | **Framework** | AWS Strands Agents SDK (`@tool`) | Deno / Supabase Edge Functions |
+ | **LLM Integration** | LiteLLM (`xai/grok-beta`, `gemini/gemini-1.5-flash`, `gpt-4o-mini`) | Direct HTTP REST with deterministic template fallback |
+ | **Execution Speed** | Subprocess / CLI batch | Serverless edge execution (<200ms cold start) |
+ | **Parity Status** | 100% logic parity (classification, 72h window, $10k+ threshold, dispute freeze) | 100% logic parity |
+ 
+ **Rationale (ARCH-01):** Strands SDK satisfies the AWS Hackathon requirement for a genuine tool-calling autonomous agent loop in Python. Supabase Edge Functions provide an always-on, zero-cost cloud runtime on the same infrastructure as the Postgres database.
+ 
+ ---
+ 
+ ### Resend vs. Amazon SES vs. SendGrid
+ 
+ | Criterion | Resend | Amazon SES | SendGrid |
+ |---|---|---|---|
+ | Free tier | ✅ 100 emails/day, no card | ⚠ 62k/month but requires AWS | ⚠ 100/day but requires verification |
+ | API simplicity | ✅ Single HTTP POST | ⚠ SDK + DKIM setup | ⚠ Complex setup |
+ | Setup time | ✅ < 5 minutes | ⚠ 30-60 minutes | ⚠ 20-30 minutes |
+ | **Decision** | ✅ **Resend** | — | — |
+ 
+ ---
+ 
+ ### Zustand vs. Redux Toolkit vs. React Query
+ 
+ | Criterion | Zustand | Redux Toolkit | React Query |
+ |---|---|---|---|
+ | Bundle size | ✅ 1.1kB | ⚠ 11kB | ⚠ 13kB |
+ | Boilerplate | ✅ Minimal | ❌ High | ✅ Low |
+ | Optimistic updates | ✅ Manual but simple | ✅ Built-in | ✅ Built-in |
+ | Server state caching | ❌ Manual | ⚠ RTK Query | ✅ Core feature |
+ | 3-day timeline fit | ✅ | ⚠ | ✅ |
+ | **Decision** | ✅ **Zustand** | — | — |
+ 
+ **Rationale:** Zustand's minimal API matches the 3-day scope. The dashboard has 3 data sources (invoices, decisions, audit) with simple fetch-and-display patterns that don't require React Query's advanced caching. Zustand's optimistic update pattern for approve/reject is 10 lines of code.
+ 
+ ---
+ 
+ ### Strands Agents SDK vs. LangGraph vs. CrewAI
+ 
+ | Criterion | Strands | LangGraph | CrewAI |
+ |---|---|---|---|
+ | Hackathon criterion | ✅ Required | ❌ | ❌ |
+ | Tool-calling | ✅ Native | ✅ | ✅ |
+ | Python | ✅ | ✅ | ✅ |
+ | Background agent pattern | ✅ | ✅ | ⚠ |
+ | **Decision** | ✅ **Strands** (required) | — | — |
+ 
+ **Rationale:** The hackathon explicitly requires Strands usage as a judging criterion. There is no alternative.
 
-| Criterion | Grok (xAI) | Gemini 1.5 Flash | Bedrock Claude | GPT-4o-mini |
-|-----------|-----------|----------------|---------------|------------|
-| Free tier | ✅ Very generous (no hard daily cap published; high rate limits) | ✅ 60 req/min, no card | ❌ Pay-per-token, AWS account | ⚠ $5 trial credit |
-| Email quality | ✅ Excellent professional prose | ✅ Excellent | ✅ Excellent | ✅ Good |
-| JSON output | ✅ Supports `json_mode` | ✅ Native `response_format` | ✅ Via prompting | ✅ Native |
-| Strands integration | ✅ Via LiteLLM (`xai/grok-beta`) | ✅ Via LiteLLM (`gemini/gemini-1.5-flash`) | ✅ Native Bedrock provider | ✅ Via LiteLLM |
-| Context window | 131k tokens | 1M tokens | 200k tokens | 128k tokens |
-| **Decision** | ✅ **Grok — preferred** | ✅ Gemini — fallback | — | — |
-
-**Rationale:** Grok's free tier is notably more permissive than Gemini's 60 req/min cap, giving more headroom for repeated demo runs and testing. Both are accessed identically via Strands' LiteLLM provider — the only difference is the `model_id` and API key env var. Gemini remains the documented fallback in case Grok API is unavailable.
-
----
-
-### Resend vs. Amazon SES vs. SendGrid
-
-| Criterion | Resend | Amazon SES | SendGrid |
-|-----------|--------|-----------|---------|
-| Free tier | ✅ 100 emails/day, no card | ⚠ 62k/month but requires AWS | ⚠ 100/day but requires verification |
-| API simplicity | ✅ Single HTTP POST | ⚠ SDK + DKIM setup | ⚠ Complex setup |
-| Setup time | ✅ < 5 minutes | ⚠ 30-60 minutes | ⚠ 20-30 minutes |
-| **Decision** | ✅ **Resend** | — | — |
-
----
-
-### Zustand vs. Redux Toolkit vs. React Query
-
-| Criterion | Zustand | Redux Toolkit | React Query |
-|-----------|---------|--------------|------------|
-| Bundle size | ✅ 1.1kB | ⚠ 11kB | ⚠ 13kB |
-| Boilerplate | ✅ Minimal | ❌ High | ✅ Low |
-| Optimistic updates | ✅ Manual but simple | ✅ Built-in | ✅ Built-in |
-| Server state caching | ❌ Manual | ⚠ RTK Query | ✅ Core feature |
-| 3-day timeline fit | ✅ | ⚠ | ✅ |
-| **Decision** | ✅ **Zustand** | — | — |
-
-**Rationale:** Zustand's minimal API matches the 3-day scope. The dashboard has 3 data sources (invoices, decisions, audit) with simple fetch-and-display patterns that don't require React Query's advanced caching. Zustand's optimistic update pattern for approve/reject is 10 lines of code.
-
----
-
-### Strands Agents SDK vs. LangGraph vs. CrewAI
-
-| Criterion | Strands | LangGraph | CrewAI |
-|-----------|---------|---------|--------|
-| Hackathon criterion | ✅ Required | ❌ | ❌ |
-| Tool-calling | ✅ Native | ✅ | ✅ |
-| Python | ✅ | ✅ | ✅ |
-| Background agent pattern | ✅ | ✅ | ⚠ |
-| **Decision** | ✅ **Strands** (required) | — | — |
-
-**Rationale:** The hackathon explicitly requires Strands usage as a judging criterion. There is no alternative.

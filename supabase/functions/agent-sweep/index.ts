@@ -5,79 +5,35 @@
 // and escalates high-value or Tier-3 receivables to the owner decision queue.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
+import {
+  CRON_CORS_HEADERS as CORS_HEADERS,
+  type EscalationTier,
+  type InvoiceRecord,
+  type ClassificationResult,
+  type EmailDraft,
+  type SweepRequestBody,
+  type SweepDetailItem,
+  type SweepResponse,
+  type ContactHistoryRecord,
+  type DecisionRecord,
+  type AuditEntryRecord,
+  type SweepRunRecord,
+} from "../_shared/types";
 
-export const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+export {
+  CORS_HEADERS,
+  type EscalationTier,
+  type InvoiceRecord,
+  type ClassificationResult,
+  type EmailDraft,
+  type SweepRequestBody,
+  type SweepDetailItem,
+  type SweepResponse,
+  type ContactHistoryRecord,
+  type DecisionRecord,
+  type AuditEntryRecord,
+  type SweepRunRecord,
 };
-
-export type EscalationTier = "TIER_1" | "TIER_2" | "TIER_3" | "UNCLASSIFIED";
-
-export interface InvoiceRecord {
-  invoice_id: string;
-  client_id: string;
-  client_name: string;
-  client_email: string;
-  amount: number;
-  currency: string;
-  due_date: string;
-  days_overdue?: number;
-  contact_count: number;
-  status: string;
-  dispute_flag: boolean;
-  last_contact_at: string | null;
-  services_description?: string;
-}
-
-export interface ClassificationResult {
-  tier: EscalationTier;
-  auto_send_eligible: boolean;
-  escalate: boolean;
-  escalation_reason: string;
-  confidence: number;
-}
-
-export interface EmailDraft {
-  subject: string;
-  body: string;
-  word_count: number;
-  validation_passed: boolean;
-  tier: EscalationTier;
-}
-
-export interface SweepRequestBody {
-  owner_id?: string;
-  high_value_threshold?: number;
-  contact_window_hours?: number;
-  sandbox?: boolean;
-}
-
-export interface SweepDetailItem {
-  invoice_id: string;
-  action: string;
-  tier?: string;
-  resend_id?: string;
-  decision_id?: string;
-  reason?: string;
-  error?: string;
-}
-
-export interface SweepResponse {
-  success: boolean;
-  sweep_id: string;
-  owner_id: string;
-  status: "COMPLETED" | "FAILED" | "RUNNING";
-  invoices_processed: number;
-  emails_sent: number;
-  escalated_count: number;
-  skipped_count: number;
-  failed_count: number;
-  duration_ms: number;
-  started_at: string;
-  completed_at: string;
-  details: SweepDetailItem[];
-}
 
 // Canonical 8-invoice seed dataset from data/invoices_seed.csv & docs/05
 export const INITIAL_MOCK_INVOICES: InvoiceRecord[] = [
@@ -681,7 +637,7 @@ export async function handleAgentSweep(
         const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const idempKey = `${invId}-${tier}-${todayStr}`;
         const sendResult = await sendEmailTs({
-          to: inv.client_email,
+          to: inv.client_email || "",
           subject: draft.subject,
           body: draft.body,
           invoice_id: invId,
@@ -705,7 +661,7 @@ export async function handleAgentSweep(
           if (supabase) {
             try {
               await supabase.from("audit_log").insert(failAudit);
-            } catch {}
+            } catch { }
           }
           details.push({ invoice_id: invId, action: "SEND_FAILED", error: sendResult.error });
           continue;
@@ -731,7 +687,7 @@ export async function handleAgentSweep(
           try {
             await supabase.from("invoices").update({ last_contact_at: nowIso, contact_count: inv.contact_count }).eq("invoice_id", invId);
             await supabase.from("contact_history").insert(contactRecord);
-          } catch {}
+          } catch { }
         }
 
         const auditAction = tier === "TIER_1" ? "TIER1_EMAIL_SENT" : (tier === "TIER_2" ? "TIER2_EMAIL_SENT" : "EMAIL_SENT");
@@ -749,7 +705,7 @@ export async function handleAgentSweep(
         if (supabase) {
           try {
             await supabase.from("audit_log").insert(sendAudit);
-          } catch {}
+          } catch { }
         }
 
         emailsSent++;
@@ -784,7 +740,7 @@ export async function handleAgentSweep(
         if (supabase) {
           try {
             await supabase.from("decision_queue").insert(decisionRecord);
-          } catch {}
+          } catch { }
         }
 
         let auditAction = "TIER3_ESCALATED";
@@ -805,7 +761,7 @@ export async function handleAgentSweep(
         if (supabase) {
           try {
             await supabase.from("audit_log").insert(escAudit);
-          } catch {}
+          } catch { }
         }
 
         escalatedCount++;
@@ -841,7 +797,7 @@ export async function handleAgentSweep(
       if (supabase) {
         try {
           await supabase.from("audit_log").insert(errorAudit);
-        } catch {}
+        } catch { }
       }
       details.push({ invoice_id: invId, action: "ERROR", error: err.message || String(err) });
     }
@@ -893,7 +849,7 @@ export async function handleAgentSweep(
         duration_ms: durationMs,
         completed_at: completedIso,
       }).eq("sweep_id", sweepId);
-    } catch {}
+    } catch { }
   }
 
   const responsePayload: SweepResponse = {

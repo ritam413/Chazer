@@ -2,68 +2,25 @@
 // Supabase Edge Function: Ingests and validates seed CSV into clients and invoices tables.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
+import {
+  SEED_CORS_HEADERS as CORS_HEADERS,
+  type RawCSVRow,
+  type SanitizedRow,
+  type ValidationResult,
+  type ClientRecord,
+  type InvoiceRecord,
+  type SeedResponse,
+} from "../_shared/types";
 
-export interface RawCSVRow {
-  invoice_id: string;
-  client_id: string;
-  client_name: string;
-  client_email: string;
-  amount: string;
-  currency?: string;
-  due_date: string;
-  status: string;
-  services_description: string;
-}
-
-export interface SanitizedRow {
-  invoice_id: string;
-  client_id: string;
-  client_name: string;
-  client_email: string;
-  amount: number;
-  currency: string;
-  due_date: string;
-  status: "DRAFT" | "SENT" | "OVERDUE" | "PAID" | "DISPUTED" | "FINAL_NOTICE_SENT" | "CLOSED";
-  services_description: string;
-}
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-  sanitizedRow: SanitizedRow;
-  rawRow: RawCSVRow;
-}
-
-export interface ClientRecord {
-  client_id: string;
-  owner_id: string;
-  name: string;
-  email: string;
-  created_at: string;
-}
-
-export interface InvoiceRecord {
-  invoice_id: string;
-  client_id: string;
-  owner_id: string;
-  amount: number;
-  currency: string;
-  due_date: string;
-  status: string;
-  services_description: string;
-  contact_count: number;
-  dispute_flag: boolean;
-  last_contact_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SeedResponse {
-  seeded: number;
-  skipped: number;
-  invalid: number;
-  invalid_rows: Array<{ row: RawCSVRow; errors: string[] }>;
-}
+export {
+  CORS_HEADERS,
+  type RawCSVRow,
+  type SanitizedRow,
+  type ValidationResult,
+  type ClientRecord,
+  type InvoiceRecord,
+  type SeedResponse,
+};
 
 export const DEFAULT_SEED_CSV = `invoice_id,client_id,client_name,client_email,amount,currency,due_date,status,services_description
 INV-001,CLI-001,Acme Corp,ap@acme.com,4800.00,USD,2026-08-15,OVERDUE,UX Design Sprint — August 2026
@@ -74,12 +31,6 @@ INV-005,CLI-004,DeltaWave Media,billing@deltawave.com,55000.00,USD,2026-07-31,OV
 INV-006,CLI-005,Ember Creative,jo@embercreative.co,1400.00,USD,2026-09-05,SENT,Social Media Package
 INV-007,CLI-002,Bluebell Studios,finance@bluebell.io,7200.00,USD,2026-08-10,OVERDUE,Web App Development Phase 1
 INV-008,CLI-006,Foxglove Labs,accounts@foxglove.io,2100.00,USD,2026-08-22,OVERDUE,API Integration Consulting`;
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-seed-secret",
-  "Access-Control-Allow-Methods": "POST, OPTIONS, GET",
-};
 
 /**
  * Parse CSV text into array of object rows

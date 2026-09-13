@@ -410,52 +410,11 @@ Initialize repo with correct directory structure, `.gitignore`, `README.md` stub
 Create the GitHub Actions workflow file for lint, type check, and deploy.
 
 **Acceptance Criteria:**
-- [ ] `.github/workflows/deploy.yml` created
-- [ ] On push to `main`: TypeScript type check passes, Python tests pass
-- [ ] On push to `main`: Vercel frontend deploys automatically
-- [ ] On push to `main`: Supabase Edge Functions deploy automatically
-- [ ] Required GitHub secrets documented in `README.md` → Setup section
-
----
-
-### DEVOPS-03: Write complete README.md
-
-**Priority:** P0 — Day 3 PM  
-**Layer:** `[DEVOPS]`  
-**Estimate:** 1.5 hours
-
-**Description:**  
-Write the public-facing README that judges will read.
-
-**Acceptance Criteria:**
-- [ ] **Project description:** One compelling paragraph explaining Chazer
-- [ ] **Architecture diagram:** Embedded mermaid diagram from doc 02
-- [ ] **Demo video link:** Embedded YouTube or Loom link
-- [ ] **Live demo link:** Vercel URL
-- [ ] **Setup instructions:** Step-by-step (supabase setup, seed, deploy)
-- [ ] **Tech stack section:** Table with icons
-- [ ] **Hackathon track:** Mentions AWS "Agents for Humans" / Professional Agents track
-- [ ] **License:** Apache-2.0 badge + link
-- [ ] **AWS Builder ID:** Noted per hackathon requirements
-
----
-
-### DEVOPS-04: Deploy and smoke-test production environment
-
-**Priority:** P0 — Day 3 PM  
-**Layer:** `[DEVOPS]`  
-**Estimate:** 1 hour
-
-**Description:**  
-Deploy all components to production and run the pre-flight smoke tests from doc 17.
-
-**Acceptance Criteria:**
-- [ ] `https://chazer.vercel.app/dashboard` loads without error
-- [ ] All 8 invoices visible after seeding
-- [ ] `POST /sweep` works from production URL
-- [ ] Decisions queue has items after sweep
-- [ ] Approve/reject works in production
-- [ ] All items in doc 17 Pre-Flight Checks table: ✅
+- [x] `.github/workflows/deploy.yml` created
+- [x] On push to `main`: TypeScript type check passes, Python tests pass
+- [x] On push to `main`: Vercel frontend deploys automatically
+- [x] On push to `main`: Supabase Edge Functions deploy automatically
+- [x] Required GitHub secrets documented in `README.md` → Setup section
 
 ---
 
@@ -469,10 +428,149 @@ Deploy all components to production and run the pre-flight smoke tests from doc 
 Create the `reset_demo()` stored procedure and document the reset flow.
 
 **Acceptance Criteria:**
-- [ ] `SELECT reset_demo()` from Supabase SQL editor resets all agent state (contact history, audit log, decision queue, sweep runs)
-- [ ] After reset, all invoices have `last_contact_at = NULL` and `contact_count = 0`
-- [ ] After reset, running sweep produces full set of actions (as if first run)
-- [ ] Reset procedure documented in doc 17 and README troubleshooting section
+- [x] `SELECT reset_demo()` from Supabase SQL editor resets all agent state (contact history, audit log, decision queue, sweep runs)
+- [x] After reset, all invoices have `last_contact_at = NULL` and `contact_count = 0`
+- [x] After reset, running sweep produces full set of actions (as if first run)
+- [x] Reset procedure documented in doc 17 and README troubleshooting section
+
+**Files modified:**
+- `supabase/migrations/002_demo_utilities.sql`
+
+---
+
+### FRONT-06: Build 4-Stage Horizontal Pipeline Visualizer Component
+
+**Priority:** P0 — Wave 3  
+**Layer:** `[FRONTEND]`  
+**Estimate:** 1.5 hours
+
+**Description:**  
+Implement the standalone 4-card horizontal connected pipeline visualizer component (`dashboard/components/PipelineVisualizer.tsx`) displaying real-time receivables ingestion, tone & risk matrix assessment, dual-lane dispatch split, and cryptographic audit settlement with interactive step-through and animated simulation.
+
+**Acceptance Criteria:**
+- [x] Renders 4 horizontal connected cards with top dashed line (`border-t-2 border-dashed border-monad-ash`):
+  1. `1. Receivables Ingested` (Badge: `8 Invoices · DB Seed`, Metric: `$96,990.00 · 8 Receivables`)
+  2. `2. Tone & Risk Matrix` (Badge: `Rule + LLM Guard`, Metric: `4 Auto · 4 Escalated · 72h & $10k+`)
+  3. `3. Dual-Lane Dispatch` (Badge: `Resend + Queue`, Metric: `4 Sent ➔ 4 Review · Zero-Loss Guard`)
+  4. `4. Ledger & Audit Trail` (Badge: `Immutable Telemetry`, Metric: `8 Cryptographic Logs · Instant Sync`)
+- [x] Active stage card highlighted with Mint/Teal pastel wash (`bg-emerald-500/15` / `#9fe3c0`), elevated shadow, dark hairline border, and footer (`Active Stage` · `Step X/4`).
+- [x] Interactive controls: manual card clicking, "Simulate Sweep" auto-play button, and reset.
+- [x] Vitest unit suite `dashboard/tests/pipeline-visualizer.test.tsx` passes with 100% coverage (at least 6 tests).
+
+**Files to create:**
+- `dashboard/components/PipelineVisualizer.tsx`
+- `dashboard/tests/pipeline-visualizer.test.tsx`
+
+---
+
+### FRONT-07: Surface Integration of Pipeline Visualizer
+
+**Priority:** P0 — Wave 3  
+**Layer:** `[FRONTEND]`  
+**Estimate:** 45 minutes
+
+**Description:**  
+Embed and wire the `PipelineVisualizer` component into the primary receivables dashboard (`dashboard/app/dashboard/page.tsx`) as a prominent header banner above `StatsBar` and on the root landing page (`dashboard/app/page.tsx`).
+
+**Acceptance Criteria:**
+- [x] `PipelineVisualizer` mounts prominently above `StatsBar` on `/dashboard`.
+- [x] Visualizer renders seamlessly on `/` within the capabilities section.
+- [x] Responsive layout: stacks cleanly on mobile (<768px) and displays full connected 4-card row on desktop.
+- [x] Zero visual or layout regressions across other components.
+- [x] Page test suites (`dashboard-page.test.tsx`) pass cleanly with 100% green tests.
 
 **Files to modify:**
-- `supabase/migrations/002_demo_utilities.sql`
+- `dashboard/app/dashboard/page.tsx`
+- `dashboard/app/page.tsx`
+- `dashboard/tests/dashboard-page.test.tsx`
+
+---
+
+### ARCH-01: Formalize Polyglot Architecture & ADR-002
+
+**Priority:** P0 — Wave 3  
+**Layer:** `[ARCHITECTURE & DOCS]`  
+**Estimate:** 45 minutes
+
+**Description:**  
+Formally document the Polyglot Autonomous Architecture (Python Strands Agent + TypeScript Edge Function parity), Dispute Reconciliation Invariant, and ADR-002 (Grok + OpenAI + Gemini Multi-Model LLM Routing via LiteLLM) in the persistent repository documentation.
+
+**Acceptance Criteria:**
+- [x] `context.md` updated with Polyglot Architecture table and ASCII architecture diagram.
+- [x] `context.md` updated with ADR-002 (Grok + OpenAI + Gemini via LiteLLM) and Dispute Invariant.
+- [x] `docs/02-architecture.md` and `docs/13-tech-stack.md` updated with multi-model routing table.
+
+**Files to modify:**
+- `context.md`
+- `docs/02-architecture.md`
+- `docs/13-tech-stack.md`
+
+---
+
+### FRONT-08: Dual-Mode Environment Indicator Badge in TopBar
+
+**Priority:** P0 — Wave 3  
+**Layer:** `[FRONTEND]`  
+**Estimate:** 30 minutes
+
+**Description:**  
+Implement an interactive Dual-Mode Environment Indicator badge in `dashboard/components/TopBar.tsx` that visually distinguishes between `Demo Sandbox Mode` (local offline/mock data) and `Live Supabase Mode` (connected to active PostgreSQL backend) with tooltips and alive status beacon.
+
+**Acceptance Criteria:**
+- [x] `TopBar.tsx` renders `EnvironmentModeBadge` alongside the sweep trigger and theme switcher.
+- [x] Displays `Demo Sandbox Mode` or `Live Supabase Mode` based on config.
+- [x] Vitest test suite passes cleanly with 100% green tests.
+
+**Files to modify:**
+- `dashboard/components/TopBar.tsx`
+- `dashboard/tests/app-shell.test.tsx`
+
+---
+
+### DEVOPS-03: Master README Alignment & 3-Minute Demo Video Storyline
+
+**Priority:** P0 — Wave 4  
+**Layer:** `[DEVOPS]`  
+**Estimate:** 1 hour
+
+**Description:**  
+Align the public `README.md` and 3-minute video presentation storyline in `docs/12-demo-script.md` with the live 4-stage pipeline visualizer, dual-mode sandbox execution, and AWS hackathon judging criteria.
+
+**Acceptance Criteria:**
+- [x] `docs/12-demo-script.md` updated with exact voiceover script and screen transition cues.
+- [x] `README.md` verified for judging badges, quickstart sandbox commands, and polyglot architecture parity table.
+
+**Files to modify:**
+- `docs/12-demo-script.md`
+- `README.md`
+
+---
+
+### DEVOPS-04: Full Suite QA Verification & Submission Sign-off
+
+**Priority:** P0 — Wave 4  
+**Layer:** `[DEVOPS / QA]`  
+**Estimate:** 45 minutes
+
+**Description:**  
+Execute end-to-end regression testing across all workstreams (Python agent, Supabase edge functions, Next.js frontend, and TypeScript compiler), audit all items in `docs/17-submission-qa-checklist.md`, and complete final release tracking.
+
+**Public Seams & Verification Suite:**
+```bash
+npm test                      # 129+ Vitest tests passing across 12 suites
+npx tsc --noEmit              # 0 TypeScript compilation errors
+pytest agent/tests/ -v        # 42 Python Strands agent tests passing
+python -m agent.main --sandbox # CLI sweep processes 8 invoices cleanly
+```
+
+**Acceptance Criteria:**
+- [x] 100% test pass rate across Vitest and Pytest test runners.
+- [x] `npx tsc --noEmit` returns 0 compilation errors.
+- [x] `docs/17-submission-qa-checklist.md` fully verified.
+- [x] `features_implemented.md` and `tracker.md` updated with 21/21 tickets completed.
+
+**Files to modify:**
+- `docs/17-submission-qa-checklist.md`
+- `features_implemented.md`
+- `tracker.md`
+- `docs/23-parallel-execution-plan.md`

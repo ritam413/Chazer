@@ -49,3 +49,32 @@ Stack Decision Rationale (ADR-001):
 - Lambda + EventBridge replaced by Supabase Edge Functions + pg_cron: same serverless, zero-cost, zero-infrastructure model. pg_cron is built into Supabase's Postgres instance.
 - Bedrock Claude replaced by Grok (xAI) as primary LLM: very generous free tier, no credit card. Google Gemini 1.5 Flash (60 req/min free) is the fallback. Both accessed via Strands LiteLLM provider — `model_id="xai/grok-beta"` or `model_id="gemini/gemini-1.5-flash"` — so Strands SDK is still the agent runtime (preserving hackathon judging criterion). Switching LLMs requires only a different API key and model_id env var.
 - AgentCore deployment: not feasible without AWS credits; dropped from scope.
+
+Polyglot Autonomous Architecture (ARCH-01):
+- Dual-Runtime Implementation:
+  1. Python Strands Agent Runtime (`agent/chazer_agent.py`, `agent/main.py`): AWS Strands SDK with LiteLLM provider for local CLI execution, batch processing, and hackathon judging verification.
+  2. TypeScript Deno Edge Function Runtime (`supabase/functions/agent-sweep/index.ts`): Serverless cloud scheduler triggered by `pg_cron` daily at 09:00 UTC and manual dashboard triggers.
+- Runtime Parity Invariants:
+  - Identical tier classification logic (`classify_invoice` in Python == `classifyInvoiceTs` in TypeScript).
+  - Identical 72-hour contact frequency window guard preventing duplicate outreach.
+  - Identical $10,000+ high-value escalation threshold and dispute freeze safeguards.
+  - Identical atomic database updates (`invoices`, `contact_history`, `decision_queue`, `audit_log`, `sweep_runs`).
+  - Identical idempotency guarantees with deterministic Resend message keys.
+
+| Dimension | Python Strands Agent (`agent/`) | TypeScript Edge Function (`supabase/functions/`) |
+| :--- | :--- | :--- |
+| **Runtime Target** | Python 3.11+ / CLI / Local / Batch | Deno 1.x / Supabase Edge Functions |
+| **Agent Framework** | AWS Strands Agents SDK (`@tool`) | Serverless Event Handler |
+| **LLM Provider** | LiteLLM (`xai/grok-beta`, `gemini/gemini-1.5-flash`, `gpt-4o-mini`) | Direct HTTP REST (`Google Gemini` / `Grok` REST API) |
+| **Email Gateway** | Resend API / Sandbox Mode (`Idempotency-Key`) | Resend API / Sandbox Mode (`Idempotency-Key`) |
+| **Database Sync** | `supabase-py` Client / Direct SQL | Supabase JS Client (`@supabase/supabase-js`) |
+| **Invocation** | CLI (`python -m agent.main`), Subprocess, Cron | `pg_cron` (`0 9 * * *`), HTTP POST (`/agent-sweep`) |
+
+Dispute Reconciliation Domain Invariant:
+- Any invoice with `dispute_flag = True` or incoming client dispute feedback immediately halts automated outreach (`auto_send_eligible = False`), escalates to `TIER_3`, creates a `decision_queue` human review item with escalation reason `CLIENT_DISPUTE_RAISED`, and logs an immutable `DISPUTE_ESCALATED` audit event.
+
+ADR-002: Multi-Model LLM Provider Routing:
+- Primary Provider: Grok (xAI) via LiteLLM (`xai/grok-beta` / `xai/grok-2`) for natural, nuanced, professional collection tone without aggressive legal jargon.
+- Secondary / Free Fallback: Google Gemini 1.5 Flash (`gemini/gemini-1.5-flash`) with 60 req/min free tier.
+- Commercial Alternative: OpenAI (`openai/gpt-4o-mini`) supported out of the box via LiteLLM model routing.
+- Zero-Cost Offline Fallback: Deterministic invariant-compliant template engine generating validated drafts when running offline or in simulated test suites without network connectivity.

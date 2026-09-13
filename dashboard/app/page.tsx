@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight, Bot, ShieldAlert, Sparkles, ReceiptText } from 'lucide-react';
+import { PipelineVisualizer } from '../components/PipelineVisualizer';
 
 export default function HomePage() {
   return (
@@ -82,6 +83,17 @@ export default function HomePage() {
               <span>Review Decision Queue</span>
             </Link>
           </div>
+        </section>
+
+        {/* 4-Stage Autonomous Pipeline Visualizer Showcase */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-lake-blue"></span>
+            <h2 className="text-sm uppercase tracking-mono-wide font-medium" style={{ color: 'var(--text-muted)' }}>
+              Interactive Architecture Simulation
+            </h2>
+          </div>
+          <PipelineVisualizer initialStage={1} />
         </section>
 
         {/* Elevated Feature Card (Periwinkle Mist) */}

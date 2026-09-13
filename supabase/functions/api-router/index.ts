@@ -3,67 +3,32 @@
 // GET /invoices, GET /decisions, GET /audit-log
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
+import {
+  CORS_HEADERS,
+  type EnrichedInvoice,
+  type InvoicesSummary,
+  type DecisionItem,
+  type AuditEntryItem,
+  type InvoicesQueryParams,
+  type DecisionsQueryParams,
+  type AuditLogQueryParams,
+  type InvoicesResponse,
+  type DecisionsResponse,
+  type AuditLogResponse,
+} from "../_shared/types";
 
-export interface EnrichedInvoice {
-  invoice_id: string;
-  client_id: string;
-  client_name: string;
-  client_email: string;
-  amount: number;
-  currency: string;
-  due_date: string;
-  days_overdue: number;
-  status: "DRAFT" | "SENT" | "OVERDUE" | "PAID" | "DISPUTED" | "FINAL_NOTICE_SENT" | "CLOSED";
-  tier: "TIER_1" | "TIER_2" | "TIER_3" | "UNCLASSIFIED";
-  is_high_value: boolean;
-  contact_count: number;
-  dispute_flag: boolean;
-  last_contact_at: string | null;
-  services_description: string;
-}
-
-export interface InvoicesSummary {
-  total_overdue_amount: number;
-  count_by_tier: {
-    TIER_1: number;
-    TIER_2: number;
-    TIER_3: number;
-  };
-  pending_decisions: number;
-}
-
-export interface DecisionItem {
-  decision_id: string;
-  invoice_id: string;
-  invoice: {
-    client_name: string;
-    amount: number;
-    days_overdue: number;
-    is_high_value: boolean;
-  };
-  escalation_reason: string;
-  draft_subject: string;
-  draft_body: string;
-  tier: "TIER_1" | "TIER_2" | "TIER_3";
-  llm_confidence: number;
-  status: "PENDING_APPROVAL" | "APPROVED" | "REJECTED";
-  created_at: string;
-}
-
-export interface AuditEntryItem {
-  log_id: string;
-  sweep_id?: string | null;
-  invoice_id?: string | null;
-  action: string;
-  status: string;
-  timestamp: string;
-  metadata?: Record<string, any>;
-}
-
-export const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+export {
+  CORS_HEADERS,
+  type EnrichedInvoice,
+  type InvoicesSummary,
+  type DecisionItem,
+  type AuditEntryItem,
+  type InvoicesQueryParams,
+  type DecisionsQueryParams,
+  type AuditLogQueryParams,
+  type InvoicesResponse,
+  type DecisionsResponse,
+  type AuditLogResponse,
 };
 
 export const MOCK_INVOICES: EnrichedInvoice[] = [
