@@ -160,12 +160,12 @@ def call_llm(prompt: str, model_id: Optional[str] = None, timeout: float = 15.0)
     selected_model = (
         model_id
         or os.environ.get("LLM_MODEL_ID")
-        or ("xai/grok-2" if (os.environ.get("GROK_API_KEY") or os.environ.get("XAI_API_KEY")) else "gemini/gemini-1.5-flash")
+        or ("xai/grok-2-latest" if (os.environ.get("GROK_API_KEY") or os.environ.get("XAI_API_KEY")) else "gemini/gemini-1.5-flash")
     )
 
-    # Automatically upgrade deprecated grok-beta alias to active grok-2
-    if "grok-beta" in selected_model:
-        selected_model = selected_model.replace("grok-beta", "grok-2")
+    # Map grok aliases to active xAI endpoint model name
+    if "grok" in selected_model and not any(m in selected_model for m in ("grok-2-latest", "grok-2-1212", "grok-3")):
+        selected_model = "xai/grok-2-latest"
 
     api_key = None
     if "xai" in selected_model or "grok" in selected_model:
