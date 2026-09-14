@@ -164,19 +164,19 @@ export function AuditEntry({ entry }: AuditEntryProps) {
 
         {/* Highlight Summary Details */}
         <div className="py-2.5 text-xs font-mono text-graphite dark:text-dark-graphite space-y-1.5">
-          {typeof entry.metadata.reason === 'string' && (
+          {typeof entry.metadata?.reason === 'string' && (
             <p className="text-ink dark:text-dark-ink leading-relaxed">
               <span className="text-smoke dark:text-dark-smoke">Reason: </span>
               {entry.metadata.reason}
             </p>
           )}
-          {typeof entry.metadata.email_subject === 'string' && (
+          {typeof entry.metadata?.email_subject === 'string' && (
             <p className="truncate text-ink dark:text-dark-ink">
               <span className="text-smoke dark:text-dark-smoke">Subject: </span>
               &ldquo;{entry.metadata.email_subject}&rdquo;
             </p>
           )}
-          {entry.metadata.invoices_processed !== undefined && (
+          {entry.metadata?.invoices_processed !== undefined && (
             <div className="flex items-center space-x-3 text-[11px] text-smoke dark:text-dark-smoke">
               <span>Processed: <strong className="text-off-black dark:text-dark-ink font-semibold">{entry.metadata.invoices_processed}</strong></span>
               <span>·</span>

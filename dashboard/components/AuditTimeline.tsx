@@ -32,10 +32,10 @@ export function AuditTimeline({ entries, isLoading }: AuditTimelineProps) {
         const matchesInvoice = entry.invoice_id?.toLowerCase().includes(term);
         const matchesSweep = entry.sweep_id?.toLowerCase().includes(term);
         const matchesReason =
-          typeof entry.metadata.reason === 'string' &&
+          typeof entry.metadata?.reason === 'string' &&
           entry.metadata.reason.toLowerCase().includes(term);
         const matchesSubject =
-          typeof entry.metadata.email_subject === 'string' &&
+          typeof entry.metadata?.email_subject === 'string' &&
           entry.metadata.email_subject.toLowerCase().includes(term);
         return Boolean(
           matchesAction || matchesInvoice || matchesSweep || matchesReason || matchesSubject

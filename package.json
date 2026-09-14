@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky || true",
+    "build": "npm --prefix dashboard run build",
+    "vercel-build": "npm --prefix dashboard install && npm --prefix dashboard run build",
     "typecheck": "npm --prefix dashboard run build",
     "test": "npm --prefix dashboard test"
   },
