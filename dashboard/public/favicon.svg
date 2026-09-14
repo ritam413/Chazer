@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <!-- Background Gradient: Deep Monad Obsidian -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181a20" />
+      <stop offset="50%" stop-color="#111215" />
+      <stop offset="100%" stop-color="#0b0c0e" />
+    </linearGradient>
+
+    <!-- Outer Bevel Gradient -->
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d4457" />
+      <stop offset="40%" stop-color="#252834" />
+      <stop offset="100%" stop-color="#161820" />
+    </linearGradient>
+
+    <!-- Inner Ambient Rim -->
+    <linearGradient id="inner-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12" />
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.02" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.4" />
+    </linearGradient>
+
+    <!-- Chazer Kinetic Arc: Lake Blue to Electric Indigo -->
+    <linearGradient id="chazer-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#608fff" />
+      <stop offset="35%" stop-color="#4d7aff" />
+      <stop offset="75%" stop-color="#2b59d1" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+
+    <!-- Primary Arc Specular Sheen -->
+    <linearGradient id="arc-sheen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
+      <stop offset="60%" stop-color="#608fff" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#2b59d1" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Mint Autonomous Heartbeat Gradient -->
+    <radialGradient id="mint-dot-grad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="30%" stop-color="#c4ffe0" />
+      <stop offset="70%" stop-color="#a7fccd" />
+      <stop offset="100%" stop-color="#10b981" />
+    </radialGradient>
+
+    <!-- Glow Filters -->
+    <filter id="mint-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="16" result="blur1" />
+      <feGaussianBlur stdDeviation="32" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="arc-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Base Squircle Container -->
+  <rect
+    x="12"
+    y="12"
+    width="488"
+    height="488"
+    rx="124"
+    fill="url(#bg-grad)"
+    stroke="url(#border-grad)"
+    stroke-width="6"
+  />
+
+  <!-- Inner Ambient Rim Specular Highlight -->
+  <rect
+    x="18"
+    y="18"
+    width="476"
+    height="476"
+    rx="118"
+    fill="none"
+    stroke="url(#inner-rim)"
+    stroke-width="2.5"
+  />
+
+  <!-- Subtle Concentric Scanning Orbit Grids -->
+  <circle
+    cx="256"
+    cy="256"
+    r="168"
+    fill="none"
+    stroke="#2c3242"
+    stroke-width="1.5"
+    stroke-dasharray="4 8"
+    opacity="0.45"
+  />
+  <circle
+    cx="256"
+    cy="256"
+    r="112"
+    fill="none"
+    stroke="#353c50"
+    stroke-width="1.5"
+    stroke-dasharray="3 6"
+    opacity="0.35"
+  />
+
+  <!-- Autonomous Collection Kinetic Arc ("C" Mark + Velocity Chevron) -->
+  <g filter="url(#arc-shadow)">
+    <!-- Primary Outer Sweeping Track -->
+    <path
+      d="M 362,142
+         C 330,118 295,106 256,106
+         C 173.15,106 106,173.15 106,256
+         C 106,338.85 173.15,406 256,406
+         C 300,406 338,391 366,364
+         L 332,328
+         C 312,348 286,358 256,358
+         C 199.66,358 154,312.34 154,256
+         C 154,199.66 199.66,154 256,154
+         C 282,154 306,163 324,178
+         L 362,142 Z"
+      fill="url(#chazer-blue-grad)"
+    />
+
+    <!-- Velocity Forward Chevron Accent (Top Terminal Arrowhead) -->
+    <path
+      d="M 324,178
+         L 384,178
+         L 354,136
+         L 324,178 Z"
+      fill="#608fff"
+    />
+
+    <!-- Highlight Specular Ridge on Upper Arc -->
+    <path
+      d="M 256,106
+         C 173.15,106 106,173.15 106,256
+         C 106,270 108,284 112,297"
+      fill="none"
+      stroke="url(#arc-sheen)"
+      stroke-width="5"
+      stroke-linecap="round"
+    />
+  </g>
+
+  <!-- Ambient Radiant Telemetry Aura -->
+  <circle
+    cx="256"
+    cy="256"
+    r="44"
+    fill="#a7fccd"
+    opacity="0.12"
+    filter="url(#mint-glow)"
+  />
+
+  <!-- Active Autonomous Heartbeat Node (Mint Beacon) -->
+  <g filter="url(#mint-glow)">
+    <!-- Outer Glow Pulse Ring -->
+    <circle
+      cx="256"
+      cy="256"
+      r="24"
+      fill="#10b981"
+      opacity="0.3"
+    />
+    
+    <!-- Radiant Core Beacon -->
+    <circle
+      cx="256"
+      cy="256"
+      r="14"
+      fill="url(#mint-dot-grad)"
+      stroke="#ffffff"
+      stroke-width="1.5"
+    />
+
+    <!-- Specular Flare Highlight -->
+    <circle
+      cx="251"
+      cy="251"
+      r="4"
+      fill="#ffffff"
+      opacity="0.9"
+    />
+  </g>
+</svg>

@@ -1,7 +1,32 @@
 # Chazer — Features Implemented
 
-**Last updated:** 2026-09-13  
-**Project status:** Complete · 21/21 Tickets Completed · Production Release & Submission Sign-Off
+**Last updated:** 2026-09-14  
+**Project status:** Complete · Production Release & Brand Assets Verified
+
+---
+
+## Feature: Brand Identity & High-Craft Favicon Suite (BRAND-01)
+
+**Status:** Implemented  
+**What it does:** Bespoke scalable SVG favicon and Apple touch icon suite adhering to `/taste` and `/impeccable` design systems, capturing the Monad technical editorial identity with high-contrast obsidian squircle, dynamic Lake Blue kinetic capture arc ("C" mark), and radiant Mint autonomous telemetry beacon.
+
+**Important details:**
+
+- **SVG Vector Geometry**:
+  - `dashboard/app/icon.svg` & `dashboard/public/favicon.svg`: Deep obsidian squircle (`#181a20` to `#0b0c0e`) with multi-layer ambient bevel highlights.
+  - Chazer kinetic acceleration arc (`#4d7aff` -> `#2b59d1`) with forward velocity chevron notch.
+  - Active autonomous heartbeat telemetry beacon (`#a7fccd` / `#10b981`) with dual-radius gaussian blur glow.
+  - Concentric scanning orbit radar guides (`#2c3242`).
+- **Apple Touch Icon**: `dashboard/app/apple-icon.svg` for iOS homescreen and Safari bookmarks.
+- **Metadata Integration**: Next.js 14 App Router `metadata.icons` in `dashboard/app/layout.tsx`.
+- **Verification**: `npm run build` and 129 Vitest tests passing.
+
+**Relevant files:**
+
+- `dashboard/app/icon.svg` (NEW)
+- `dashboard/app/apple-icon.svg` (NEW)
+- `dashboard/public/favicon.svg` (NEW)
+- `dashboard/app/layout.tsx` (MODIFIED)
 
 ---
 
@@ -11,6 +36,7 @@
 **What it does:** Complete pre-submission verification and release audit across all 21 repository tickets, validating 100% test pass rates across both Python Strands and TypeScript Deno/Next.js runtimes, zero compilation errors, and complete verification of `docs/17-submission-qa-checklist.md`.
 
 **Important details:**
+
 - **Automated Multi-Runtime Verification Suite**:
   - `npm test` in `dashboard/`: 129/129 tests passed across 12 test suites.
   - `npx tsc --noEmit` in `dashboard/`: 0 compilation errors.
@@ -22,6 +48,7 @@
   - Submission assets (Apache-2.0 `LICENSE`, `README.md`, `docs/12-demo-script.md`, reset procedure `reset_demo()`) verified.
 
 **Relevant files:**
+
 - `docs/17-submission-qa-checklist.md` (MODIFIED)
 - `docs/22-actionable-issues-backlog.md` (MODIFIED)
 - `docs/23-parallel-execution-plan.md` (MODIFIED)
@@ -34,6 +61,7 @@
 **What it does:** Formalization of the dual-runtime Polyglot Architecture (Python Strands Agent + TypeScript Edge Function parity), Dispute Reconciliation Invariant, and ADR-002 (Multi-Model LLM routing with Grok, Gemini, OpenAI via LiteLLM) across `context.md`, `docs/02-architecture.md`, `docs/13-tech-stack.md`, and `README.md`.
 
 **Important details:**
+
 - **Dual-Runtime Parity Matrix**:
   - Python Strands Agent Runtime (`agent/chazer_agent.py`, `agent/main.py`): AWS Strands SDK with LiteLLM provider for local CLI execution, batch processing, and hackathon judging verification.
   - TypeScript Deno Edge Function Runtime (`supabase/functions/agent-sweep/index.ts`): Serverless cloud scheduler triggered by `pg_cron` daily at 09:00 UTC and manual dashboard triggers.
@@ -48,6 +76,7 @@
 - **Verification**: 129 Vitest tests, 42 Pytest tests, 0 TypeScript errors.
 
 **Relevant files:**
+
 - `context.md` (MODIFIED)
 - `docs/02-architecture.md` (MODIFIED)
 - `docs/13-tech-stack.md` (MODIFIED)
@@ -61,6 +90,7 @@
 **What it does:** Complete alignment of public-facing `README.md`, `docs/16-demo-script-pitch.md`, and standalone `docs/12-demo-script.md` for AWS Hackathon judging with 4-Stage Horizontal Pipeline Visualizer narrative, Monad Editorial design system cues, and multi-model runtime instructions.
 
 **Important details:**
+
 - **Public `README.md` Badging & Sections**:
   - Badging for Apache-2.0, Python 3.11+, Next.js 14, TypeScript 5.x, Tailwind CSS 3.4, Strands SDK, and AWS Hackathon Professional Agents track.
   - 4-Stage Autonomous Pipeline Architecture ASCII diagram and breakdown.
@@ -71,12 +101,12 @@
   - Dramatic Wow Moments table and presenter delivery notes.
 
 **Relevant files:**
+
 - `README.md` (MODIFIED)
 - `docs/16-demo-script-pitch.md` (MODIFIED)
 - `docs/12-demo-script.md` (NEW)
 
 ---
-
 
 ## Feature: 4-Stage Horizontal Pipeline Visualizer Component (FRONT-06)
 
@@ -84,6 +114,7 @@
 **What it does:** Standalone 4-card horizontal connected pipeline visualizer component (`dashboard/components/PipelineVisualizer.tsx`) rendering real-time receivables ingestion, tone & risk matrix assessment, dual-lane dispatch split, and cryptographic audit settlement with interactive step-through, live simulation loop, and active stage deep inspection callouts.
 
 **Important details:**
+
 - **4 Connected Sequential Stages**:
   1. `01: Receivables Ingested` (Badge: `8 Invoices · DB Seed`, Metric: `$96,990.00 · 8 Receivables`, Subtitle: Supabase Postgres data source with dynamic overdue arithmetic).
   2. `02: Tone & Risk Matrix` (Badge: `Rule + LLM Guard`, Metric: `4 Auto · 4 Escalated · 72h & $10k+`, Subtitle: Multi-tier escalation ladder, 72-hour contact frequency guard, $10k+ high-value check).
@@ -100,6 +131,7 @@
 - **Verification**: 6/6 Vitest tests passing in `dashboard/tests/pipeline-visualizer.test.tsx`.
 
 **Relevant files:**
+
 - `dashboard/components/PipelineVisualizer.tsx` (NEW)
 - `dashboard/tests/pipeline-visualizer.test.tsx` (NEW)
 
@@ -111,6 +143,7 @@
 **What it does:** Seamless embedding of the `PipelineVisualizer` component into the primary receivables operational dashboard (`dashboard/app/dashboard/page.tsx`) right above `StatsBar` and into the root editorial landing page (`dashboard/app/page.tsx`) within the architecture showcase section.
 
 **Important details:**
+
 - **Dashboard Surface (`/dashboard`)**:
   - Positioned above `StatsBar` and `InvoiceTable`, providing immediate visual context for how the autonomous state machine evaluates aging receivables.
   - Fully responsive: Stacks cleanly into 2-column or 1-column responsive cards on tablet/mobile screens (< 768px).
@@ -119,6 +152,7 @@
 - **Verification**: 13/13 Vitest tests passing in `dashboard/tests/dashboard-page.test.tsx` and 129/129 total tests passing across all 12 frontend/edge test suites.
 
 **Relevant files:**
+
 - `dashboard/app/dashboard/page.tsx` (MODIFIED)
 - `dashboard/app/page.tsx` (MODIFIED)
 - `dashboard/tests/dashboard-page.test.tsx` (MODIFIED)
@@ -131,6 +165,7 @@
 **What it does:** Unified, single source-of-truth domain types and interfaces library (`supabase/functions/_shared/types.ts` and `supabase/functions/types.ts`) consolidating all domain enums, database record schemas, enriched API contracts, sweep pipeline schemas, action payloads, and CORS constants across all 5 Supabase Edge Functions (`api-router`, `agent-sweep`, `decisions-approve`, `decisions-reject`, `seed-data`).
 
 **Important details:**
+
 - **Central Library Modules**:
   - `supabase/functions/_shared/types.ts`: Master definition file covering `InvoiceStatus`, `EscalationTier`, `DecisionStatus`, `ContactHistoryStatus`, `SweepStatus`, `AuditAction`, `AuditStatus`, `ClientRecord`, `InvoiceRecord`, `ContactHistoryRecord`, `DecisionRecord`, `AuditEntryRecord`, `SweepRunRecord`, `EnrichedInvoice`, `InvoicesSummary`, `DecisionItem`, `AuditEntryItem`, `ClassificationResult`, `EmailDraft`, `SweepRequestBody`, `SweepDetailItem`, `SweepResponse`, `ApproveDecisionBody/Response`, `RejectDecisionBody/Response`, `RawCSVRow`, `SanitizedRow`, `ValidationResult`, `SeedResponse`, `InvoicesQueryParams`, `DecisionsQueryParams`, `AuditLogQueryParams`, `Pagination`, `InvoicesResponse`, `DecisionsResponse`, `AuditLogResponse`, `ApiErrorResponse`, `CORS_HEADERS`, `CRON_CORS_HEADERS`, `SEED_CORS_HEADERS`.
   - `supabase/functions/types.ts`: Central re-export module for root-level import convenience.
@@ -143,6 +178,7 @@
 - **Verification**: 123/123 Vitest tests passing across 11 test suites; 42/42 Pytest tests passing; 0 TypeScript errors under `npx tsc --noEmit`.
 
 **Relevant files:**
+
 - `supabase/functions/_shared/types.ts` (NEW)
 - `supabase/functions/types.ts` (NEW)
 - `supabase/functions/api-router/index.ts` (MODIFIED)
@@ -159,6 +195,7 @@
 **What it does:** Reactive global state management architecture (`dashboard/lib/store.ts` and `dashboard/lib/api.ts`) connecting all Next.js dashboard surfaces (`/dashboard`, `/decisions`, `/audit`, TopBar, and Sidebar) directly to live Supabase Edge Functions (`api-router`, `agent-sweep`, `decisions-approve`, `decisions-reject`) with optimistic mutations, rollback resilience, query synchronizations, and loading skeletons.
 
 **Important details:**
+
 - **Asynchronous Actions & Store Wireup**:
   - `fetchInvoices()`: Ingests dynamic overdue aging receivables and summary KPI aggregates (`total_overdue_amount`, `count_by_tier`, `pending_decisions`, `sent_this_week`).
   - `fetchDecisions()`: Loads human-in-the-loop pending approval decisions with invoice context and LLM-drafted emails.
@@ -172,6 +209,7 @@
 - **Verification**: 14/14 dedicated Vitest tests passing in `dashboard/tests/store.test.ts`, bringing full test suite to 123/123 tests passing.
 
 **Relevant files:**
+
 - `dashboard/lib/store.ts`
 - `dashboard/lib/api.ts`
 - `dashboard/tests/store.test.ts`
@@ -184,6 +222,7 @@
 **What it does:** PostgreSQL cron schedule in `supabase/migrations/001_initial_schema.sql` registering `daily-chazer-sweep` at `0 9 * * *` (09:00 UTC) invoking the `agent-sweep` Supabase Edge Function via `pg_net` with `x-cron-secret` authentication and automated error resilience.
 
 **Important details:**
+
 - **pg_cron Schedule (`0 9 * * *`)**:
   - Fires daily at 09:00 UTC using `net.http_post` to trigger the autonomous background sweep.
   - Automatically reads `app.supabase_url` and `app.cron_secret` configuration parameters.
@@ -196,6 +235,7 @@
 - **Verification**: 17/17 Vitest tests passing in `dashboard/tests/agent-sweep.test.ts`.
 
 **Relevant files:**
+
 - `supabase/migrations/001_initial_schema.sql`
 - `supabase/functions/agent-sweep/index.ts`
 - `dashboard/tests/agent-sweep.test.ts`
@@ -209,6 +249,7 @@
 **What it does:** Complete unification of the entire Chazer web application into an editorial technical journal on warm parchment (`#f6f3f1`) and deep obsidian (`#111215`), adhering to Monad design system specifications, `/taste`, `/impeccable`, and `/awesome-design` rules.
 
 **Important details:**
+
 - **Typography Matrix**: Newsreader (Untitled Serif) weight 400 strictly for display and section headings (`-0.02em` tracking, never bold); JetBrains Mono / ABC Diatype Mono for body copy, tabular ledger rows, audit logs, and status badges.
 - **Palette**: Warm parchment canvas (`#f6f3f1`) & deep obsidian (`#111215`), single Lake Blue (`#2b59d1` / `#4d7aff`) primary CTA accent with trailing arrow (`▸`), Periwinkle Mist (`#cfdaf5` / `#1a2030`) elevated tone ladder banner with soft pastel washes, Coral (`#ff9473`) alert accents, Mint (`#9fe3c0`) success tags, and Ash (`#cecac8` / `#2a2d38`) hairline 1px borders.
 - **Pages & Surfaces Unified**:
@@ -228,6 +269,7 @@
 **What it does:** Automated continuous integration and deployment workflow (`.github/workflows/deploy.yml`) running lint, TypeScript type checking, Vitest test suites, and Pytest Python agent contract tests on PRs/pushes to `main`, and deploying the Next.js frontend to Vercel and Edge Functions to Supabase upon successful verification.
 
 **Important details:**
+
 - **Quality Gates**:
   - `frontend-verification`: ESLint, `npx tsc --noEmit`, and 100% Vitest test suite pass.
   - `agent-verification`: Pytest suite with Pydantic contract validation.
@@ -237,6 +279,7 @@
 - **Concurrency Guard**: Cancels redundant in-progress workflow runs on branch update.
 
 **Relevant files:**
+
 - `.github/workflows/deploy.yml`
 - `README.md`
 
@@ -248,6 +291,7 @@
 **What it does:** Stored procedures (`reset_demo()` and `get_demo_summary()`) in `supabase/migrations/002_demo_utilities.sql` providing single-command reset of all agent state, contact history, decision queues, and sweep executions back to pristine demo state.
 
 **Important details:**
+
 - **`reset_demo(p_owner_id)`**:
   - Resets all invoice contact timestamps (`last_contact_at = NULL`) and contact count (`contact_count = 0`).
   - Purges records from `contact_history`, `decision_queue`, `sweep_runs`, and `audit_log`.
@@ -258,6 +302,7 @@
   - Diagnostic query returning real-time aggregation of invoices, overdue amounts, pending decisions, sweeps, and audit entries.
 
 **Relevant files:**
+
 - `supabase/migrations/002_demo_utilities.sql`
 - `README.md`
 
@@ -269,12 +314,14 @@
 **What it does:** Core PostgreSQL DDL schema definition in `supabase/migrations/001_initial_schema.sql` creating all 6 application tables, indices, dynamic aging view `v_invoices_enriched`, and Row Level Security (RLS) policies.
 
 **Important details:**
+
 - **Tables**: `clients`, `invoices`, `contact_history`, `audit_log`, `decision_queue`, `sweep_runs`.
 - **View `v_invoices_enriched`**: Computes `days_overdue` and tiered classification (`TIER_1`, `TIER_2`, `TIER_3`, `UNCLASSIFIED`) on-the-fly.
 - **Extensions**: `uuid-ossp`, `pg_cron`, `pg_net`.
 - **RLS**: Enabled across all tables with `demo_owner` access policies.
 
 **Relevant files:**
+
 - `supabase/migrations/001_initial_schema.sql`
 
 ---
@@ -285,6 +332,7 @@
 **What it does:** Full-surface chronological audit log (`/audit`) visualizing every autonomous agent sweep, tier escalation, Resend email dispatch, and human owner authorization in an immutable execution stream.
 
 **Important details:**
+
 - **Audit Timeline (`dashboard/components/AuditTimeline.tsx`)**:
   - Automatically sorts all entries strictly newest-first by timestamp.
   - Filter chips: All Telemetry, Agent Sweeps, Dispatches, Escalations, Human Decisions.
@@ -308,6 +356,7 @@
 **What it does:** Complete human-in-the-loop escalation safeguard screen (`/decisions`), allowing owners to inspect AI-drafted collection emails, evaluate escalation reasons, edit draft content in a modal with safety verification, and execute optimistic approval or rejection with instant UI updates.
 
 **Important details:**
+
 - **Decision Cards (`dashboard/components/DecisionCard.tsx`)**:
   - Displays invoice context (`INV-005`, client name, dollar amount, days overdue, high-value flag).
   - Clear escalation trigger callout box explaining why human oversight was required.
@@ -326,6 +375,7 @@
 - **Testing**: 11/11 tests passing under Vitest (`dashboard/tests/decisions-page.test.tsx`).
 
 **Relevant files:**
+
 - `dashboard/app/decisions/page.tsx`
 - `dashboard/components/DecisionCard.tsx`
 - `dashboard/components/EmailDraftPreview.tsx`
@@ -341,6 +391,7 @@
 **What it does:** Primary operational receivables ledger (`/dashboard`) displaying overdue invoices categorized across graduated escalation tiers, real-time statistics summary, multi-dimensional filtering, and sortable table/mobile card views.
 
 **Important details:**
+
 - **Stats Summary Bar (`dashboard/components/StatsBar.tsx`)**:
   - 3 KPI metric cards: Total Overdue (formatted USD), Pending Decisions count, Sent This Week count.
   - Left-border color accents (red, amber, green, purple) and loading skeleton cards.
@@ -358,6 +409,7 @@
 - **Testing**: 13/13 tests passing under Vitest (`dashboard/tests/dashboard-page.test.tsx`).
 
 **Relevant files:**
+
 - `dashboard/app/dashboard/page.tsx`
 - `dashboard/components/StatsBar.tsx`
 - `dashboard/components/InvoiceTable.tsx`
@@ -374,6 +426,7 @@
 **What it does:** High-taste error and route recovery page tailored to the Chazer autonomous A/R domain ("Ledger Entry Missing / Uncollectible Route"), featuring interactive snapshot diagnostics and quick navigation recovery.
 
 **Important details:**
+
 - **Visual Design & Micro-interactions**:
   - Dark-mode glassmorphic inspection card (`glass-card`, `border-border-subtle`, gradient accents) depicting `INV-404-NOT-FOUND`.
   - Alive pulsing classification badge (`UNCOLLECTIBLE_ROUTE · TIER_3_ESCALATED`).
@@ -386,6 +439,7 @@
 - **Testing**: 3/3 unit tests passing in Vitest (`dashboard/tests/not-found.test.tsx`).
 
 **Relevant files:**
+
 - `dashboard/app/not-found.tsx`
 - `dashboard/tests/not-found.test.tsx`
 
@@ -397,6 +451,7 @@
 **What it does:** Core application layout framework, responsive navigation system, live sweep status indicator, manual sweep trigger, and Zustand state integration for the Chazer owner dashboard.
 
 **Important details:**
+
 - **Sidebar (`dashboard/components/Sidebar.tsx`)**:
   - Chazer brand logo with gradient icon and subtitle (`Autonomous Collections`).
   - 3 primary routes: Dashboard (`/dashboard`), Decisions (`/decisions`), Audit Log (`/audit`).
@@ -416,6 +471,7 @@
 - **Testing**: 9/9 unit and component tests passing under Vitest (`dashboard/tests/app-shell.test.tsx`).
 
 **Relevant files:**
+
 - `dashboard/components/AppShell.tsx`
 - `dashboard/components/Sidebar.tsx`
 - `dashboard/components/TopBar.tsx`
@@ -431,6 +487,7 @@
 **What it does:** Supabase Edge Functions implementing owner approval (`POST /decisions/:id/approve` / `decisions-approve`) and rejection (`POST /decisions/:id/reject` / `decisions-reject`) for pending AI-drafted collection emails.
 
 **Important details:**
+
 - **Approve Decision Endpoint (`decisions-approve`)**:
   - Validates decision presence, returning 404 `DECISION_NOT_FOUND` if absent.
   - Enforces conflict resolution guard, returning 409 `DECISION_ALREADY_RESOLVED` if decision is not pending.
@@ -445,6 +502,7 @@
 - **Testing**: 12/12 unit and integration tests passing under Vitest (`dashboard/tests/decisions-actions.test.ts`).
 
 **Relevant files:**
+
 - `supabase/functions/decisions-approve/index.ts`
 - `supabase/functions/decisions-reject/index.ts`
 - `dashboard/tests/decisions-actions.test.ts`
@@ -456,11 +514,13 @@
 
 **Status:** Implemented  
 **What it does:** Standardized test infrastructure and execution framework enforcing Test-Driven Development (`/tdd`) across the entire repository.
+
 - **Frontend / Fullstack**: Vitest + React Testing Library + JSDOM (`dashboard/vitest.config.ts`, `dashboard/vitest.setup.ts`, `npm test`)
 - **Python Agent**: Pytest + Pydantic validation models (`agent/tests/schemas.py`, `pytest tests/ -v`)
 - **Completion Invariant**: No ticket or feature can be marked `Completed` without red-green TDD verification.
 
 **Relevant files:**
+
 - `dashboard/vitest.config.ts`, `dashboard/vitest.setup.ts`, `dashboard/package.json`, `dashboard/tests/types.test.ts`
 - `agent/tests/schemas.py`
 - `docs/20-testing-strategy.md`, `docs/21-code-review-protocol.md`, `docs/22-actionable-issues-backlog.md`, `docs/23-parallel-execution-plan.md`
@@ -471,6 +531,7 @@
 **What it does:** Supabase Edge Function serving REST API endpoints (`GET /invoices`, `GET /decisions`, `GET /audit-log`) for the Next.js owner dashboard with dynamic aging calculation, tier classification, high-value flagging, summary statistics aggregation, and query filtering/pagination.
 
 **Important details:**
+
 - **`GET /invoices`**:
   - Fetches and dynamically enriches invoices with `days_overdue`, `tier`, `is_high_value`, `client_name`, and `client_email`.
   - Computes global summary statistics (`total_overdue_amount`, `count_by_tier`, `pending_decisions`).
@@ -485,6 +546,7 @@
 - **Testing**: 14/14 unit and integration tests passing under Vitest (`dashboard/tests/api-router.test.ts`).
 
 **Relevant files:**
+
 - `supabase/functions/api-router/index.ts`
 - `dashboard/tests/api-router.test.ts`
 - `docs/06-api-and-state-design.md`
@@ -497,6 +559,7 @@
 **What it does:** Supabase Edge Function ingesting, validating, and upserting invoice seed datasets from Supabase Storage or request payloads into Postgres `clients` and `invoices` tables.
 
 **Important details:**
+
 - **Authentication Guard**: Mandatory `x-seed-secret` header check returning 401 Unauthorized if secret is invalid.
 - **CSV Parser & Validator**:
   - RFC 5321 email format validation, `amount` bounds checking (`> 0` and `<= 999,999.99`), `invoice_id` format checking (`INV-NNN`), and status validation.
@@ -508,6 +571,7 @@
 - **Testing**: 14/14 unit and integration tests passing under Vitest (`dashboard/tests/seed-data.test.ts`).
 
 **Relevant files:**
+
 - `supabase/functions/seed-data/index.ts`
 - `data/invoices_seed.csv`
 - `dashboard/tests/seed-data.test.ts`
@@ -521,6 +585,7 @@
 **What it does:** Resend API integration with Idempotency-Key support and sandbox development mode, coupled with synchronous immutable audit event persistence in Supabase Postgres.
 
 **Important details:**
+
 - **Email Sending Tool (`send_email`)**:
   - Resend API dispatch supporting custom sender, recipients, plain-text body, and subject.
   - Zero-credit Sandbox Mode (`sandbox = True` / `RESEND_SANDBOX = true`) generating deterministic mock message IDs without live HTTP traffic.
@@ -534,6 +599,7 @@
 - **Testing**: 8/8 unit tests passing under Pytest with Pydantic `SendEmailOutputSchema` and `AuditLogEntrySchema` validation.
 
 **Relevant files:**
+
 - `agent/tools/send_email.py`
 - `agent/tools/write_audit_log.py`
 - `agent/tests/test_send_email.py`
@@ -549,6 +615,7 @@
 **What it does:** LLM-powered collection email generation tool for the Strands agent framework, supporting Grok (xAI) and Google Gemini 1.5 Flash via LiteLLM provider with strict post-generation safety validation, word count limits, and robust parse/retry logic.
 
 **Important details:**
+
 - **Tier 1 Tone**: Warm, polite nudge assuming the client simply misplaced or overlooked the invoice.
 - **Tier 2 Tone**: Firmer follow-up explicitly referencing prior reminder dates and stating clear payment urgency.
 - **Tier 3 Tone**: Formal, unambiguous final notice requesting immediate settlement while strictly banning unlawful threats.
@@ -565,6 +632,7 @@
 - **Testing**: 13/13 unit and contract tests passing under Pytest with Pydantic `EmailDraftSchema` validation.
 
 **Relevant files:**
+
 - `agent/tools/draft_email.py`
 - `agent/tests/test_draft_email.py`
 - `agent/tests/schemas.py`
@@ -578,6 +646,7 @@
 **What it does:** Deterministic rule-based escalation classifier tool for the Strands AI collection agent runtime, implementing complete tier assignment matrix, high-value thresholds, dispute flag auto-freezes, and late-start edge cases.
 
 **Important details:**
+
 - **Tier 1 (1–7 days overdue)**: Friendly nudge (`auto_send_eligible = True`, `escalate = False` on first contact; `auto_send_eligible = False` if already contacted).
 - **Tier 2 (8–21 days overdue)**: Firm reminder referencing prior contact (`auto_send_eligible = True`, `escalate = False` when `contact_count >= 1`).
 - **Late Start Edge Case (8–21 days overdue, 0 contacts)**: Intelligently falls back to Tier 1 initial nudge to avoid incoherent "second reminder" messaging.
@@ -588,6 +657,7 @@
 - **Testing**: 15/15 unit tests passing under Pytest with Pydantic payload validation.
 
 **Relevant files:**
+
 - `agent/tools/classify.py`
 - `agent/tests/test_classify.py`
 - `agent/tests/schemas.py`
@@ -601,6 +671,7 @@
 **What it does:** Centralized TypeScript definitions for the entire application frontend, API contracts, entity schemas, enums, query parameters, state mutations, and UI models strictly aligned with `docs/06-api-and-state-design.md` and `docs/07-components.md`.
 
 **Important details:**
+
 - Domain Enums: `InvoiceStatus`, `EscalationTier`, `DecisionStatus`, `ContactHistoryStatus`, `SweepStatus`, `AuditAction`, `AuditStatus`
 - Entities: `Client`, `Invoice`, `Summary`, `TierCounts`, `Decision`, `DecisionInvoiceContext`, `ContactHistory`, `AuditEntry`, `AuditMetadata`, `SweepRun`
 - API Contracts: `InvoicesResponse`, `InvoicesQueryParams`, `DecisionsResponse`, `DecisionsQueryParams`, `EmailContent`, `ApproveDecisionRequest/Response`, `RejectDecisionRequest/Response`, `AuditLogQueryParams`, `AuditLogResponse`, `Pagination`, `SweepTriggerResponse`, `SeedDataResponse`, `ApiErrorResponse`
@@ -608,6 +679,7 @@
 - Component Prop Types: `AppShellProps`, `StatsBarProps`, `StatCardProps`, `InvoiceTableProps`, `InvoiceRowProps`, `TierBadgeProps`, `AgingBarProps`, `DecisionCardProps`, `EmailDraftPreviewProps`, `EditDraftModalProps`, `DecisionActionsProps`, `AuditTimelineProps`, `AuditEntryProps`, `SweepStatusIndicatorProps`, `TriggerSweepButtonProps`, `EmptyStateProps`
 
 **Relevant files:**
+
 - `dashboard/lib/types.ts`
 - `dashboard/tests/types.test.ts`
 - `docs/06-api-and-state-design.md`
@@ -621,6 +693,7 @@
 **What it does:** Complete repository workspace initialization, configuration, toolchain setup, and file structure supporting the Python Strands agent runtime, Supabase edge database/functions layer, and Next.js 14 frontend dashboard.
 
 **Important details:**
+
 - Git initialized with `main` branch
 - Comprehensive `.gitignore` covering Python, Next.js, Vercel, Supabase, node_modules, and environment files
 - Apache-2.0 `LICENSE`
@@ -631,6 +704,7 @@
 - `data/` seeded with standard `invoices_seed.csv` from `docs/05`
 
 **Relevant files:**
+
 - `.gitignore`, `LICENSE`, `README.md`
 - `agent/requirements.txt`, `agent/.env.example`
 - `supabase/config.toml`, `supabase/.env.example`
@@ -645,11 +719,13 @@
 **What it does:** 22 production-grade markdown documents covering every aspect of the Chazer autonomous invoice-chasing agent — from PRD through architecture, agent spec, API design, UI components, design system, testing, deployment, and demo script.
 
 **Important details:**
+
 - Stack was revised from AWS-native to free-tier stack (Supabase + Gemini + Resend + Vercel) during planning due to no AWS credits available
 - All documents are consistent with the revised stack (context.md updated to reflect)
 - ADR-001 documented in context.md explaining all stack trade-offs
 
 **Relevant files:**
+
 - `docs/01-prd.md` through `docs/23-parallel-execution-plan.md`
 - `context.md` (updated with revised stack)
 
@@ -663,6 +739,7 @@
 **What it does:** Full orchestration engine (`agent/chazer_agent.py` and `agent/main.py`) assembling the complete Strands agent toolchain (`classify_invoice`, `draft_email`, `send_email`, `write_audit_log`) into an autonomous background loop capable of executing sweeps across active receivables, auto-dispatching Tier 1/2 notices, and escalating Tier 3 or high-value invoices into the human decision queue.
 
 **Important details:**
+
 - **`ChazerCollectionAgent` Engine (`agent/chazer_agent.py`)**:
   - Ingests active invoices from Supabase Postgres or canonical 8-invoice seed dataset fallback.
   - Dynamically computes overdue aging (`days_overdue = max(0, (now - due_date).days)`).
@@ -679,6 +756,7 @@
 - **Testing**: 42/42 tests passing in Pytest (`agent/tests/test_chazer_agent.py`, `test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
 
 **Relevant files:**
+
 - `agent/chazer_agent.py`
 - `agent/main.py`
 - `agent/tests/test_chazer_agent.py`
@@ -692,6 +770,7 @@
 **What it does:** Supabase Edge Function (`supabase/functions/agent-sweep/index.ts`) providing native TypeScript runtime execution for autonomous collection sweeps triggered by pg_cron schedules, manual dashboard button clicks, or external webhook invocations.
 
 **Important details:**
+
 - **Endpoint Route**: `POST /functions/v1/agent-sweep` (and `POST /sweep`), supporting `GET` (health/status) and `OPTIONS` (CORS preflight).
 - **Parity with Python Strands Agent**:
   - Employs identical classification rules (`classifyInvoiceTs`), 72-hour contact window guards, high-value overrides ($10,000+), and dispute freezes.
@@ -702,7 +781,7 @@
 - **Testing**: 12/12 unit and integration tests passing in Vitest (`dashboard/tests/agent-sweep.test.ts`), bringing full frontend/edge test suite to 104/104 tests passing.
 
 **Relevant files:**
+
 - `supabase/functions/agent-sweep/index.ts`
 - `dashboard/tests/agent-sweep.test.ts`
 - `docs/03-agent-specification.md`, `docs/06-api-and-state-design.md`
-
