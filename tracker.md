@@ -2,12 +2,84 @@
 
 ---
 
+## 2026-09-14 — Setup Pre-Commit Hooks (Husky + lint-staged + Prettier) & Repository Setup
+
+### Objective
+
+Configure Husky pre-commit hooks with lint-staged, Prettier, typecheck, and test scripts at the repository root, stage and commit the codebase, and push the repository to `https://github.com/ritam413/Chazer.git` on `main`.
+
+### Changes Made
+
+- **Pre-Commit Hook Configuration**:
+  - Configured Husky (`.husky/pre-commit`) running `npx lint-staged`, `npm run typecheck`, and `npm run test`.
+  - Configured `.lintstagedrc` with Prettier automatic file formatting.
+  - Created `.prettierrc` with consistent formatting rules.
+  - Set up root `package.json` with scripts for `prepare`, `typecheck` (`npm --prefix dashboard run build`), and `test` (`npm --prefix dashboard test`).
+- **Verification**:
+  - Verified pre-commit validation pipeline: `npm run typecheck` and `npm run test` (129/129 tests passed).
+  - Verified Python test suite (42/42 tests passed).
+
+### Files Changed
+
+- `.husky/pre-commit` (NEW)
+- `.lintstagedrc` (NEW)
+- `.prettierrc` (NEW)
+- `package.json` (NEW)
+- `package-lock.json` (NEW)
+- `tracker.md` (MODIFIED)
+
+### Current State
+
+Pre-commit hooks are active, ensuring all future commits pass Prettier formatting, Next.js build typechecking, and test suite verification.
+
+### Next Agent Instructions
+
+Repository is pushed and ready for active development and demo runs.
+
+---
+
+## 2026-09-14 — Refine Dashboard Layout: Scoped Pipeline Visualizer Exclusively to Landing Page
+
+### Objective
+
+Remove the 4-Stage Collection Pipeline Visualizer from `/dashboard` (`Aging Receivables`) to maintain a clean, focused operational ledger view, keeping the interactive visualizer exclusively on the `/` public landing page showcase.
+
+### Changes Made
+
+- **Dashboard View Clean-Up**:
+  - Removed `PipelineVisualizer` import and `<PipelineVisualizer initialStage={1} />` component from [dashboard/app/dashboard/page.tsx](file:///c:/CCodes_WebDevelopment/hckthon/Chazer/dashboard/app/dashboard/page.tsx).
+  - Maintained `PipelineVisualizer` on the root landing page ([dashboard/app/page.tsx](file:///c:/CCodes_WebDevelopment/hckthon/Chazer/dashboard/app/page.tsx)) under the "Interactive Architecture Simulation" showcase.
+- **Integration Test Alignment**:
+  - Updated [dashboard/tests/dashboard-page.test.tsx](file:///c:/CCodes_WebDevelopment/hckthon/Chazer/dashboard/tests/dashboard-page.test.tsx) to assert that `pipeline-visualizer` is not present in `DashboardPage`, validating full layout hierarchy and passing 13/13 tests.
+
+### Files Changed
+
+- `dashboard/app/dashboard/page.tsx` (MODIFIED)
+- `dashboard/tests/dashboard-page.test.tsx` (MODIFIED)
+- `tracker.md` (MODIFIED)
+
+### Verification
+
+- `npm test` in `dashboard/`: 129/129 tests passed across 12 test suites.
+
+### Current State
+
+The `/dashboard` view is streamlined for live ledger operations, while the `/` landing page maintains the interactive architecture simulation loop.
+
+### Next Agent Instructions
+
+Continue with any demo presentation recording or further UI polish if requested.
+
+---
+
 ## 2026-09-14 — Supabase Edge Functions Deployment via MCP Server & Next.js Production Build Validation
 
 ### Objective
+
 Deploy all 5 required Supabase Edge Functions to the live active Supabase cloud project (`enpxakhpoixwgrhvieyk`) using the Supabase MCP Server (`deploy_edge_function`), verify active runtime status, and validate Next.js production build (`npm run build`) and test suites.
 
 ### Changes Made
+
 - **Deployed Edge Functions via Supabase MCP Tool**:
   1. `seed-data`: CSV seed ingestion, validation, and demo database state reset (`status: ACTIVE`, version 1).
   2. `decisions-approve`: Human-in-the-loop decision approval, Resend email dispatch, and `OWNER_APPROVED` audit logging (`status: ACTIVE`, version 1).
@@ -24,15 +96,18 @@ Deploy all 5 required Supabase Edge Functions to the live active Supabase cloud 
   - Python test suite (`pytest agent/tests/ -v`): 42/42 passed.
 
 ### Files Changed
+
 - `dashboard/components/DecisionStates.tsx` (NEW)
 - `dashboard/app/decisions/page.tsx` (MODIFIED)
 - `dashboard/tests/decisions-page.test.tsx` (MODIFIED)
 - `tracker.md` (MODIFIED)
 
 ### Current State
+
 **The application is 100% production-ready for deployment to Vercel and submission.** All cloud Edge Functions and database tables are live on Supabase.
 
 ### Next Agent Instructions
+
 1. When configuring cron schedules or webhooks, point to the live deployed function URLs: `https://enpxakhpoixwgrhvieyk.supabase.co/functions/v1/<function-name>`.
 2. Secrets (`RESEND_API_KEY`, `SEED_SECRET`, `CRON_SECRET`) can be set via `supabase secrets set` or Supabase project dashboard settings.
 
@@ -41,9 +116,11 @@ Deploy all 5 required Supabase Edge Functions to the live active Supabase cloud 
 ## 2026-09-13 — DEVOPS-04: Full Suite QA Verification & Final Submission Sign-Off
 
 ### Objective
+
 Execute complete end-to-end regression testing across all multi-runtime workstreams, verify and sign off all items in `docs/17-submission-qa-checklist.md`, synchronize the 21-ticket parallel execution matrix in `docs/23-parallel-execution-plan.md` and `docs/22-actionable-issues-backlog.md`, and complete final repository release handoff.
 
 ### Changes Made
+
 - **Pre-Submission QA Audit (`docs/17-submission-qa-checklist.md`)**:
   - Checked off Critical Path tests (CP-01 through CP-06): DB seed verification, manual sweep trigger, decision queue population, approve action with Resend dispatch, reject action with audit logging, and 72-hour idempotency guard.
   - Checked off UI Smoke tests (UI-01 through UI-05): Dashboard rendering ($96,990 overdue), decision queue optimistic actions, draft modal word count/safety validation, audit log relative time & tooltips, and mobile card layouts.
@@ -54,6 +131,7 @@ Execute complete end-to-end regression testing across all multi-runtime workstre
   - Updated `features_implemented.md`: Added `DEVOPS-04` feature entry.
 
 ### Files Changed
+
 - `docs/17-submission-qa-checklist.md` (MODIFIED)
 - `docs/22-actionable-issues-backlog.md` (MODIFIED)
 - `docs/23-parallel-execution-plan.md` (MODIFIED)
@@ -61,16 +139,20 @@ Execute complete end-to-end regression testing across all multi-runtime workstre
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - **Frontend & Edge Vitest Suite**: 129/129 tests passed across 12 test suites (`npm test` in `dashboard/`).
 - **TypeScript Strict Compiler**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
 - **Python Strands Agent Pytest Suite**: 42/42 tests passed in 0.47s (`pytest agent/tests/ -v`).
 - **Python Agent CLI Sweep**: `python -m agent.main --sandbox` executed across all 8 seeded invoices with 0 errors (4 auto-sent, 4 escalated).
 
 ### Current State
+
 **All 21/21 repository tickets are 100% completed, tested, and verified.** The repository is in a pristine, production-ready state for hackathon submission and demo video recording.
 
 ### Next Agent Instructions
+
 The repository build is complete! For recording the demo video or presenting to judges:
+
 1. Start the Next.js frontend: `cd dashboard && npm run dev`
 2. Follow the 3-minute video presentation script in `docs/12-demo-script.md`.
 3. To reset the demo state between takes, execute `SELECT reset_demo();` in Supabase SQL editor.
@@ -78,31 +160,34 @@ The repository build is complete! For recording the demo video or presenting to 
 ---
 
 ## 2026-09-13 — ARCH-01 & DEVOPS-03: Polyglot Architecture Formalization & Master Demo Script Alignment
-+
+
+-
+
 +### Objective
-+Formalize the Polyglot Autonomous Architecture, Dispute Reconciliation Invariant, and ADR-002 (Multi-Model LLM routing with Grok, OpenAI, Gemini via LiteLLM) (`ARCH-01`), and align the public `README.md`, `docs/16-demo-script-pitch.md`, and `docs/12-demo-script.md` with the live 4-Stage Horizontal Pipeline Visualizer and Monad Editorial design system (`DEVOPS-03`).
-+
++Formalize the Polyglot Autonomous Architecture, Dispute Reconciliation Invariant, and ADR-002 (Multi-Model LLM routing with Grok, OpenAI, Gemini via LiteLLM) (`ARCH-01`), and align the public `README.md`, `docs/16-demo-script-pitch.md`, and `docs/12-demo-script.md` with the live 4-Stage Horizontal Pipeline Visualizer and Monad Editorial design system (`DEVOPS-03`). +
 +### Changes Made
 +- **ARCH-01 (Polyglot Architecture & ADR-002)**:
-+  - Updated `context.md`:
-+    - Documented dual-runtime Polyglot Architecture (Python Strands Agent + TypeScript Edge Function).
-+    - Added Runtime Comparison Matrix table.
-+    - Specified the Dispute Reconciliation Domain Invariant (`dispute_flag = True` ➔ auto-freeze, `TIER_3`, human review queue).
-+    - Added ADR-002: Multi-Model LLM Routing (Grok preferred, Gemini fallback, OpenAI supported, offline invariant template fallback).
-+  - Updated `docs/02-architecture.md`:
-+    - Updated High-Level System Overview ASCII diagram and Mermaid graph with dual-runtime polyglot layers and 4-Stage visualizer.
-+  - Updated `docs/13-tech-stack.md`:
-+    - Updated LLM matrix and polyglot runtime trade-offs.
-+- **DEVOPS-03 (Master README & Demo Script Alignment)**:
-+  - Updated `README.md`:
-+    - Added Polyglot Architecture comparison table and multi-model configuration.
-+    - Updated test suite metrics (129 Vitest tests, 42 Pytest tests).
-+    - Ensured all documentation links are consistent.
-+  - Created `docs/12-demo-script.md` & updated `docs/16-demo-script-pitch.md`:
-+    - Aligned 3-minute hackathon demo script with 4-stage pipeline visualizer simulation, Monad Editorial design system cues, Decision Queue inspection, and AWS Strands SDK Python code review.
-+- **Backlog & Execution Tracking**:
-+  - Updated `features_implemented.md`, `docs/23-parallel-execution-plan.md`, `docs/22-actionable-issues-backlog.md`, and `tracker.md`.
-+
+
+- - Updated `context.md`:
+- - Documented dual-runtime Polyglot Architecture (Python Strands Agent + TypeScript Edge Function).
+- - Added Runtime Comparison Matrix table.
+- - Specified the Dispute Reconciliation Domain Invariant (`dispute_flag = True` ➔ auto-freeze, `TIER_3`, human review queue).
+- - Added ADR-002: Multi-Model LLM Routing (Grok preferred, Gemini fallback, OpenAI supported, offline invariant template fallback).
+- - Updated `docs/02-architecture.md`:
+- - Updated High-Level System Overview ASCII diagram and Mermaid graph with dual-runtime polyglot layers and 4-Stage visualizer.
+- - Updated `docs/13-tech-stack.md`:
+- - Updated LLM matrix and polyglot runtime trade-offs.
+    +- **DEVOPS-03 (Master README & Demo Script Alignment)**:
+- - Updated `README.md`:
+- - Added Polyglot Architecture comparison table and multi-model configuration.
+- - Updated test suite metrics (129 Vitest tests, 42 Pytest tests).
+- - Ensured all documentation links are consistent.
+- - Created `docs/12-demo-script.md` & updated `docs/16-demo-script-pitch.md`:
+- - Aligned 3-minute hackathon demo script with 4-stage pipeline visualizer simulation, Monad Editorial design system cues, Decision Queue inspection, and AWS Strands SDK Python code review.
+    +- **Backlog & Execution Tracking**:
+- - Updated `features_implemented.md`, `docs/23-parallel-execution-plan.md`, `docs/22-actionable-issues-backlog.md`, and `tracker.md`.
+-
+
 +### Files Changed
 +- `context.md` (MODIFIED)
 +- `docs/02-architecture.md` (MODIFIED)
@@ -113,30 +198,26 @@ The repository build is complete! For recording the demo video or presenting to 
 +- `features_implemented.md` (MODIFIED)
 +- `docs/23-parallel-execution-plan.md` (MODIFIED)
 +- `docs/22-actionable-issues-backlog.md` (MODIFIED)
-+- `tracker.md` (MODIFIED)
-+
++- `tracker.md` (MODIFIED) +
 +### Verification
 +- **Frontend & Edge Vitest Suite**: 129/129 tests passed across 12 test suites (`npm test` in `dashboard/`).
 +- **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
 +- **Python Agent Pytest Suite**: 42/42 tests passed in 0.36s (`pytest agent/tests/ -v`).
-+- **Python Agent CLI Sweep**: `python -m agent.main --sandbox` executed across all 8 seeded invoices with 0 errors (4 auto-sent, 4 escalated).
-+
-+### Current State
-+`ARCH-01` and `DEVOPS-03` are 100% completed and verified. 20/21 total repository tickets are now complete.
-+
++- **Python Agent CLI Sweep**: `python -m agent.main --sandbox` executed across all 8 seeded invoices with 0 errors (4 auto-sent, 4 escalated). +
++### Current State +`ARCH-01` and `DEVOPS-03` are 100% completed and verified. 20/21 total repository tickets are now complete. +
 +### Next Agent Instructions
 +The next agent should proceed to the final ticket:
-+1. `DEVOPS-04`: Production Smoke-Test & Submission Verification (run through `docs/17-submission-qa-checklist.md` and complete final repository sign-off).
-+
-+---
-+
- ## 2026-09-13 — FRONT-06 & FRONT-07: 4-Stage Horizontal Pipeline Visualizer Component & Surface Integration
++1. `DEVOPS-04`: Production Smoke-Test & Submission Verification (run through `docs/17-submission-qa-checklist.md` and complete final repository sign-off). +
++--- +
 
+## 2026-09-13 — FRONT-06 & FRONT-07: 4-Stage Horizontal Pipeline Visualizer Component & Surface Integration
 
 ### Objective
+
 Implement the 4-Stage Horizontal Connected Pipeline Visualizer component (`FRONT-06`) and integrate it into the primary receivables ledger on `/dashboard` and the editorial landing page on `/` (`FRONT-07`) under strict TDD and Monad Editorial design guidelines.
 
 ### Changes Made
+
 - **FRONT-06 (4-Stage Pipeline Visualizer Component)**:
   - Created `dashboard/components/PipelineVisualizer.tsx`:
     - 4 sequential connected cards (`1. Receivables Ingested`, `2. Tone & Risk Matrix`, `3. Dual-Lane Dispatch`, `4. Ledger & Audit Trail`) with top dashed connector line on desktop.
@@ -154,6 +235,7 @@ Implement the 4-Stage Horizontal Connected Pipeline Visualizer component (`FRONT
   - Updated `features_implemented.md`, `docs/23-parallel-execution-plan.md`, `docs/22-actionable-issues-backlog.md`, and `tracker.md`.
 
 ### Files Changed
+
 - `dashboard/components/PipelineVisualizer.tsx` (NEW)
 - `dashboard/tests/pipeline-visualizer.test.tsx` (NEW)
 - `dashboard/app/dashboard/page.tsx` (MODIFIED)
@@ -166,23 +248,29 @@ Implement the 4-Stage Horizontal Connected Pipeline Visualizer component (`FRONT
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - **Frontend & Edge Vitest Suite**: 129/129 tests passed across 12 test suites (`npm test` in `dashboard/`).
 - **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
 - **Python Agent Pytest Suite**: 42/42 tests passed in 0.37s (`pytest agent/tests/ -v`).
 
 ### Current State
+
 `FRONT-06` and `FRONT-07` are 100% completed, tested, and integrated. 18/21 total repository tickets are now complete.
 
 ### Next Agent Instructions
+
 The next agent should proceed to the remaining tickets:
+
 1. `ARCH-01`: Update `context.md`, `docs/02-architecture.md`, and `docs/13-tech-stack.md` formalizing Polyglot Architecture, Dispute Reconciliation Invariant, and ADR-002 (Grok + OpenAI + Gemini via LiteLLM).
 2. `DEVOPS-03`: Align `docs/12-demo-script.md` with the 4-stage visualizer and finalize pitch assets.
 3. `DEVOPS-04`: Run end-to-end QA checklist against live endpoints.
 
 ### Objective
+
 Decompose the implementation plan and visual pipeline design into 5 atomic, decoupled, single-responsibility tickets (`FRONT-06`, `FRONT-07`, `ARCH-01`, `DEVOPS-03`, `DEVOPS-04`), update the backlog and execution matrix in `docs/22-actionable-issues-backlog.md` and `docs/23-parallel-execution-plan.md`, and establish a step-by-step roadmap so tickets can be executed one by one.
 
 ### Changes Made
+
 - **Backlog & Execution Matrix Updates**:
   - Updated `docs/22-actionable-issues-backlog.md`:
     - Defined `FRONT-06`: 4-Stage Horizontal Pipeline Visualizer Component (`PipelineVisualizer.tsx` + `pipeline-visualizer.test.tsx`).
@@ -197,15 +285,19 @@ Decompose the implementation plan and visual pipeline design into 5 atomic, deco
   - Updated `tracker.md`.
 
 ### Files Changed
+
 - `docs/22-actionable-issues-backlog.md` (MODIFIED)
 - `docs/23-parallel-execution-plan.md` (MODIFIED)
 - `tracker.md` (MODIFIED)
 
 ### Current State
+
 16/21 tickets completed. 5 atomic tickets (`FRONT-06`, `FRONT-07`, `ARCH-01`, `DEVOPS-03`, `DEVOPS-04`) are fully specified with acceptance criteria, non-overlapping file scopes, and test contracts, ready to be executed one by one.
 
 ### Next Agent Instructions
+
 Execute the remaining tickets sequentially or individually:
+
 1. `FRONT-06`: Implement `dashboard/components/PipelineVisualizer.tsx` and `dashboard/tests/pipeline-visualizer.test.tsx`.
 2. `FRONT-07`: Integrate `PipelineVisualizer` into `dashboard/app/dashboard/page.tsx` and `dashboard/app/page.tsx`.
 3. `ARCH-01`: Update `context.md`, `docs/02-architecture.md`, and `docs/13-tech-stack.md`.
@@ -217,9 +309,11 @@ Execute the remaining tickets sequentially or individually:
 ## 2026-09-13 — Centralized Shared Types & Interfaces Architecture (BACK-TYPES)
 
 ### Objective
+
 Create a unified, single source-of-truth types and interfaces library (`supabase/functions/_shared/types.ts` and `supabase/functions/types.ts`) for all Supabase Edge Functions, and refactor all edge functions to import from this central module so types are identical and synchronized across the entire backend.
 
 ### Changes Made
+
 - **Central Shared Types Library**:
   - Created `supabase/functions/_shared/types.ts`:
     - Domain enums & status literals (`InvoiceStatus`, `EscalationTier`, `DecisionStatus`, `ContactHistoryStatus`, `SweepStatus`, `AuditAction`, `AuditStatus`).
@@ -240,6 +334,7 @@ Create a unified, single source-of-truth types and interfaces library (`supabase
   - Updated `features_implemented.md` and `tracker.md`.
 
 ### Files Changed
+
 - `supabase/functions/_shared/types.ts` (NEW)
 - `supabase/functions/types.ts` (NEW)
 - `supabase/functions/api-router/index.ts` (MODIFIED)
@@ -251,15 +346,19 @@ Create a unified, single source-of-truth types and interfaces library (`supabase
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
 - **Frontend & Edge Vitest Suite**: 123/123 tests passed across 11 test suites (`npm test` in `dashboard/`).
 - **Python Agent Pytest Suite**: 42/42 tests passed in 0.30s (`pytest agent/tests/ -v`).
 
 ### Current State
+
 All Supabase Edge Functions now share a single, unified types definition library in `supabase/functions/_shared/types.ts`. All test suites and TypeScript checks are 100% green.
 
 ### Next Agent Instructions
+
 Continue with **Wave 3: Release & Verification**:
+
 1. `DEVOPS-03`: Update `README.md` and public architecture documentation.
 2. `DEVOPS-04`: Perform end-to-end smoke verification against live endpoints.
 
@@ -268,11 +367,14 @@ Continue with **Wave 3: Release & Verification**:
 ## 2026-09-13 — Phase 3 (Wave 2): FRONT-05 & BACK-05 Implementation
 
 ### Objective
+
 Complete **Phase 3: Integration (Wave 2)**:
+
 - **Agent 3: FRONT-05**: Wire Zustand client store (`dashboard/lib/store.ts` and `dashboard/lib/api.ts`) to live Supabase Edge Function REST API endpoints (`/invoices`, `/decisions`, `/audit-log`, `/decisions-approve`, `/decisions-reject`, `/agent-sweep`), with optimistic mutations, rollback resilience, loading skeletons, query synchronizations, and Vitest test suite.
 - **Agent 4: BACK-05**: Configure `pg_cron` daily collection sweep schedule in PostgreSQL migrations (`supabase/migrations/001_initial_schema.sql`) and `CRON_SECRET` authentication verification in the `agent-sweep` Edge Function (`supabase/functions/agent-sweep/index.ts`).
 
 ### Changes Made
+
 - **FRONT-05 (Zustand Store & API Integration)**:
   - Created `dashboard/tests/store.test.ts`:
     - 14 comprehensive unit and integration tests verifying store initialization, sidebar controls, filter & sorting mutations, `fetchInvoices`, `fetchDecisions`, `fetchAuditLog`, optimistic `approveDecision` with rollback on error, optimistic `rejectDecision` with rollback on error, and `triggerSweep` refresh cycles.
@@ -293,6 +395,7 @@ Complete **Phase 3: Integration (Wave 2)**:
   - Updated `features_implemented.md` with complete feature descriptions, file lists, and verification results.
 
 ### Files Changed
+
 - `dashboard/tests/store.test.ts` (NEW)
 - `dashboard/lib/api.ts` (MODIFIED)
 - `supabase/migrations/001_initial_schema.sql` (MODIFIED)
@@ -303,26 +406,33 @@ Complete **Phase 3: Integration (Wave 2)**:
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - **Frontend & Edge Vitest Suite**: 123/123 tests passed across 11 test suites (`npm test` in `dashboard/`).
 - **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
 - **Python Agent Pytest Suite**: 42/42 tests passed in 0.45s (`pytest agent/tests/ -v`).
 
 ### Current State
+
 `FRONT-05` and `BACK-05` are 100% complete and verified. All Phase 1, Phase 2, and Phase 3 tickets (16/20 total tickets) are now completed. All core agent tools, edge functions, database migrations, pg_cron schedules, Next.js frontend pages, and Zustand store API bindings are implemented and green under TDD.
 
 ### Next Agent Instructions
+
 The next agent should proceed to **Phase 4: Verification & Release (Wave 3)**:
+
 1. `DEVOPS-03`: Update `README.md` and public architecture docs with badging, complete setup walkthrough, API routes table, and demo script details for hackathon judging.
 2. `DEVOPS-04`: Perform end-to-end smoke verification against live endpoints following `docs/17-submission-qa-checklist.md`.
 
 ---
 
 ### Objective
+
 Complete **Phase 3: Integration (Wave 2)**:
+
 - **Agent 1: AGENT-04**: Assemble Python Strands agent `chazer_agent.py` and CLI sweep loop runner `main.py` with full per-invoice classification, auto-send, high-value/tier-3 escalation, contact window guards, fault tolerance, and Pytest test suite.
 - **Agent 2: AGENT-05**: Implement native TypeScript `agent-sweep` Supabase Edge Function (`supabase/functions/agent-sweep/index.ts`) providing serverless execution parity with the Python agent, with full Vitest test suite.
 
 ### Changes Made
+
 - **AGENT-04 (Python Strands Agent Sweep Loop & CLI Runner)**:
   - Created `agent/chazer_agent.py`:
     - Implemented `ChazerCollectionAgent` orchestrating `classify_invoice`, `draft_email`, `send_email`, and `write_audit_log`.
@@ -349,6 +459,7 @@ Complete **Phase 3: Integration (Wave 2)**:
   - Updated `features_implemented.md` with complete implementation details and verified files.
 
 ### Files Changed
+
 - `agent/chazer_agent.py` (NEW)
 - `agent/main.py` (NEW)
 - `agent/tests/test_chazer_agent.py` (NEW)
@@ -359,15 +470,18 @@ Complete **Phase 3: Integration (Wave 2)**:
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - **Python Agent Pytest Suite**: 42/42 tests passed in 0.41s (`pytest agent/tests/ -v`).
 - **Python CLI Runner**: `python -m agent.main --sandbox` executed against all 8 seeded invoices with 0 errors (4 dispatched, 4 escalated).
 - **Frontend / Edge Vitest Suite**: 104/104 tests passed across 10 test suites (`npm test` in `dashboard/`).
 - **TypeScript Typecheck**: `npx tsc --noEmit` in `dashboard/` passed with 0 errors.
 
 ### Current State
+
 `AGENT-04` and `AGENT-05` are 100% complete, fully tested, and verified. The autonomous sweep engine is operational in both Python (Strands agent for CLI/hackathon judging) and native TypeScript (Supabase Edge Function for serverless production runtime).
 
 ### Next Agent Instructions
+
 1. `FRONT-05 (Phase B)`: Wire Zustand store actions (`dashboard/lib/store.ts` and `dashboard/lib/api.ts`) to live Supabase Edge Function endpoints (`/invoices`, `/decisions`, `/audit-log`, `/sweep`, `/approve`, `/reject`).
 2. `BACK-05`: Configure `pg_cron` daily sweep schedule in Supabase migrations.
 3. `DEVOPS-03`: Finalize `README.md` and public architecture docs for hackathon submission.
@@ -375,9 +489,11 @@ Complete **Phase 3: Integration (Wave 2)**:
 ---
 
 ### Objective
+
 Complete **Agent 10: FRONT-04** (Audit Log Page `/audit`, `AuditTimeline.tsx`, and `AuditEntry.tsx` with newest-first ordering, relative timestamps with absolute ISO hover tooltips, and complete action coverage) and **Agent 11: DEVOPS-02 & DEVOPS-05** (`.github/workflows/deploy.yml` CI/CD pipeline, `supabase/migrations/002_demo_utilities.sql` stored procedure for reset, plus `supabase/migrations/001_initial_schema.sql` base DDL).
 
 ### Changes Made
+
 - **FRONT-04 (Audit Log Page & Components)**:
   - `dashboard/components/AuditEntry.tsx`: Added `formatRelativeTime` utility rendering relative timestamps ("Just now", "2m ago", "1h ago"), absolute ISO timestamps in `title` hover tooltips, and complete action type icons (`HIGH_VALUE_ESCALATED`, `TIER3_ESCALATED`, `DISPUTE_ESCALATED`, `TIER1_EMAIL_SENT`, `TIER2_EMAIL_SENT`, `EMAIL_SENT`, `OWNER_APPROVED`, `OWNER_REJECTED`, `SWEEP_STARTED`, `SWEEP_COMPLETED`, `SEED_DATA_INGESTED`, `SEND_FAILED`, `LLM_FAILED`).
   - `dashboard/components/AuditTimeline.tsx`: Enforced strict newest-first sorting (`.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())`), category filtering, search, and loading skeleton states.
@@ -396,6 +512,7 @@ Complete **Agent 10: FRONT-04** (Audit Log Page `/audit`, `AuditTimeline.tsx`, a
   - Updated `docs/23-parallel-execution-plan.md` and `features_implemented.md`.
 
 ### Files Changed
+
 - `dashboard/components/AuditEntry.tsx` (MODIFIED)
 - `dashboard/components/AuditTimeline.tsx` (MODIFIED)
 - `dashboard/tests/audit-page.test.tsx` (MODIFIED)
@@ -408,14 +525,17 @@ Complete **Agent 10: FRONT-04** (Audit Log Page `/audit`, `AuditTimeline.tsx`, a
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - `npm test` in `dashboard/`: 92/92 Vitest tests passed across 9 test suites.
 - `npx tsc --noEmit` in `dashboard/`: 0 errors, clean check.
 - `pytest agent/tests/ -v`: 36/36 tests passed in 0.31s.
 
 ### Current State
+
 `FRONT-04`, `DEVOPS-02`, `DEVOPS-05`, and `BACK-01` are 100% complete, tested, and documented.
 
 ### Next Agent Instructions
+
 1. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent` CLI loop.
 2. `AGENT-05`: Implement `supabase/functions/agent-sweep/index.ts`.
 3. `FRONT-05`: Implement Zustand store live API wiring in `dashboard/lib/store.ts`.
@@ -425,9 +545,11 @@ Complete **Agent 10: FRONT-04** (Audit Log Page `/audit`, `AuditTimeline.tsx`, a
 ## 2026-09-12 — DESIGN-01 & FRONT-04: Full App Unification Under Monad Editorial Design System
 
 ### Objective
+
 Unify the entire Chazer web application (Landing Page `/`, Receivables Dashboard `/dashboard`, Decision Queue `/decisions`, Audit Log `/audit`, and 404 Recovery `/not-found`) under the **Monad Editorial Design System** (warm parchment `#f6f3f1` / deep obsidian `#111215`, Newsreader weight 400 headings, JetBrains Mono body & tables, Lake Blue `#2b59d1` primary actions, Periwinkle cards, and Ash hairline borders), maintaining 100% test coverage.
 
 ### Changes Made
+
 - **Design System Tokens & Foundation**:
   - Configured `dashboard/tailwind.config.js` and `dashboard/app/globals.css` with Monad dual-mode palette, Google fonts (`Newsreader` + `JetBrains Mono`), and zero-flash CSS variables for live Sun/Moon toggling.
 - **Component & Page Architecture**:
@@ -450,6 +572,7 @@ Unify the entire Chazer web application (Landing Page `/`, Receivables Dashboard
   - All 36 Pytest tests in `agent/tests/` passing.
 
 ### Files Changed
+
 - `dashboard/app/page.tsx` (MODIFIED)
 - `dashboard/app/not-found.tsx` (MODIFIED)
 - `dashboard/app/audit/page.tsx` (NEW)
@@ -462,14 +585,17 @@ Unify the entire Chazer web application (Landing Page `/`, Receivables Dashboard
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - `npm test` in `dashboard/`: 89/89 Vitest tests passed across 9 test suites.
 - `npx tsc --noEmit` in `dashboard/`: 0 errors, clean compilation.
 - `pytest agent/tests/ -v`: 36/36 tests passed.
 
 ### Current State
+
 The entire Chazer application is completely unified under the Monad Editorial Design System in both Light and Dark modes with responsive layout support and zero test regressions.
 
 ### Next Agent Instructions
+
 1. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py`.
 2. `AGENT-05`: Implement `supabase/functions/agent-sweep/index.ts`.
 3. `BACK-01`: Create `supabase/migrations/001_initial_schema.sql`.
@@ -479,9 +605,11 @@ The entire Chazer application is completely unified under the Monad Editorial De
 ## 2026-09-12 — FRONT-02 & FRONT-03: Implement Dashboard & Decision Queue Pages
 
 ### Objective
+
 Implement the complete Next.js Aging Receivables Dashboard (`FRONT-02`) and Decision Queue Review System (`FRONT-03`) along with their full component trees (`StatsBar`, `InvoiceTable`, `TierBadge`, `AgingBar`, `DecisionCard`, `EmailDraftPreview`, `EditDraftModal`), API client (`api.ts`), and Zustand state integration under strict `/tdd` Red-Green-Refactor protocol.
 
 ### Changes Made
+
 - **API Client & Store Wiring**:
   - Created `dashboard/lib/api.ts` providing typed functions (`fetchInvoicesApi`, `fetchDecisionsApi`, `approveDecisionApi`, `rejectDecisionApi`, `triggerSweepApi`, `fetchAuditLogApi`) with seamless Edge Function integration and robust offline/client fallback datasets (`FALLBACK_INVOICES`, `FALLBACK_DECISIONS`, `FALLBACK_SUMMARY`).
   - Updated `dashboard/lib/store.ts` connecting Zustand actions to API client with optimistic updates, rollback resilience, and reactive summary counts.
@@ -501,6 +629,7 @@ Implement the complete Next.js Aging Receivables Dashboard (`FRONT-02`) and Deci
 - Updated `dashboard/lib/types.ts` (`isSubmitting` optional in `DecisionCardProps`), `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
 
 ### Files Changed
+
 - `dashboard/lib/api.ts` (NEW)
 - `dashboard/lib/store.ts` (MODIFIED)
 - `dashboard/lib/types.ts` (MODIFIED)
@@ -520,20 +649,24 @@ Implement the complete Next.js Aging Receivables Dashboard (`FRONT-02`) and Deci
 - `tracker.md` (MODIFIED)
 
 ### Implementation Details
+
 - Glassmorphic styling strictly follows `docs/09-design-systems.md` (`glass-card`, `border-border-subtle`, purple glow shadows, custom scrollbars).
 - Safety invariant checks (e.g. email must contain invoice ID, word count ceiling ≤ 200 words) are enforced on the client in `EditDraftModal` before submission, mirroring backend and agent rules.
 - Mobile responsiveness features dual-view layout: comprehensive 8-column data table on desktop, transitioning seamlessly to touch-optimized cards on mobile screens (`< 768px`).
 
 ### Verification
+
 - Vitest suite in `dashboard/`: 82/82 tests passed across 8 test suites (`dashboard-page.test.tsx`, `decisions-page.test.tsx`, `not-found.test.tsx`, `app-shell.test.tsx`, `decisions-actions.test.ts`, `api-router.test.ts`, `seed-data.test.ts`, `types.test.ts`).
 - Pytest suite in `agent/`: 36/36 tests passed across all agent modules (`test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
 - TypeScript compiler (`npx tsc --noEmit` in `dashboard/`): 0 errors, clean check.
 - Red -> Green TDD verification completed.
 
 ### Current State
+
 `FRONT-02` and `FRONT-03` are 100% complete, fully verified, and ready for production deployment.
 
 ### Next Agent Instructions
+
 1. `FRONT-04`: Build `dashboard/app/audit/page.tsx`, `dashboard/components/AuditTimeline.tsx`, and `dashboard/components/AuditEntry.tsx`.
 2. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
 3. `AGENT-05`: Implement `supabase/functions/agent-sweep/index.ts`.
@@ -544,9 +677,11 @@ Implement the complete Next.js Aging Receivables Dashboard (`FRONT-02`) and Deci
 ## 2026-09-12 — UI Craft: Implement Domain-Themed 404 Not Found Screen
 
 ### Objective
+
 Create a domain-authentic 404 Not Found error and recovery page for the Next.js App Router (`dashboard/app/not-found.tsx`) adhering to the `/taste` and `/impeccable` design systems (dark-mode glassmorphic aesthetics, alive micro-interactions, WCAG AA compliance, and clear recovery navigation).
 
 ### Changes Made
+
 - Created `dashboard/app/not-found.tsx` with:
   - "Ledger Entry Missing" / "Uncollectible Route" headline with giant gradient display number and VOID stamp
   - Pulsing `UNCOLLECTIBLE_ROUTE · TIER_3_ESCALATED` badge
@@ -557,6 +692,7 @@ Create a domain-authentic 404 Not Found error and recovery page for the Next.js 
 - Updated `features_implemented.md` and `tracker.md`.
 
 ### Verification
+
 - Vitest suite in `dashboard/`: 58/58 tests passing across 6 test files (`not-found.test.tsx`, `app-shell.test.tsx`, `decisions-actions.test.ts`, `api-router.test.ts`, `seed-data.test.ts`, `types.test.ts`).
 - TypeScript compiler (`npx tsc --noEmit` in `dashboard/`): 0 errors.
 
@@ -565,9 +701,11 @@ Create a domain-authentic 404 Not Found error and recovery page for the Next.js 
 ## 2026-09-12 — BACK-04 & FRONT-01: Implement Decision Actions & AppShell UI Framework
 
 ### Objective
+
 Implement the `decisions-approve` and `decisions-reject` Supabase Edge Function endpoints (`BACK-04`) and the complete `AppShell`, `Sidebar`, `TopBar`, and Zustand store client architecture (`FRONT-01`) with full test coverage under strict `/tdd` Red-Green-Refactor protocol.
 
 ### Changes Made
+
 - **BACK-04 (Decision Actions Backend)**:
   - Created `supabase/functions/decisions-approve/index.ts` implementing:
     - Route handling for `POST /decisions/:id/approve` and `POST /decisions-approve`
@@ -606,6 +744,7 @@ Implement the `decisions-approve` and `decisions-reject` Supabase Edge Function 
 - Updated `dashboard/vitest.config.ts`, `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
 
 ### Files Changed
+
 - `supabase/functions/decisions-approve/index.ts` (NEW)
 - `supabase/functions/decisions-reject/index.ts` (NEW)
 - `dashboard/tests/decisions-actions.test.ts` (NEW)
@@ -620,19 +759,23 @@ Implement the `decisions-approve` and `decisions-reject` Supabase Edge Function 
 - `tracker.md` (MODIFIED)
 
 ### Implementation Details
+
 - Handlers in `decisions-approve` and `decisions-reject` support isolated testing via pure `handleApproveDecision` and `handleRejectDecision` async functions, and run natively on Deno Edge Function runtime.
 - AppShell and navigation components strictly follow tokens from `docs/09-design-systems.md` with glassmorphism surface styling, purple glow accents, and responsive layout behavior.
 
 ### Verification
+
 - Vitest suite in `dashboard/`: 55/55 tests passed across 5 test suites (`decisions-actions.test.ts`, `app-shell.test.tsx`, `api-router.test.ts`, `seed-data.test.ts`, `types.test.ts`).
 - Pytest suite in `agent/`: 36/36 tests passed across all agent modules (`test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
 - TypeScript compiler (`npx tsc --noEmit` in `dashboard/`): 0 errors, clean check.
 - Red -> Green TDD verification completed.
 
 ### Current State
+
 `BACK-04` and `FRONT-01` are 100% complete, fully tested, and verified.
 
 ### Next Agent Instructions
+
 1. `FRONT-02`: Build `dashboard/app/dashboard/page.tsx`, `InvoiceTable.tsx`, `StatsBar.tsx`, `TierBadge.tsx`, and `AgingBar.tsx`.
 2. `FRONT-03`: Build `dashboard/app/decisions/page.tsx`, `DecisionCard.tsx`, `EmailDraftPreview.tsx`, and `EditDraftModal.tsx`.
 3. `FRONT-04`: Build `dashboard/app/audit/page.tsx`, `AuditTimeline.tsx`, and `AuditEntry.tsx`.
@@ -643,9 +786,11 @@ Implement the `decisions-approve` and `decisions-reject` Supabase Edge Function 
 ## 2026-09-12 — BACK-02 & BACK-03: Implement seed-data & api-router Edge Functions
 
 ### Objective
+
 Implement the `seed-data` CSV ingestion Edge Function (`BACK-02`) and the `api-router` REST API Edge Function (`BACK-03`) with complete test coverage in Vitest (`dashboard/tests/seed-data.test.ts`, `dashboard/tests/api-router.test.ts`), supporting the Next.js owner dashboard and Supabase Postgres database layer under strict `/tdd` Red-Green-Refactor protocol.
 
 ### Changes Made
+
 - Created `supabase/functions/seed-data/index.ts` implementing:
   - Header auth verification for `x-seed-secret`
   - Flexible ingestion from Supabase Storage `seed-data/invoices_seed.csv`, direct CSV request body, or canonical seed fallback
@@ -667,6 +812,7 @@ Implement the `seed-data` CSV ingestion Edge Function (`BACK-02`) and the `api-r
 - Updated `features_implemented.md`, `docs/23-parallel-execution-plan.md`, and `tracker.md`.
 
 ### Files Changed
+
 - `supabase/functions/seed-data/index.ts` (NEW)
 - `supabase/functions/api-router/index.ts` (NEW)
 - `dashboard/tests/seed-data.test.ts` (NEW)
@@ -677,18 +823,22 @@ Implement the `seed-data` CSV ingestion Edge Function (`BACK-02`) and the `api-r
 - `tracker.md` (MODIFIED)
 
 ### Implementation Details
+
 - Handlers in `seed-data` and `api-router` are exported as pure async functions (`handleSeedData`, `handleApiRouter`) alongside native `Deno.serve` invocation hooks, enabling zero-friction testing under Vitest as well as deployment on Deno/Supabase Edge runtime.
 - In `api-router`, dynamic calculation helpers `computeEnrichedInvoice` and `calculateInvoicesSummary` ensure aging days and escalation tiers are computed accurately from due dates and dispute flags.
 
 ### Verification
+
 - Vitest suite in `dashboard/`: 34/34 tests passed across 3 test files (`seed-data.test.ts`, `api-router.test.ts`, `types.test.ts`).
 - Pytest suite in `agent/`: 36/36 tests passed across all agent modules (`test_classify.py`, `test_draft_email.py`, `test_send_email.py`, `test_write_audit_log.py`).
 - Red -> Green TDD verification completed.
 
 ### Current State
+
 `BACK-02` and `BACK-03` are 100% complete, fully tested, and ready for integration.
 
 ### Next Agent Instructions
+
 1. `BACK-04`: Implement `supabase/functions/decisions-approve/index.ts` and `supabase/functions/decisions-reject/index.ts`.
 2. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
 3. `FRONT-01` .. `FRONT-04`: Implement Next.js dashboard UI components and pages using the type contracts and API endpoints now available.
@@ -698,9 +848,11 @@ Implement the `seed-data` CSV ingestion Edge Function (`BACK-02`) and the `api-r
 ## 2026-09-12 — AGENT-03: Implement send_email and write_audit_log Tools
 
 ### Objective
+
 Implement the remaining two core Strands agent tools: `send_email` (Resend integration with sandbox mode and idempotency keys) and `write_audit_log` (synchronous immutable audit persistence in Supabase Postgres) along with their unit and contract tests (`agent/tools/send_email.py`, `agent/tools/write_audit_log.py`, `agent/tests/test_send_email.py`, `agent/tests/test_write_audit_log.py`) following strict `/tdd` Red-Green-Refactor protocol.
 
 ### Changes Made
+
 - Created feature branch `feat/agent-03-tools`.
 - Created `agent/tests/test_send_email.py` covering:
   - Zero-credit sandbox mode generating mock Resend IDs without live HTTP traffic
@@ -727,6 +879,7 @@ Implement the remaining two core Strands agent tools: `send_email` (Resend integ
 - Updated `agent/tests/schemas.py`, `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
 
 ### Files Changed
+
 - `agent/tools/send_email.py` (NEW)
 - `agent/tools/write_audit_log.py` (NEW)
 - `agent/tests/test_send_email.py` (NEW)
@@ -737,20 +890,25 @@ Implement the remaining two core Strands agent tools: `send_email` (Resend integ
 - `tracker.md` (MODIFIED)
 
 ### Implementation Details
+
 - `send_email` defaults to sandbox mode if `RESEND_API_KEY` is absent or `RESEND_SANDBOX=true`, ensuring zero-cost developer experience and test suite execution.
 - `write_audit_log` produces immutable log entries synchronously before returning to satisfy invariant INV-03 (all agent actions logged before next step).
 
 ### Verification
+
 - Pytest unit suite `pytest agent/tests/test_send_email.py agent/tests/test_write_audit_log.py`: 8/8 unit tests passed in 0.17s.
 - Pytest full agent suite `pytest agent/tests/ -v`: 36/36 tests passed in 0.23s.
 - Vitest frontend suite `npm test` in `dashboard/`: 6/6 tests passed in 2.20s.
 - Red -> Green TDD verification completed.
 
 ### Current State
+
 `AGENT-03` is 100% complete and verified on branch `feat/agent-03-tools`. All 3 individual Strands agent tools (`classify_invoice`, `draft_email`, `send_email`, `write_audit_log`) are now fully built and tested.
 
 ### Next Agent Instructions
+
 The agent toolchain is ready for:
+
 1. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling all 4 tools into `ChazerCollectionAgent` and executing the full per-invoice background sweep loop.
 2. Parallel backend streams (`BACK-01`, `BACK-02`) or frontend streams (`FRONT-01`, `FRONT-02`).
 
@@ -759,9 +917,11 @@ The agent toolchain is ready for:
 ## 2026-09-12 — AGENT-02: Implement draft_email Strands Tool with LiteLLM & Tests
 
 ### Objective
+
 Implement the `@tool`-decorated `draft_email` Strands agent tool and comprehensive unit/contract test suite (`agent/tools/draft_email.py`, `agent/tests/test_draft_email.py`) supporting Grok (xAI) and Google Gemini 1.5 Flash via LiteLLM following strict `/tdd` Red-Green-Refactor protocol.
 
 ### Changes Made
+
 - Created feature branch `feat/agent-02-draft-email`.
 - Created `agent/tests/test_draft_email.py` covering:
   - Tier 1 friendly email drafting & tone instructions
@@ -784,6 +944,7 @@ Implement the `@tool`-decorated `draft_email` Strands agent tool and comprehensi
 - Updated `docs/23-parallel-execution-plan.md`, `features_implemented.md`, and `tracker.md`.
 
 ### Files Changed
+
 - `agent/tools/draft_email.py` (NEW)
 - `agent/tests/test_draft_email.py` (NEW)
 - `docs/23-parallel-execution-plan.md` (MODIFIED)
@@ -791,22 +952,27 @@ Implement the `@tool`-decorated `draft_email` Strands agent tool and comprehensi
 - `tracker.md` (MODIFIED)
 
 ### Implementation Details
+
 - `validate_draft` is independently computed by the Python tool, never relying blindly on LLM self-reporting.
 - Prompt explicitly provides tone, schema, and forbidden terms constraints for the LLM.
 - Model defaults to `LLM_MODEL_ID` or Grok/Gemini based on available API keys (`GROK_API_KEY`, `GEMINI_API_KEY`).
 - 15s timeout is captured and translated into standard `LLMTimeoutError`.
 
 ### Verification
+
 - Pytest unit suite `pytest agent/tests/test_draft_email.py`: 13/13 unit tests passed in 0.18s.
 - Pytest full agent suite `pytest agent/tests/ -v`: 28/28 tests passed in 0.24s.
 - Vitest frontend suite `npm test` in `dashboard/`: 6/6 tests passed in 2.49s.
 - Red -> Green TDD verification completed.
 
 ### Current State
+
 `AGENT-02` is 100% complete and verified on branch `feat/agent-02-draft-email`.
 
 ### Next Agent Instructions
+
 The agent toolchain is ready for:
+
 1. `AGENT-03`: Implement `agent/tools/send_email.py` (Resend integration) and `agent/tools/write_audit_log.py` (Supabase audit logging).
 2. `AGENT-04`: Implement `agent/chazer_agent.py` and `agent/main.py` assembling the complete `ChazerCollectionAgent`.
 3. Parallel backend or frontend streams (`BACK-01`, `BACK-02`, `FRONT-01`, `FRONT-02`).
@@ -816,9 +982,11 @@ The agent toolchain is ready for:
 ## 2026-09-12 — AGENT-01: Implement classify_invoice Strands Tool
 
 ### Objective
+
 Implement the deterministic rule-based `classify_invoice` Strands agent tool and comprehensive test suite (`agent/tools/classify.py`, `agent/tests/test_classify.py`) following strict `/tdd` Red-Green-Refactor protocol.
 
 ### Changes Made
+
 - Created `agent/tests/test_classify.py` covering:
   - Tier 1 first contact (`days_overdue` in [1, 7], `contact_count == 0` -> auto-send eligible, no escalation)
   - Tier 1 boundary cases (Day 1, Day 7) and contact suppression if already contacted
@@ -834,6 +1002,7 @@ Implement the deterministic rule-based `classify_invoice` Strands agent tool and
 - Updated `docs/23-parallel-execution-plan.md` and `features_implemented.md`.
 
 ### Files Changed
+
 - `agent/tools/classify.py` (NEW)
 - `agent/tests/test_classify.py` (NEW)
 - `agent/tests/schemas.py` (MODIFIED)
@@ -842,21 +1011,26 @@ Implement the deterministic rule-based `classify_invoice` Strands agent tool and
 - `tracker.md` (MODIFIED)
 
 ### Implementation Details
+
 - Tool is decorated with `@tool` with a fallback mechanism if `strands` SDK is absent in a given environment.
 - Follows exact specification in `docs/03-agent-specification.md`, `docs/04-rules.md`, and `docs/14-core-algorithms-and-theory.md`.
 - Deterministic $O(1)$ algorithm: pure rule-based logic without unnecessary LLM latency for classification.
 - Output dictionary adheres strictly to `ClassificationResultSchema` and `ClassifyInvoiceOutput`.
 
 ### Verification
+
 - Pytest suite `agent/tests/test_classify.py`: 15/15 unit tests passed in 0.23s.
 - Vitest suite `npm test` in `dashboard/`: 6/6 tests passed in 2.25s.
 - Red -> Green TDD verification completed.
 
 ### Current State
+
 `AGENT-01` is 100% complete and fully verified.
 
 ### Next Agent Instructions
+
 The agent toolchain is ready for:
+
 1. `AGENT-02`: Implement `agent/tools/draft_email.py` and `agent/tests/test_draft_email.py` (LLM-driven email drafter with Gemini/Grok via LiteLLM).
 2. `AGENT-03`: Implement `agent/tools/send_email.py` (Resend integration) and `agent/tools/write_audit_log.py` (Supabase audit logging).
 3. Backend or Frontend parallel streams (`BACK-01`, `BACK-02`, `FRONT-01`, `FRONT-02`).
@@ -866,9 +1040,11 @@ The agent toolchain is ready for:
 ## 2026-09-12 — Test Infrastructure: Vitest, Pydantic & Strict TDD Protocol
 
 ### Objective
+
 Incorporate Vitest for frontend/TypeScript testing, Pydantic schemas for Python agent test validation, and enforce strict `/tdd` (Red → Green → Refactor) across all tickets. Mandate that tickets can only be marked as complete after their TDD suite has been executed, red-to-green verified, and passed.
 
 ### Changes Made
+
 - Configured Vitest test runner in `dashboard/`:
   - `dashboard/vitest.config.ts` (with React plugin, jsdom environment, `@/` path alias)
   - `dashboard/vitest.setup.ts` (`@testing-library/jest-dom`)
@@ -885,6 +1061,7 @@ Incorporate Vitest for frontend/TypeScript testing, Pydantic schemas for Python 
   - `context.md` & `features_implemented.md` — Documented TDD framework and completion invariant.
 
 ### Files Changed
+
 - `dashboard/package.json` (MODIFIED)
 - `dashboard/vitest.config.ts` (NEW)
 - `dashboard/vitest.setup.ts` (NEW)
@@ -901,14 +1078,18 @@ Incorporate Vitest for frontend/TypeScript testing, Pydantic schemas for Python 
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - `npm test` inside `dashboard/` ran Vitest suite against `types.test.ts` — passed.
 - Pydantic models in `agent/tests/schemas.py` verified with type checker.
 
 ### Current State
+
 Vitest + Pydantic testing infrastructure is active. All subsequent tickets will strictly follow the `/tdd` workflow (Red -> Green -> Refactor) and can only be marked as complete after test execution verification.
 
 ### Next Agent Instructions
+
 When implementing any ticket:
+
 1. Agree on public seam interface.
 2. Write tests first (**Red**): using Vitest for TS/Frontend or Pytest + Pydantic for Python agent.
 3. Implement minimal code to pass (**Green**).
@@ -919,9 +1100,11 @@ When implementing any ticket:
 ## 2026-09-12 — FRONT-05 (Phase A): TypeScript Domain Contracts & API Interfaces (Agent C)
 
 ### Objective
+
 Execute Agent C task: create complete, strictly typed domain contracts, API interfaces, schema enums, UI state types, and component prop interfaces in `dashboard/lib/types.ts` derived from `docs/06-api-and-state-design.md` and `docs/07-components.md`.
 
 ### Changes Made
+
 - Created `dashboard/lib/types.ts` containing all types:
   - Domain enums: `InvoiceStatus`, `EscalationTier`, `DecisionStatus`, `ContactHistoryStatus`, `SweepStatus`, `AuditAction`, `AuditStatus`
   - Entity types: `Client`, `Invoice`, `Summary`, `TierCounts`, `Decision`, `DecisionInvoiceContext`, `ContactHistory`, `AuditEntry`, `AuditMetadata`, `SweepRun`
@@ -933,6 +1116,7 @@ Execute Agent C task: create complete, strictly typed domain contracts, API inte
 - Updated `features_implemented.md` and `tracker.md`.
 
 ### Files Changed
+
 - `dashboard/lib/types.ts` (NEW/MODIFIED)
 - `dashboard/tests/types.test.ts` (MODIFIED)
 - `dashboard/vitest.config.ts` (MODIFIED)
@@ -940,14 +1124,17 @@ Execute Agent C task: create complete, strictly typed domain contracts, API inte
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - `npm test` inside `dashboard/` — 6/6 Vitest tests passing.
 - `npx tsc --noEmit` executed in `dashboard/` — passed with 0 type errors.
 - Verified all fields match Postgres schema, REST endpoint contracts, and UI component specifications in `docs/06-api-and-state-design.md` and `docs/07-components.md`.
 
 ### Current State
+
 Foundational contracts established. Frontend UI components (`FRONT-01` through `FRONT-04`) and API store (`FRONT-05 Phase B`) can now be built against unified type definitions with full TypeScript autocompletion and type safety.
 
 ### Next Agent Instructions
+
 1. **Frontend stream**: Build `FRONT-01` (`dashboard/components/AppShell.tsx`, `Sidebar.tsx`, `TopBar.tsx`) and `FRONT-02` (`dashboard/app/dashboard/page.tsx`, `InvoiceTable.tsx`).
 2. **Backend stream**: Build `BACK-01` (`supabase/migrations/001_initial_schema.sql`).
 3. **Agent stream**: Build `AGENT-01` (`agent/tools/classify.py`).
@@ -957,9 +1144,11 @@ Foundational contracts established. Frontend UI components (`FRONT-01` through `
 ## 2026-09-12 — DEVOPS-01: Repository Scaffolding, Tooling & Directory Tree
 
 ### Objective
+
 Execute Ticket DEVOPS-01 (Wave 0): initialize repository, establish full multi-tier directory structure for Python agent, Supabase backend, Next.js frontend, configure all tooling, dependencies, licenses, `.gitignore`, and seed assets.
 
 ### Changes Made
+
 - Initialized local Git repository on `main` branch.
 - Created root `.gitignore` filtering Node.js, Next.js, Python, Supabase, Vercel, and environment files (`.env`, `.env.local`).
 - Created Apache-2.0 `LICENSE` file.
@@ -971,6 +1160,7 @@ Execute Ticket DEVOPS-01 (Wave 0): initialize repository, establish full multi-t
 - Updated `docs/23-parallel-execution-plan.md` and `features_implemented.md`.
 
 ### Files Changed
+
 - `.gitignore` (NEW)
 - `LICENSE` (NEW)
 - `README.md` (NEW)
@@ -1000,16 +1190,20 @@ Execute Ticket DEVOPS-01 (Wave 0): initialize repository, establish full multi-t
 - `tracker.md` (MODIFIED)
 
 ### Verification
+
 - `git status` confirmed clean tracking of all repository components
 - Directory structure matches `docs/11-deployment-cloud-guide.md` section 8
 - Tailwind theme verified with exact tokens from `docs/09-design-systems.md`
 - Seed data matches `docs/05-data-ingestion-and-processing-engine.md`
 
 ### Current State
+
 Wave 0 Scaffolding (`DEVOPS-01`) is 100% complete. Repository is primed for parallel Wave 0 / Wave 1 tickets (`BACK-01`, `FRONT-05` types, `AGENT-01`, `AGENT-02`, `AGENT-03`, `FRONT-01`..`04`).
 
 ### Next Agent Instructions
+
 Proceed to Wave 0 / Wave 1 parallel workstreams:
+
 1. **Backend stream**: Execute `BACK-01` (`supabase/migrations/001_initial_schema.sql` with tables and views per `docs/06`).
 2. **Frontend stream**: Execute `FRONT-05` (Phase A: `dashboard/lib/types.ts`) and `FRONT-01` (`dashboard/components/AppShell.tsx`, `Sidebar.tsx`, `TopBar.tsx`).
 3. **Agent stream**: Execute `AGENT-01` (`agent/tools/classify.py` + tests) and `AGENT-02` (`agent/tools/draft_email.py` + tests).
@@ -1019,18 +1213,22 @@ Proceed to Wave 0 / Wave 1 parallel workstreams:
 ## 2026-09-12 — LLM Updated: Grok (xAI) as Primary Model
 
 ### Objective
+
 User identified Grok API as a better LLM option due to more generous free-tier rate limits vs. Gemini's 60 req/min cap.
 
 ### Changes Made
+
 - `context.md` — Updated LLM line + ADR-001 rationale to list Grok as primary, Gemini as fallback
 - `docs/03-agent-specification.md` — LLM config block updated to `model_id="xai/grok-beta"` with Gemini commented fallback
 - `docs/11-deployment-cloud-guide.md` — Cost table and all env var blocks updated (`GROK_API_KEY` primary)
 - `docs/13-tech-stack.md` — Comparison table updated; Grok wins vs. Gemini due to rate limits
 
 ### Key Decision
+
 Both LLMs are accessed identically via `strands.models.LiteLLM`. Switching is purely `model_id` + API key — zero code changes required. This makes Gemini a viable fallback if Grok is unavailable on demo day.
 
 ### Next Agent: Get Grok API Key
+
 1. Go to [console.x.ai](https://console.x.ai) → create account → generate API key
 2. Add `GROK_API_KEY=xai-...` to `agent/.env` and Supabase Edge Function secrets
 3. Use `model_id="xai/grok-beta"` in `agent/chazer_agent.py`
@@ -1040,44 +1238,48 @@ Both LLMs are accessed identically via `strands.models.LiteLLM`. Switching is pu
 ## 2026-09-12 — Full Documentation Suite Generated
 
 ### Objective
+
 Generate all 22 production-grade technical documents for the Chazer autonomous invoice-chasing agent project. Revise architecture from AWS-native to free-tier (Supabase + Gemini + Resend + Vercel) due to user having no AWS credits.
 
 ### Changes Made
+
 - Created `docs/` directory with all 22 documents
 - Updated `context.md` with revised free-tier architecture and ADR-001
 - Created `features_implemented.md` with project feature status
 
 ### Files Changed
-| File | Status |
-|------|--------|
-| `docs/01-prd.md` | NEW — Product Requirements Document |
-| `docs/02-architecture.md` | NEW — System Architecture with ASCII + Mermaid diagrams |
-| `docs/03-agent-specification.md` | NEW — Strands agent state machine, tools, prompts |
-| `docs/04-rules.md` | NEW — Domain business rules and invariants |
-| `docs/05-data-ingestion-and-processing-engine.md` | NEW — CSV seed pipeline |
-| `docs/06-api-and-state-design.md` | NEW — REST API endpoints + Postgres schema |
-| `docs/07-components.md` | NEW — React component library spec |
-| `docs/08-pages.md` | NEW — Next.js pages, wireframes, responsive layout |
-| `docs/09-design-systems.md` | NEW — Design tokens, color palette, Tailwind config |
-| `docs/10-development-roadmap.md` | NEW — 3-day build plan with 40+ milestones |
-| `docs/11-deployment-cloud-guide.md` | NEW — Supabase + Vercel deployment guide |
-| `docs/12-pitch-and-winning-strategy.md` | NEW — Competitive strategy and judging criteria alignment |
-| `docs/13-tech-stack.md` | NEW — Technology choices with trade-off analysis |
-| `docs/14-core-algorithms-and-theory.md` | NEW — Formal algorithm specs with complexity analysis |
-| `docs/15-security-privacy-and-safety-spec.md` | NEW — Security controls, RLS, content validation |
-| `docs/16-demo-script-pitch.md` | NEW — 5-minute demo script with presenter notes |
-| `docs/17-submission-qa-checklist.md` | NEW — Pre-submission QA with curl commands |
-| `docs/18-ubiquitous-language-glossary.md` | NEW — Domain terminology glossary |
-| `docs/19-troubleshooting-playbook.md` | NEW — 10 failure scenarios with diagnostic + fixes |
-| `docs/20-testing-strategy.md` | NEW — Unit, integration, E2E tests with code |
-| `docs/21-code-review-protocol.md` | NEW — PR standards and engineering conventions |
-| `docs/22-actionable-issues-backlog.md` | NEW — 20 granular tickets with acceptance criteria |
-| `context.md` | MODIFIED — Revised stack to Supabase/Gemini/Vercel; added ADR-001 |
-| `features_implemented.md` | NEW — Feature status tracking |
+
+| File                                              | Status                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| `docs/01-prd.md`                                  | NEW — Product Requirements Document                               |
+| `docs/02-architecture.md`                         | NEW — System Architecture with ASCII + Mermaid diagrams           |
+| `docs/03-agent-specification.md`                  | NEW — Strands agent state machine, tools, prompts                 |
+| `docs/04-rules.md`                                | NEW — Domain business rules and invariants                        |
+| `docs/05-data-ingestion-and-processing-engine.md` | NEW — CSV seed pipeline                                           |
+| `docs/06-api-and-state-design.md`                 | NEW — REST API endpoints + Postgres schema                        |
+| `docs/07-components.md`                           | NEW — React component library spec                                |
+| `docs/08-pages.md`                                | NEW — Next.js pages, wireframes, responsive layout                |
+| `docs/09-design-systems.md`                       | NEW — Design tokens, color palette, Tailwind config               |
+| `docs/10-development-roadmap.md`                  | NEW — 3-day build plan with 40+ milestones                        |
+| `docs/11-deployment-cloud-guide.md`               | NEW — Supabase + Vercel deployment guide                          |
+| `docs/12-pitch-and-winning-strategy.md`           | NEW — Competitive strategy and judging criteria alignment         |
+| `docs/13-tech-stack.md`                           | NEW — Technology choices with trade-off analysis                  |
+| `docs/14-core-algorithms-and-theory.md`           | NEW — Formal algorithm specs with complexity analysis             |
+| `docs/15-security-privacy-and-safety-spec.md`     | NEW — Security controls, RLS, content validation                  |
+| `docs/16-demo-script-pitch.md`                    | NEW — 5-minute demo script with presenter notes                   |
+| `docs/17-submission-qa-checklist.md`              | NEW — Pre-submission QA with curl commands                        |
+| `docs/18-ubiquitous-language-glossary.md`         | NEW — Domain terminology glossary                                 |
+| `docs/19-troubleshooting-playbook.md`             | NEW — 10 failure scenarios with diagnostic + fixes                |
+| `docs/20-testing-strategy.md`                     | NEW — Unit, integration, E2E tests with code                      |
+| `docs/21-code-review-protocol.md`                 | NEW — PR standards and engineering conventions                    |
+| `docs/22-actionable-issues-backlog.md`            | NEW — 20 granular tickets with acceptance criteria                |
+| `context.md`                                      | MODIFIED — Revised stack to Supabase/Gemini/Vercel; added ADR-001 |
+| `features_implemented.md`                         | NEW — Feature status tracking                                     |
 
 ### Implementation Details
 
 **Stack Decision (ADR-001):**
+
 - DynamoDB → Supabase Postgres (free tier, full SQL, native pg_cron)
 - AWS Lambda → Supabase Edge Functions (Deno, same platform as DB)
 - AWS EventBridge → pg_cron (built into Supabase)
@@ -1087,10 +1289,12 @@ Generate all 22 production-grade technical documents for the Chazer autonomous i
 
 **Key Technical Insight (from doc 10, P3-04):**
 Running Python as a subprocess from Deno Edge Functions is impractical. The sweep logic will be implemented twice:
+
 1. In Python (Strands SDK) for the agent/ directory — satisfies hackathon judging requirement, runnable locally
 2. In TypeScript (Supabase Edge Function) — the actual production runtime
 
 **System Invariants (from doc 04):**
+
 - INV-01: Tier-3 emails never auto-sent
 - INV-02: High-value invoices always require approval
 - INV-03: All agent actions logged before external action executed
@@ -1099,35 +1303,42 @@ Running Python as a subprocess from Deno Edge Functions is impractical. The swee
 - INV-06: Sweep is idempotent
 
 ### Verification
+
 - All 22 files created in `docs/` directory: verified via filesystem
 - Each document was reviewed for internal consistency (schema references, tool names, API endpoints match across docs)
 - No build or tests run yet (code not written yet)
 
 ### Current State
+
 Documentation phase is 100% complete. **No code has been written yet.** The project is ready to enter Phase 1 of the roadmap (Day 1 AM — Foundation & Schema).
 
 ### Remaining Work
+
 **Everything** — all actual code is to be built. Specifically:
 
 **Day 1 AM (Foundation):**
+
 - BACK-01: Create Supabase schema migration
 - BACK-02: Build seed-data Edge Function
 - DEVOPS-01: Set up repo structure
 - Initialize Next.js and Python projects
 
 **Day 1 PM (Agent):**
+
 - AGENT-01: classify_invoice tool
 - AGENT-02: draft_email tool (Gemini)
 - AGENT-03: send_email + write_audit_log tools
 - AGENT-04: Assemble ChazerCollectionAgent + sweep loop
 
 **Day 2 (Backend):**
+
 - BACK-03: api-router Edge Function
 - BACK-04: decisions-approve + decisions-reject
 - BACK-05: pg_cron schedule
 - AGENT-05: agent-sweep Edge Function (TypeScript)
 
 **Day 3 AM (Frontend):**
+
 - FRONT-01: AppShell + Sidebar + TopBar
 - FRONT-02: Dashboard page
 - FRONT-03: Decision Queue page
@@ -1135,12 +1346,14 @@ Documentation phase is 100% complete. **No code has been written yet.** The proj
 - FRONT-05: Zustand store
 
 **Day 3 PM (Deploy & Ship):**
+
 - DEVOPS-02: GitHub Actions CI/CD
 - DEVOPS-03: README.md
 - DEVOPS-04: Production smoke tests
 - DEVOPS-05: Demo reset procedure
 
 ### Known Issues
+
 - No known blockers. The Python-in-Deno subprocess issue is already mitigated in the plan (TypeScript sweep as production runtime).
 - Resend domain verification (`chazer.dev`) takes 24-48 hours. Start this on Day 1 even if using sandbox mode for demo.
 - pg_cron requires the `pg_net` extension to be enabled in Supabase. Verify this is available on the free tier before writing the migration.
@@ -1148,11 +1361,13 @@ Documentation phase is 100% complete. **No code has been written yet.** The proj
 ### Next Agent Instructions
 
 **Read first:**
+
 1. `context.md` — understand the free-tier stack and why each choice was made
 2. `docs/10-development-roadmap.md` — your day-by-day milestone checklist
 3. `docs/22-actionable-issues-backlog.md` — pick the ticket to work on
 
 **Start with:**
+
 1. Create Supabase project at supabase.com
 2. Note the project URL and service role key
 3. Write `supabase/migrations/001_initial_schema.sql` (spec in `docs/06-api-and-state-design.md`)
@@ -1160,6 +1375,7 @@ Documentation phase is 100% complete. **No code has been written yet.** The proj
 5. Create `data/invoices_seed.csv` using the example rows in `docs/05-data-ingestion-and-processing-engine.md`
 
 **Key file to reference when building each component:**
+
 - DB schema: `docs/06-api-and-state-design.md`
 - Agent tools: `docs/03-agent-specification.md`
 - API endpoints: `docs/06-api-and-state-design.md`
@@ -1169,6 +1385,7 @@ Documentation phase is 100% complete. **No code has been written yet.** The proj
 - Test examples: `docs/20-testing-strategy.md`
 
 **Do not:**
+
 - Rebuild or question the stack choices — they are finalized in context.md + ADR-001
 - Use DynamoDB, AWS Lambda, or any AWS services (no credits)
 - Add authentication — demo_owner is hardcoded
@@ -1179,26 +1396,32 @@ Documentation phase is 100% complete. **No code has been written yet.** The proj
 ## 2026-09-12 — Research: Parallel Execution & Ticket Concurrency Analysis
 
 ### Objective
+
 Analyze all 20 actionable backlog tickets to determine which workstreams can be executed in parallel and construct a dependency graph for multi-agent / multi-developer concurrency.
 
 ### Changes Made
+
 - Created and updated `docs/23-parallel-execution-plan.md` containing full dependency matrix, wave-based schedule, workstream breakdown, collision-free file maps, and explicit ticket status tracking (`Completed` / `Implementing` / `Not Implemented`).
 
 ### Files Changed
+
 - `docs/23-parallel-execution-plan.md` — NEW
 
 ### Implementation Details
+
 - Classified backlog into 4 distinct execution waves and 4 decoupled workstreams (Agent, Backend, Frontend, DevOps).
 - Up to 9-11 tickets can be executed in parallel during Wave 1 because schemas and API contracts are strictly specified in `docs/03` and `docs/06`.
 - Documented clear integration convergence points for Wave 2 and Wave 3.
 
 ### Verification
+
 - Cross-referenced all ticket acceptance criteria, input/output contracts, and file targets against `docs/03-agent-specification.md`, `docs/06-api-and-state-design.md`, `docs/07-components.md`, `docs/08-pages.md`, and `docs/22-actionable-issues-backlog.md`.
 
 ### Current State
+
 Research complete. Backlog tickets are mapped into parallel execution waves ready for implementation.
 
 ### Next Agent Instructions
+
 1. Review `docs/23-parallel-execution-plan.md` to pick tickets for parallel execution.
 2. Start with Wave 0 bootstrapping (`DEVOPS-01`, `BACK-01`, and `FRONT-05` types), then launch Wave 1 parallel streams.
-

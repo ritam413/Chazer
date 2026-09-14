@@ -1,0 +1,15 @@
+{
+  "name": "chazer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "npm --prefix dashboard run build",
+    "test": "npm --prefix dashboard test"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.9.6"
+  }
+}
