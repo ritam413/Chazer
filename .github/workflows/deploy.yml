@@ -128,6 +128,7 @@ jobs:
       - name: Deploy Edge Functions to Supabase
         run: |
           supabase functions deploy api-router --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy agent-sweep --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
           supabase functions deploy seed-data --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
           supabase functions deploy decisions-approve --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
           supabase functions deploy decisions-reject --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
