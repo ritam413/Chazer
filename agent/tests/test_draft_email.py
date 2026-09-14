@@ -296,3 +296,35 @@ def test_build_draft_prompt_contains_rules():
     assert "2026-08-01" in prompt
     assert "200 words" in prompt
     assert "JSON" in prompt
+
+
+def test_call_llm_passes_api_key_when_configured(monkeypatch):
+    """call_llm should pass api_key explicitly to litellm.completion."""
+    import sys
+    from agent.tools.draft_email import call_llm
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+
+    mock_litellm = MagicMock()
+    mock_resp = MagicMock()
+    mock_choice = MagicMock()
+    mock_choice.message.content = '{"subject": "S", "body": "B"}'
+    mock_resp.choices = [mock_choice]
+    mock_litellm.completion.return_value = mock_resp
+
+    monkeypatch.setitem(sys.modules, "litellm", mock_litellm)
+    call_llm("test prompt", model_id="gemini/gemini-1.5-flash")
+
+    mock_litellm.completion.assert_called_once()
+    assert mock_litellm.completion.call_args.kwargs.get("api_key") == "test-gemini-key"
+
+
+def test_draft_email_reraises_upstream_api_exception(base_invoice):
+    """draft_email should directly propagate upstream API/Auth exceptions instead of mislabeling them as JSON parse errors."""
+    class CustomAPIError(Exception):
+        pass
+
+    with patch("agent.tools.draft_email.call_llm", side_effect=CustomAPIError("Invalid API Key or Quota Exceeded")):
+        with pytest.raises(CustomAPIError) as exc_info:
+            draft_email(base_invoice)
+
+    assert "Invalid API Key or Quota Exceeded" in str(exc_info.value)

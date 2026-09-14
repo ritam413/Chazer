@@ -163,14 +163,26 @@ def call_llm(prompt: str, model_id: Optional[str] = None, timeout: float = 15.0)
         or ("xai/grok-beta" if os.environ.get("GROK_API_KEY") else "gemini/gemini-1.5-flash")
     )
 
+    api_key = None
+    if "xai" in selected_model or "grok" in selected_model:
+        api_key = os.environ.get("XAI_API_KEY") or os.environ.get("GROK_API_KEY")
+    elif "gemini" in selected_model:
+        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    elif "openai" in selected_model or "gpt" in selected_model:
+        api_key = os.environ.get("OPENAI_API_KEY")
+
     try:
-        response = litellm.completion(
-            model=selected_model,
-            messages=[{"role": "user", "content": prompt}],
-            timeout=timeout,
-            temperature=0.2,
-        )
-        return response.choices[0].message.content
+        kwargs: Dict[str, Any] = {
+            "model": selected_model,
+            "messages": [{"role": "user", "content": prompt}],
+            "timeout": timeout,
+            "temperature": 0.2,
+        }
+        if api_key:
+            kwargs["api_key"] = api_key
+
+        response = litellm.completion(**kwargs)
+        return response.choices[0].message.content or ""
     except TimeoutError as exc:
         raise LLMTimeoutError(f"LLM request timed out after {timeout}s: {exc}") from exc
     except Exception as exc:
@@ -183,7 +195,10 @@ def call_llm(prompt: str, model_id: Optional[str] = None, timeout: float = 15.0)
 
 def _extract_json_payload(raw_content: str) -> Dict[str, Any]:
     """Cleans and extracts JSON object from raw LLM string."""
-    cleaned = raw_content.strip()
+    cleaned = (raw_content or "").strip()
+    if not cleaned:
+        raise ValueError("Empty LLM response")
+
     # Strip markdown code fences if LLM wrapped it in ```json ... ```
     if cleaned.startswith("```"):
         cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
@@ -217,32 +232,7 @@ def draft_email(
     timeout: float = 15.0,
     **extra: Any,
 ) -> Dict[str, Any]:
-    """Generates a professional email draft for an overdue invoice using LLM inference.
-
-    Args:
-        invoice_data: Optional dictionary containing invoice attributes.
-        invoice_id: Unique invoice identifier (e.g. 'INV-042').
-        client_name: Recipient client or business name.
-        client_email: Recipient billing email.
-        owner_name: Name of the invoice issuer.
-        owner_email: Email of the invoice issuer.
-        amount: Outstanding balance in USD.
-        due_date: Due date (YYYY-MM-DD).
-        tier: Escalation tier ('TIER_1', 'TIER_2', 'TIER_3').
-        prior_contact_date: Date of previous reminder if applicable.
-        services_description: Description of services billed.
-        model_id: Optional LLM model identifier.
-        timeout: LLM call timeout in seconds.
-        **extra: Additional attributes.
-
-    Returns:
-        Dict containing:
-            subject: str
-            body: str
-            word_count: int
-            validation_passed: bool
-            tier: str
-    """
+    """Generates a professional email draft for an overdue invoice using LLM inference."""
     # Merge dictionary argument if supplied
     data: Dict[str, Any] = {}
     if isinstance(invoice_data, dict):
@@ -284,10 +274,11 @@ def draft_email(
         parsed_json = _extract_json_payload(raw_response)
     except TimeoutError as exc:
         raise LLMTimeoutError(f"LLM request timed out after {timeout}s: {exc}") from exc
-    except Exception:
+    except (json.JSONDecodeError, ValueError):
+        # Catch only JSON parse errors for single retry
         parsed_json = None
 
-    # Attempt 2: Retry once on parse failure with strict formatting reminder
+    # Attempt 2: Retry once on JSON parse failure with strict formatting reminder
     if not parsed_json or not isinstance(parsed_json, dict) or "subject" not in parsed_json or "body" not in parsed_json:
         retry_prompt = (
             f"{prompt}\n\nIMPORTANT: Your previous output was not valid JSON. "
@@ -299,7 +290,7 @@ def draft_email(
             parsed_json = _extract_json_payload(raw_response)
         except TimeoutError as exc:
             raise LLMTimeoutError(f"LLM request timed out after {timeout}s: {exc}") from exc
-        except Exception as exc:
+        except (json.JSONDecodeError, ValueError) as exc:
             raise LLMParseError(f"Failed to parse LLM response into JSON: {last_raw_response}") from exc
 
     if not parsed_json or not isinstance(parsed_json, dict) or "subject" not in parsed_json or "body" not in parsed_json:
