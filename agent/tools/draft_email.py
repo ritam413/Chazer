@@ -160,7 +160,7 @@ def call_llm(prompt: str, model_id: Optional[str] = None, timeout: float = 15.0)
     selected_model = (
         model_id
         or os.environ.get("LLM_MODEL_ID")
-        or ("xai/grok-2-latest" if (os.environ.get("GROK_API_KEY") or os.environ.get("XAI_API_KEY")) else "gemini/gemini-1.5-flash")
+        or ("gemini/gemini-1.5-flash" if (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")) else "xai/grok-2-latest")
     )
 
     # Map grok aliases to active xAI endpoint model name

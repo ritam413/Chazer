@@ -115,7 +115,9 @@ def send_email(
         data.get("from_email")
         or data.get("from")
         or from_email
-        or os.environ.get("RESEND_FROM_EMAIL", "reminders@chazer.dev")
+        or os.environ.get("SENDER_EMAIL")
+        or os.environ.get("RESEND_FROM_EMAIL")
+        or "onboarding@resend.dev"
     )
     email_subject = str(data.get("subject") or subject or "")
     content_body = str(data.get("body_text") or data.get("body") or body_text or "")
